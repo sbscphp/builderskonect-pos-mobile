@@ -1,0 +1,71 @@
+import 'package:builders_konnect/core/core.dart';
+
+class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
+  const CustomAppbar({
+    super.key,
+    required this.title,
+    this.trailingWidget,
+    this.leadingWidget,
+    this.onBack,
+  });
+
+  final String title;
+  final Widget? trailingWidget;
+  final Widget? leadingWidget;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(Sizer.height(60)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.gray50,
+          border: Border(
+            bottom: BorderSide(
+              color: AppColors.grayF2,
+            ),
+          ),
+        ),
+        padding: EdgeInsets.symmetric(
+          horizontal: Sizer.width(16),
+          vertical: Sizer.height(10),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  child: leadingWidget ??
+                      InkWell(
+                        onTap: () {
+                          if (Navigator.canPop(context)) {
+                            Navigator.pop(context);
+                          } else if (onBack != null) {
+                            onBack!();
+                          }
+                        },
+                        child: SvgPicture.asset(AppSvgs.circleBack),
+                      ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: Sizer.height(20)),
+                  child: Text(
+                    title,
+                    style: AppTypography.text14.medium,
+                  ),
+                ),
+                Container(child: trailingWidget)
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(Sizer.height(60));
+}
