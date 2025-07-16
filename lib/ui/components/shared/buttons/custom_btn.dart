@@ -23,7 +23,7 @@ class CustomBtn {
         onTap: onTap,
         child: Container(
           width: width ?? Sizer.screenWidth,
-          height: Sizer.height(height ?? 42),
+          height: Sizer.height(height ?? 48),
           decoration: (online && !isLoading)
               ? BoxDecoration(
                   borderRadius: borderRadius ?? BorderRadius.circular(4),

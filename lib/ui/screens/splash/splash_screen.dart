@@ -36,7 +36,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       //     : RoutePath.onboardingScreen;
 
       if (mounted) {
-        Navigator.of(context).pushReplacementNamed(RoutePath.bottomNavScreen);
+        Navigator.of(context).pushReplacementNamed(RoutePath.introScreen);
       }
     });
   }

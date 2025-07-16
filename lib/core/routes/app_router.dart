@@ -12,6 +12,12 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.introScreen:
+        return TransitionUtils.buildTransition(
+          const IntroScreen(),
+          settings,
+        );
+
       case RoutePath.bottomNavScreen:
         final dashArgs = args as DashArg?;
         return TransitionUtils.buildTransition(

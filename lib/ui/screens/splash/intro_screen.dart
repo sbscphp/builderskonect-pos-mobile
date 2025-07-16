@@ -1,0 +1,84 @@
+import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/ui/components/components.dart';
+
+class IntroScreen extends StatelessWidget {
+  const IntroScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Container(
+        height: Sizer.screenHeight,
+        width: Sizer.screenWidth,
+        decoration: BoxDecoration(
+          color: AppColors.primaryBlue.withValues(alpha: 0.4),
+        ),
+        child: Padding(
+          padding: EdgeInsets.only(
+            left: Sizer.width(16),
+            right: Sizer.width(16),
+            bottom: Sizer.height(40),
+          ),
+          child: Column(
+            children: [
+              Spacer(),
+              Container(
+                padding: EdgeInsets.symmetric(
+                  vertical: Sizer.height(24),
+                  horizontal: Sizer.width(24),
+                ),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: AppColors.white,
+                  borderRadius: BorderRadius.circular(Sizer.radius(8)),
+                ),
+                child: Column(
+                  children: [
+                    Image.asset(
+                      AppImages.logo,
+                      height: Sizer.height(48),
+                    ),
+                    YBox(30),
+                    Text(
+                      "Welcome to Builder’sKonnect",
+                      style: AppTypography.text20.medium,
+                    ),
+                    Text(
+                      "Manage your building materials and construction business from anywhere with ease.",
+                      textAlign: TextAlign.center,
+                      style: AppTypography.text12.withCustomColor(
+                          AppColors.black.withValues(alpha: 0.45)),
+                    ),
+                    YBox(30),
+                    CustomBtn.solid(
+                      text: "Get Started",
+                      onTap: () {
+                        Navigator.of(context).pushReplacementNamed(
+                          RoutePath.loginScreen,
+                        );
+                      },
+                    ),
+                    YBox(24),
+                    CustomBtn.solid(
+                      text: "Log in",
+                      isOutline: true,
+                      outlineColor: AppColors.neutral5,
+                      // textColor: AppColors.black.withValues(alpha: 0.85),
+                      textStyle: AppTypography.text16.withCustomColor(
+                          AppColors.black.withValues(alpha: 0.85)),
+                      onTap: () {
+                        Navigator.of(context).pushReplacementNamed(
+                          RoutePath.loginScreen,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
