@@ -17,6 +17,7 @@ class AppColors {
   static const blue8C = Color(0xFF003A8C);
 
   static const dayBreakBlue = Color(0xFFE6F7FF);
+  static const dayBreakBlue3 = Color(0xFF91D5FF);
 
   static const neutral1 = Color(0xFFFFFFFF);
   static const neutral2 = Color(0xFFFAFAFA);

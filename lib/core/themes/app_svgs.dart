@@ -13,4 +13,5 @@ class AppSvgs {
   static const String notification = "$svgIcon/notification.svg";
 
   static const String more = "$svgIcon/more.svg";
+  static const String pentagon = "$svgIcon/pentagon.svg";
 }

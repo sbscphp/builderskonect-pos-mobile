@@ -8,4 +8,7 @@ class AppImages {
 
   static const avatar = "$images/avatar.png";
   static const oip = "$images/oip.png";
+  static const signupBg = "$images/signupBg.png";
+  static const banner = "$images/banner.png";
+  static const planCard = "$images/planCard.png";
 }

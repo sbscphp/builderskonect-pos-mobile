@@ -38,6 +38,13 @@ class AppRouter {
           settings,
         );
 
+      // Plans
+      case RoutePath.pricingPlansScreen:
+        return TransitionUtils.buildTransition(
+          const PricingPlansScreen(),
+          settings,
+        );
+
       default:
         return errorScreen(settings);
     }

@@ -12,4 +12,7 @@ class RoutePath {
 
   // Notification
   static const notificationScreen = '/notificationScreen';
+
+  // Plans
+  static const pricingPlansScreen = '/pricingPlansScreen';
 }

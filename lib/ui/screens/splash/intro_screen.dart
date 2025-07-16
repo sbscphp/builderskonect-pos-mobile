@@ -11,7 +11,10 @@ class IntroScreen extends StatelessWidget {
         height: Sizer.screenHeight,
         width: Sizer.screenWidth,
         decoration: BoxDecoration(
-          color: AppColors.primaryBlue.withValues(alpha: 0.4),
+          image: DecorationImage(
+            image: AssetImage(AppImages.signupBg),
+            fit: BoxFit.cover,
+          ),
         ),
         child: Padding(
           padding: EdgeInsets.only(
@@ -53,8 +56,8 @@ class IntroScreen extends StatelessWidget {
                     CustomBtn.solid(
                       text: "Get Started",
                       onTap: () {
-                        Navigator.of(context).pushReplacementNamed(
-                          RoutePath.loginScreen,
+                        Navigator.of(context).pushNamed(
+                          RoutePath.pricingPlansScreen,
                         );
                       },
                     ),
