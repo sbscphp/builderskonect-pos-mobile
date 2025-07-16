@@ -25,6 +25,7 @@ class AppColors {
   static const neutral5 = Color(0xFFD9D9D9);
   static const neutral6 = Color(0xFFBFBFBF);
   static const neutral7 = Color(0xFF8C8C8C);
+  static const neutral8 = Color(0xFF595959);
   static const neutral9 = Color(0xFF434343);
 
   static const gray50 = Color(0xFFF9FAFB);
@@ -38,6 +39,9 @@ class AppColors {
   static const grayA4 = Color(0xFFA4A4A4);
   static const grayDD = Color(0xFFD0D5DD);
   static const grayF5 = Color(0xFFF0F2F5);
+
+  // Red
+  static const red2D = Color(0xFFF5222D);
 
   // Flushbar
   static const opacityRed100 = Color(0xFFFFF8F7);

@@ -65,6 +65,7 @@ class BaseVm extends ChangeNotifier {
     String? busyObjectName,
   }) async {
     try {
+      setError(false);
       setBusyForObject(busyObjectName ?? this, true);
 
       apiResponse = await method(

@@ -25,6 +25,13 @@ class AppRouter {
       //     settings,
       //   );
 
+      // Notification
+      case RoutePath.notificationScreen:
+        return TransitionUtils.buildTransition(
+          const NotificationScreen(),
+          settings,
+        );
+
       default:
         return errorScreen(settings);
     }

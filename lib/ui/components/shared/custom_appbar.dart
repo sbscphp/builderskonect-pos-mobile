@@ -17,7 +17,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
-      preferredSize: Size.fromHeight(Sizer.height(60)),
+      preferredSize: Size.fromHeight(Sizer.height(50)),
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.gray50,
@@ -40,13 +40,12 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                 Container(
                   child: leadingWidget ??
                       InkWell(
-                        onTap: () {
-                          if (Navigator.canPop(context)) {
-                            Navigator.pop(context);
-                          } else if (onBack != null) {
-                            onBack!();
-                          }
-                        },
+                        onTap: onBack ??
+                            () {
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              }
+                            },
                         child: SvgPicture.asset(AppSvgs.circleBack),
                       ),
                 ),
@@ -67,5 +66,5 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(Sizer.height(60));
+  Size get preferredSize => Size.fromHeight(Sizer.height(50));
 }

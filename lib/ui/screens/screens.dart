@@ -1,6 +1,7 @@
 export 'accounting/accounting.dart';
 export 'auth/auth.dart';
 export 'bottom_nav_screen.dart';
+export 'notifications/notifications.dart';
 export 'pos/pos.dart';
 export 'procurement/procurement.dart';
 export 'screen_not_found.dart';

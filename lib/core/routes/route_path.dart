@@ -9,15 +9,6 @@ class RoutePath {
   static const forgotPasswordOtpScreen = '/forgotPasswordOtpScreen';
   static const newPasswordScreen = '/newPasswordScreen';
 
-  // Order
-  static const orderDetailsScreen = '/orderDetailsScreen';
-  static const confirmPackageScreen = '/confirmPackageScreen';
-
+  // Notification
   static const notificationScreen = '/notificationScreen';
-
-  // Wallet
-  static const sendMoneyScreen = '/sendMoneyScreen';
-  static const sendMoneyAccountScreen = '/sendMoneyAccountScreen';
-  static const walletScreen = '/walletScreen';
-  static const sendMoneySuccesScreen = '/sendMoneySuccesScreen';
 }
