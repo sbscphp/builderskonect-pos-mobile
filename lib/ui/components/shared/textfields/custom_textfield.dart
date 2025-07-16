@@ -259,11 +259,7 @@ class CustomTextFieldState extends State<CustomTextField> {
                       ),
                     TextSpan(
                       text: widget.labelText ?? '',
-                      style: TextStyle(
-                        color: AppColors.black.withValues(alpha: 0.85),
-                        fontSize: widget.labelSize ?? 14.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
+                      style: AppTypography.text14,
                     ),
                     WidgetSpan(child: SizedBox(width: 4)),
                     TextSpan(
@@ -276,7 +272,7 @@ class CustomTextFieldState extends State<CustomTextField> {
                   ],
                 ),
               ),
-              const YBox(8)
+              const YBox(6)
             ],
           ),
         Container(
@@ -323,7 +319,7 @@ class CustomTextFieldState extends State<CustomTextField> {
                 hintText: widget.hintText,
                 hintStyle: widget.hintStyle ??
                     TextStyle(
-                      fontSize: Sizer.text(16),
+                      fontSize: Sizer.text(14),
                       fontWeight: FontWeight.w400,
                       color: AppColors.black.withValues(alpha: 0.45),
                     ),

@@ -14,4 +14,8 @@ class AppSvgs {
 
   static const String more = "$svgIcon/more.svg";
   static const String pentagon = "$svgIcon/pentagon.svg";
+  static const String checkIcon = "$svgIcon/checkIcon.svg";
+  static const String infoCircle = "$svgIcon/InfoCircle.svg";
+  static const String infoCircleRed = "$svgIcon/infoCircleRed.svg";
+  static const String modalHLine = "$svgIcon/modalHLine.svg";
 }

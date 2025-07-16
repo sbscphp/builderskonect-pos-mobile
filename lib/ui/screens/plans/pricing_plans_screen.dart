@@ -52,7 +52,7 @@ class _PricingPlansScreenState extends State<PricingPlansScreen> {
                     price: '₦ 10,000',
                     period: isYearly ? '/ per year' : '/ per month',
                     onSubscribe: () {
-                      // Handle subscription
+                      Navigator.pushNamed(context, RoutePath.getStartedScreen);
                     },
                     onLearnMore: () {
                       // Handle learn more

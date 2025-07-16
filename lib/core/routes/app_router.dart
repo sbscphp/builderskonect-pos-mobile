@@ -52,6 +52,12 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.getStartedScreen:
+        return TransitionUtils.buildTransition(
+          const GetStartedScreen(),
+          settings,
+        );
+
       default:
         return errorScreen(settings);
     }
