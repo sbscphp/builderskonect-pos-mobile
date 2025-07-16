@@ -6,6 +6,7 @@ class RoutePath {
 
   // Auth
   static const loginScreen = '/loginScreen';
+  static const vendorRegistrationScreen = '/vendorRegistrationScreen';
   static const forgotPasswordScreen = '/forgotPasswordScreen';
   static const forgotPasswordOtpScreen = '/forgotPasswordOtpScreen';
   static const newPasswordScreen = '/newPasswordScreen';

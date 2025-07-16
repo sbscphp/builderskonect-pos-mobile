@@ -25,11 +25,18 @@ class AppRouter {
           settings,
         );
 
-      // case RoutePath.loginScreen:
-      //   return TransitionUtils.buildTransition(
-      //     const LoginScreen(),
-      //     settings,
-      //   );
+      // Auth
+      case RoutePath.loginScreen:
+        return TransitionUtils.buildTransition(
+          const LoginScreen(),
+          settings,
+        );
+
+      case RoutePath.vendorRegistrationScreen:
+        return TransitionUtils.buildTransition(
+          const VendorRegistrationScreen(),
+          settings,
+        );
 
       // Notification
       case RoutePath.notificationScreen:

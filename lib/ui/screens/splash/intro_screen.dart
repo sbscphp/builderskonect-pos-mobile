@@ -66,13 +66,11 @@ class IntroScreen extends StatelessWidget {
                       text: "Log in",
                       isOutline: true,
                       outlineColor: AppColors.neutral5,
-                      // textColor: AppColors.black.withValues(alpha: 0.85),
                       textStyle: AppTypography.text16.withCustomColor(
                           AppColors.black.withValues(alpha: 0.85)),
                       onTap: () {
-                        Navigator.of(context).pushReplacementNamed(
-                          RoutePath.loginScreen,
-                        );
+                        printty("Login");
+                        Navigator.of(context).pushNamed(RoutePath.loginScreen);
                       },
                     ),
                   ],

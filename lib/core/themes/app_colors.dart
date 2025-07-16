@@ -43,6 +43,7 @@ class AppColors {
 
   // Red
   static const red2D = Color(0xFFF5222D);
+  static const red4F = Color(0xFFFF4D4F);
 
   // Flushbar
   static const opacityRed100 = Color(0xFFFFF8F7);
