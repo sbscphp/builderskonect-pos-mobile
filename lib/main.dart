@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
+import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,14 +20,22 @@ class MyApp extends StatelessWidget {
           final themeVm = ref.watch(themeViewModel);
           final themeMode = themeVm.themeMode;
 
-          // Update the status bar dynamically
-          AppTheme.updateStatusBarBrightness(themeMode: themeMode);
           return MaterialApp(
             title: 'Builder Konnect',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeMode,
+
+            // System UI overlay style
+            builder: (context, child) {
+              return AnnotatedRegion<SystemUiOverlayStyle>(
+                value: themeMode == ThemeMode.dark
+                    ? SystemUiOverlayStyle.light
+                    : SystemUiOverlayStyle.dark,
+                child: child!,
+              );
+            },
             navigatorKey: NavKey.appNavKey,
             onGenerateRoute: AppRouter.onGenerateRoute,
             home: const SplashScreen(),

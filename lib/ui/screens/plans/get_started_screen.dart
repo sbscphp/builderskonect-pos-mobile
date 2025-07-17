@@ -14,6 +14,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       backgroundColor: AppColors.white,
       appBar: CustomAppbar(title: ""),
@@ -27,13 +30,13 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
         children: [
           Text(
             "Get started on Builder’sKonnect",
-            style: AppTypography.text20.medium,
+            style: textTheme.text20?.medium,
           ),
           YBox(4),
           Text(
             "Fill the information below and subscribe to begin your experience.",
-            style: AppTypography.text16.withCustomColor(
-              AppColors.black.withValues(alpha: 0.45),
+            style: textTheme.text16?.copyWith(
+              color: colorScheme.black45,
             ),
           ),
           YBox(16),
@@ -48,7 +51,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               children: [
                 Text(
                   "Payment Summary",
-                  style: AppTypography.text16.medium,
+                  style: textTheme.text16?.medium,
                 ),
                 YBox(16),
                 Row(
@@ -111,10 +114,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                       RowText(
                         keyText: "Total Cost",
                         valueText: "N 30,000",
-                        keyTextStyle: AppTypography.text16,
-                        valueTextStyle:
-                            AppTypography.text16.bold.withCustomColor(
-                          AppColors.primaryBlue,
+                        keyTextStyle: textTheme.text16,
+                        valueTextStyle: textTheme.text16?.bold.copyWith(
+                          color: AppColors.primaryBlue,
                         ),
                       ),
                     ],
@@ -134,7 +136,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               children: [
                 Text(
                   "Your Details",
-                  style: AppTypography.text16.medium,
+                  style: textTheme.text16?.medium,
                 ),
                 YBox(16),
                 CustomTextField(
@@ -197,8 +199,13 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                           "Your subscription to Builder’skonnect is successful. You can now register on the platform to reach more target customers. ",
                       solidBtnText: "Okay, continue",
                       outlineBtnText: "No, cancel",
-                      onSolidBtnOnTap: () {},
-                      onOutlineBtnOnTap: () {},
+                      onSolidBtnOnTap: () {
+                        Navigator.pushNamedAndRemoveUntil(context,
+                            RoutePath.bottomNavScreen, (route) => false);
+                      },
+                      onOutlineBtnOnTap: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ));
             },
@@ -226,21 +233,23 @@ class RowText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
         Text(
           keyText,
           style: keyTextStyle ??
-              AppTypography.text14.withCustomColor(
-                AppColors.black.withValues(alpha: 0.45),
+              textTheme.text14?.copyWith(
+                color: colorScheme.black45,
               ),
         ),
         Spacer(),
         Text(
           valueText,
           style: valueTextStyle ??
-              AppTypography.text14.medium.withCustomColor(
-                AppColors.black.withValues(alpha: 0.85),
+              textTheme.text14?.medium.copyWith(
+                color: colorScheme.black85,
               ),
         ),
       ],

@@ -16,6 +16,8 @@ class ConfirmationModal extends ConsumerStatefulWidget {
 class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Padding(
       padding: EdgeInsets.symmetric(
         horizontal: Sizer.width(16),
@@ -36,18 +38,18 @@ class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
           YBox(16),
           Text(
             widget.modalConfirmationArg.title,
-            style: AppTypography.text20.medium,
+            style: textTheme.text20?.medium,
           ),
           YBox(4),
           Text(
             widget.modalConfirmationArg.description,
             textAlign: TextAlign.center,
-            style: AppTypography.text14,
+            style: textTheme.text14,
           ),
           YBox(40),
           CustomBtn.solid(
-            text: "Okay, continue",
-            onTap: () {},
+            text: widget.modalConfirmationArg.solidBtnText,
+            onTap: widget.modalConfirmationArg.onSolidBtnOnTap,
           ),
           if (widget.modalConfirmationArg.onOutlineBtnOnTap != null) YBox(16),
           if (widget.modalConfirmationArg.onOutlineBtnOnTap != null)
@@ -55,8 +57,7 @@ class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
               text: widget.modalConfirmationArg.outlineBtnText ?? "No, cancel",
               isOutline: true,
               outlineColor: AppColors.neutral5,
-              textStyle: AppTypography.text16
-                  .withCustomColor(AppColors.black.withValues(alpha: 0.85)),
+              textStyle: textTheme.text16,
               onTap: widget.modalConfirmationArg.onOutlineBtnOnTap,
             ),
           YBox(30),

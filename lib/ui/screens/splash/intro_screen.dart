@@ -6,6 +6,8 @@ class IntroScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
         height: Sizer.screenHeight,
@@ -43,14 +45,14 @@ class IntroScreen extends StatelessWidget {
                     ),
                     YBox(30),
                     Text(
-                      "Welcome to Builder’sKonnect",
-                      style: AppTypography.text20.medium,
+                      "Welcome to Builder’s Konnect",
+                      style: textTheme.text20?.medium,
                     ),
                     Text(
                       "Manage your building materials and construction business from anywhere with ease.",
                       textAlign: TextAlign.center,
-                      style: AppTypography.text12.withCustomColor(
-                          AppColors.black.withValues(alpha: 0.45)),
+                      style: textTheme.text12
+                          ?.copyWith(color: colorScheme.black45),
                     ),
                     YBox(30),
                     CustomBtn.solid(
@@ -66,8 +68,7 @@ class IntroScreen extends StatelessWidget {
                       text: "Log in",
                       isOutline: true,
                       outlineColor: AppColors.neutral5,
-                      textStyle: AppTypography.text16.withCustomColor(
-                          AppColors.black.withValues(alpha: 0.85)),
+                      textStyle: textTheme.text16,
                       onTap: () {
                         printty("Login");
                         Navigator.of(context).pushNamed(RoutePath.loginScreen);

@@ -23,14 +23,19 @@ class FlushBarToast {
           ),
           const XBox(10),
           Expanded(
-            child: Text(
-              message,
-              // overflow: TextOverflow.ellipsis,
-              // maxLines: 2,
-              style: AppTypography.text14.copyWith(
-                color: AppColors.black,
-              ),
-            ),
+            child: Text(message,
+
+                // overflow: TextOverflow.ellipsis,
+                // maxLines: 2,
+                style: Theme.of(NavKey.appNavKey.currentContext!)
+                    .textTheme
+                    .text14
+                    ?.copyWith(
+                      color: textColor ??
+                          Theme.of(NavKey.appNavKey.currentContext!)
+                              .colorScheme
+                              .black85,
+                    )),
           ),
         ],
       ),

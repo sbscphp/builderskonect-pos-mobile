@@ -11,6 +11,7 @@ class AppSvgs {
   static const String circleBack = "$svgIcon/circleBack.svg";
   static const String bag = "$svgIcon/bag.svg";
   static const String notification = "$svgIcon/notification.svg";
+  static const String chart = "$svgIcon/chart.svg";
 
   static const String more = "$svgIcon/more.svg";
   static const String pentagon = "$svgIcon/pentagon.svg";
@@ -18,4 +19,15 @@ class AppSvgs {
   static const String infoCircle = "$svgIcon/InfoCircle.svg";
   static const String infoCircleRed = "$svgIcon/infoCircleRed.svg";
   static const String modalHLine = "$svgIcon/modalHLine.svg";
+
+  static const String menu = "$svgIcon/menu.svg";
+  static const String profile = "$svgIcon/profile.svg";
+  static const String product = "$svgIcon/product.svg";
+  static const String reviewIcon = "$svgIcon/reviewIcon.svg";
+  static const String shopping = "$svgIcon/shopping.svg";
+
+  static const String shop = "$svgIcon/shop.svg";
+  static const String plusCircle = "$svgIcon/plusCircle.svg";
+  static const String checkCircle = "$svgIcon/checkCircle.svg";
+  static const String chevronRight = "$svgIcon/chevronRight.svg";
 }

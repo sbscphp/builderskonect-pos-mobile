@@ -4,5 +4,6 @@ export 'app_svgs.dart';
 export 'app_theme.dart';
 export 'app_typography.dart';
 export 'custom_color_scheme.dart';
+export 'custom_text_theme.dart';
 export 'my_cached_network_image.dart';
 export 'pin_input_theme.dart';

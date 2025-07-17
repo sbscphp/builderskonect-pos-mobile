@@ -26,7 +26,7 @@ class _PricingPlansScreenState extends State<PricingPlansScreen> {
           children: [
             Text(
               "Pricing Plans",
-              style: AppTypography.text20.medium,
+              style: Theme.of(context).textTheme.text20?.medium,
             ),
             YBox(16),
             PricingTab(

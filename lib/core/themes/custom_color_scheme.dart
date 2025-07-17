@@ -2,8 +2,26 @@ import 'package:builders_konnect/core/core.dart';
 
 extension CustomColorScheme on ColorScheme {
   // Custom text color variants
-  // Color get textPrimary => brightness == Brightness.light ? AppColors.gulfBlue : Colors.red;
-  // Color get textSecondary => brightness == Brightness.light ? AppColors.fizzYellow : Colors.red;
+  Color get primaryColor =>
+      brightness == Brightness.light ? AppColors.primaryBlue : Colors.red;
+  Color get secondaryColor =>
+      brightness == Brightness.light ? AppColors.neutral5 : Colors.red;
+  Color get white =>
+      brightness == Brightness.light ? AppColors.white : Colors.red;
+
+  Color get text6 => brightness == Brightness.light
+      ? AppColors.black.withValues(alpha: 0.06)
+      : Colors.red;
+  Color get black25 => brightness == Brightness.light
+      ? AppColors.black.withValues(alpha: 0.25)
+      : Colors.red;
+  Color get black45 => brightness == Brightness.light
+      ? AppColors.black.withValues(alpha: 0.45)
+      : Colors.red;
+  Color get black85 => brightness == Brightness.light
+      ? AppColors.black.withValues(alpha: 0.85)
+      : Colors.red;
+
   // Color get textTertiary => brightness == Brightness.light ? AppColors.gullGrey : Colors.red;
   // Color get text4 => brightness == Brightness.light ? AppColors.mirageBlack : Colors.red;
   // Color get text5 => brightness == Brightness.light ? AppColors.minskBlue : Colors.red;

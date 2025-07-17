@@ -10,11 +10,10 @@ class AppColors {
   static const red = Colors.red;
 
   static const primaryBlue = Color(0xFF003399);
-  static const blue5 = Color(0xFF40A9FF);
   static const blue2 = Color(0xFFBAE7FF);
+  static const blue5 = Color(0xFF40A9FF);
   static const blueFF = Color(0xFFF6FCFF);
   static const blue4F = Color(0xFF2D3A4F);
-  static const blue8C = Color(0xFF003A8C);
 
   static const dayBreakBlue = Color(0xFFE6F7FF);
   static const dayBreakBlue3 = Color(0xFF91D5FF);
@@ -44,6 +43,23 @@ class AppColors {
   // Red
   static const red2D = Color(0xFFF5222D);
   static const red4F = Color(0xFFFF4D4F);
+
+  // Yellow
+  static const yellow3D = Color(0xFFFFC53D);
+  static const yellowE6 = Color(0xFFFFFBE6);
+  static const yellow6 = Color(0xFFFAAD14);
+  static const yellow4 = Color(0xFFFFD666);
+
+  static const magenta6 = Color(0xFFEB2F96);
+  static const magenta4 = Color(0xFFFF85C0);
+  static const magenta2 = Color(0xFFFFD6E7);
+  static const magentaF8 = Color(0xFFFBF6F8);
+
+  static const green7 = Color(0xFF389E0D);
+  static const green4 = Color(0xFF95DE64);
+  static const greenED = Color(0xFFF6FFED);
+  static const green1A = Color(0xFF52C41A);
+  static const purple2 = Color(0xFFEFDBFF);
 
   // Flushbar
   static const opacityRed100 = Color(0xFFFFF8F7);

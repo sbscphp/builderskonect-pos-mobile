@@ -23,6 +23,9 @@ class PricingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(Sizer.radius(16)),
@@ -51,14 +54,13 @@ class PricingCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: AppTypography.text16.bold,
+                      style: textTheme.text16?.bold,
                     ),
                     YBox(4),
                     Text(
                       description,
-                      style: AppTypography.text12.withCustomColor(
-                        AppColors.black.withValues(alpha: 0.45),
-                      ),
+                      style: textTheme.text12
+                          ?.copyWith(color: colorScheme.black45),
                     ),
                   ],
                 ),
@@ -70,14 +72,12 @@ class PricingCard extends StatelessWidget {
             children: [
               Text(
                 price,
-                style: AppTypography.text20.medium,
+                style: textTheme.text20?.medium,
               ),
               const SizedBox(width: 4),
               Text(
                 period,
-                style: AppTypography.text12.withCustomColor(
-                  AppColors.black.withValues(alpha: 0.45),
-                ),
+                style: textTheme.text12?.copyWith(color: colorScheme.black45),
               ),
             ],
           ),
@@ -90,9 +90,12 @@ class PricingCard extends StatelessWidget {
           Center(
             child: InkWell(
               onTap: onLearnMore,
-              child: Text('Learn more about this plan',
-                  style: AppTypography.text14
-                      .withCustomColor(AppColors.primaryBlue)),
+              child: Text(
+                'Learn more about this plan',
+                style: textTheme.text14?.copyWith(
+                  color: colorScheme.primary,
+                ),
+              ),
             ),
           ),
         ],

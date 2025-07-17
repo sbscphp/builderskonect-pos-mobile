@@ -80,6 +80,7 @@ class NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -125,15 +126,15 @@ class NotificationCard extends StatelessWidget {
                         Text(title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: AppTypography.text14.medium
-                                .withCustomColor(AppColors.blue4F)),
+                            style: textTheme.text14?.medium
+                                .copyWith(color: AppColors.blue4F)),
                         YBox(2),
                         Text(
                           message,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: AppTypography.text12
-                              .withCustomColor(AppColors.blue4F),
+                          style: textTheme.text12
+                              ?.copyWith(color: AppColors.blue4F),
                         ),
                       ],
                     ),
@@ -146,16 +147,15 @@ class NotificationCard extends StatelessWidget {
               children: [
                 Text(
                   time,
-                  style:
-                      AppTypography.text12.withCustomColor(AppColors.neutral8),
+                  style: textTheme.text12?.copyWith(color: AppColors.neutral8),
                 ),
                 Spacer(),
                 InkWell(
                   onTap: () {},
                   child: Text(
                     "View",
-                    style: AppTypography.text12
-                        .withCustomColor(AppColors.primaryBlue),
+                    style: textTheme.text12
+                        ?.copyWith(color: AppColors.primaryBlue),
                   ),
                 ),
               ],
@@ -181,6 +181,7 @@ class NotificationTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Sizer.width(16),
@@ -192,9 +193,10 @@ class NotificationTab extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: AppTypography.text14.withCustomColor(isSelected
-            ? AppColors.primaryBlue
-            : AppColors.black.withValues(alpha: 0.83)),
+        style: textTheme.text14?.copyWith(
+            color: isSelected
+                ? AppColors.primaryBlue
+                : AppColors.black.withValues(alpha: 0.83)),
       ),
     );
   }

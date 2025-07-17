@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/themes/custom_text_theme.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class VendorRegistrationScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
   int regSteps = 2;
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
         height: Sizer.screenHeight,
@@ -56,10 +58,10 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
                         ),
                       ),
                       YBox(20),
-                      Text(
-                        "Vendor Registration",
-                        style: AppTypography.text20.medium,
-                      ),
+                      Text("Vendor Registration",
+                          style: textTheme.text20?.medium
+                          // style: AppTypography.text20.medium,
+                          ),
                       YBox(24),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

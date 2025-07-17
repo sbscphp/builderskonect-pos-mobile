@@ -18,6 +18,8 @@ class BottomNavColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onPressed,
       child: Column(
@@ -39,8 +41,8 @@ class BottomNavColumn extends StatelessWidget {
           YBox(2),
           Text(
             labelText,
-            style: AppTypography.text12.withCustomColor(
-              isActive ? AppColors.primaryBlue : AppColors.neutral9,
+            style: textTheme.text12?.copyWith(
+              color: isActive ? colorScheme.primary : AppColors.neutral9,
             ),
           ),
         ],

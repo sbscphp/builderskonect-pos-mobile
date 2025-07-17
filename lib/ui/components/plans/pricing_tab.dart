@@ -79,6 +79,9 @@ class _PricingTabState extends State<PricingTab>
     final spacing = Sizer.width(16);
     final totalWidth = (tabWidth * 2) + spacing;
 
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       height: Sizer.height(52),
       decoration: BoxDecoration(
@@ -136,11 +139,10 @@ class _PricingTabState extends State<PricingTab>
                                 duration: const Duration(milliseconds: 200),
                                 child: Text(
                                   "Monthly",
-                                  style: AppTypography.text12.medium
-                                      .withCustomColor(
-                                    isSelected
-                                        ? AppColors.white
-                                        : AppColors.primaryBlue,
+                                  style: textTheme.text12?.medium.copyWith(
+                                    color: isSelected
+                                        ? colorScheme.white
+                                        : colorScheme.primary,
                                   ),
                                 ),
                               ),
@@ -173,11 +175,10 @@ class _PricingTabState extends State<PricingTab>
                                 duration: const Duration(milliseconds: 200),
                                 child: Text(
                                   "Yearly",
-                                  style: AppTypography.text12.medium
-                                      .withCustomColor(
-                                    isSelected
-                                        ? AppColors.white
-                                        : AppColors.primaryBlue,
+                                  style: textTheme.text12?.medium.copyWith(
+                                    color: isSelected
+                                        ? colorScheme.white
+                                        : colorScheme.primary,
                                   ),
                                 ),
                               ),

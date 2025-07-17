@@ -16,6 +16,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return PreferredSize(
       preferredSize: Size.fromHeight(Sizer.height(50)),
       child: Container(
@@ -53,7 +54,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                   padding: EdgeInsets.only(right: Sizer.height(20)),
                   child: Text(
                     title,
-                    style: AppTypography.text14.medium,
+                    style: textTheme.text14?.medium,
                   ),
                 ),
                 Container(child: trailingWidget)

@@ -12,6 +12,7 @@ class EmptyListState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return SizedBox(
       height: Sizer.height(height ?? 500),
       width: Sizer.screenWidth,
@@ -19,7 +20,7 @@ class EmptyListState extends StatelessWidget {
         child: Text(
           text,
           textAlign: TextAlign.center,
-          style: AppTypography.text16.copyWith(
+          style: textTheme.text16?.copyWith(
             color: AppColors.black,
           ),
         ),

@@ -17,7 +17,7 @@ class ScreenNotFound extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               '404 - Page Not Found',
-              style: AppTypography.text24,
+              style: Theme.of(context).textTheme.text24,
             ),
             const SizedBox(height: 8),
             const Text(

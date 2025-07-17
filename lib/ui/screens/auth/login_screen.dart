@@ -36,6 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: Container(
         height: Sizer.screenHeight,
@@ -75,8 +76,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       YBox(20),
                       Text(
-                        "Log in to Builder’sKonnect",
-                        style: AppTypography.text20.medium,
+                        "Log in to Builder’s Konnect",
+                        style: textTheme.text20?.medium,
                       ),
                       YBox(30),
                       CustomTextField(

@@ -28,6 +28,8 @@ class _BankDetailsState extends State<BankDetails> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       children: [
         Expanded(
@@ -78,8 +80,7 @@ class _BankDetailsState extends State<BankDetails> {
               child: CustomBtn.solid(
                 isOutline: true,
                 outlineColor: AppColors.neutral5,
-                textStyle: AppTypography.text16
-                    .withCustomColor(AppColors.black.withValues(alpha: 0.85)),
+                textStyle: textTheme.text16,
                 text: "Previous",
                 onTap: () {
                   _submitForm();

@@ -29,6 +29,7 @@ class ConvertTextfield extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return TextField(
       onTap: onTap,
       readOnly: readOnly,
@@ -44,7 +45,7 @@ class ConvertTextfield extends StatelessWidget {
       // inputFormatters: inputFormatters ?? inputFormatter(KeyboardType.decimal),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: AppTypography.text16.copyWith(
+        hintStyle: textTheme.text16?.copyWith(
           color: AppColors.grey,
         ),
         border: InputBorder.none,
@@ -52,8 +53,7 @@ class ConvertTextfield extends StatelessWidget {
           bottom: Sizer.width(8),
         ),
       ),
-      style: AppTypography.text16.copyWith(
-        fontWeight: FontWeight.w700,
+      style: textTheme.text16?.bold.copyWith(
         color: color,
       ),
     );

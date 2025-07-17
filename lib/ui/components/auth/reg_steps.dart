@@ -14,6 +14,9 @@ class RegSteps extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         Container(
@@ -31,10 +34,8 @@ class RegSteps extends StatelessWidget {
           child: Center(
             child: Text(
               number,
-              style: AppTypography.text12.withCustomColor(
-                isActive
-                    ? AppColors.white
-                    : AppColors.black.withValues(alpha: 0.25),
+              style: textTheme.text12?.copyWith(
+                color: isActive ? colorScheme.white : colorScheme.black25,
               ),
             ),
           ),
@@ -42,10 +43,8 @@ class RegSteps extends StatelessWidget {
         XBox(6),
         Text(
           text,
-          style: AppTypography.text12.withCustomColor(
-            isActive
-                ? AppColors.black.withValues(alpha: 0.83)
-                : AppColors.black.withValues(alpha: 0.25),
+          style: textTheme.text12?.copyWith(
+            color: isActive ? colorScheme.black85 : colorScheme.black25,
           ),
         )
       ],

@@ -58,6 +58,13 @@ class AppRouter {
           settings,
         );
 
+      // POS
+      case RoutePath.moreScreen:
+        return TransitionUtils.buildTransition(
+          const MoreScreen(),
+          settings,
+        );
+
       default:
         return errorScreen(settings);
     }

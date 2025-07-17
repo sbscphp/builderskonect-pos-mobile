@@ -46,12 +46,17 @@ class CustomBtn {
                 : Text(
                     text,
                     style: textStyle ??
-                        AppTypography.text14.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: online
-                              ? textColor ?? AppColors.white
-                              : AppColors.grey,
-                        ),
+                        Theme.of(NavKey.appNavKey.currentContext!)
+                            .textTheme
+                            .text14
+                            ?.copyWith(
+                              color: online
+                                  ? textColor ??
+                                      Theme.of(NavKey.appNavKey.currentContext!)
+                                          .colorScheme
+                                          .white
+                                  : AppColors.grey,
+                            ),
                   ),
           ),
         ),

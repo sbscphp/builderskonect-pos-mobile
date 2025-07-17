@@ -24,6 +24,8 @@ class StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -51,8 +53,9 @@ class StatCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: AppTypography.text12.copyWith(
-                        color: AppColors.black.withValues(alpha: 0.45)),
+                    style: textTheme.text12?.copyWith(
+                      color: colorScheme.black45,
+                    ),
                   ),
                   Spacer(),
                   Skeleton.replace(
@@ -73,7 +76,9 @@ class StatCard extends StatelessWidget {
             YBox(16),
             Text(
               amount,
-              style: AppTypography.text20.medium.withCustomColor(amountColor),
+              style: textTheme.text20?.medium.copyWith(
+                color: amountColor,
+              ),
             ),
           ],
         ),

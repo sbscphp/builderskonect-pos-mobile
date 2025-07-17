@@ -237,6 +237,7 @@ class CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -259,7 +260,7 @@ class CustomTextFieldState extends State<CustomTextField> {
                       ),
                     TextSpan(
                       text: widget.labelText ?? '',
-                      style: AppTypography.text14,
+                      style: textTheme.text14,
                     ),
                     WidgetSpan(child: SizedBox(width: 4)),
                     TextSpan(

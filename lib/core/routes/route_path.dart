@@ -17,4 +17,7 @@ class RoutePath {
   // Plans
   static const pricingPlansScreen = '/pricingPlansScreen';
   static const getStartedScreen = '/getStartedScreen';
+
+  // POS
+  static const moreScreen = '/moreScreen';
 }
