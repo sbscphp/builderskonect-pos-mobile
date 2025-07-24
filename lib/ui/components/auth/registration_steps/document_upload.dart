@@ -1,21 +1,29 @@
+import 'dart:io';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class DocumentUpload extends StatefulWidget {
-  final VoidCallback? onNext;
-  final VoidCallback? onPrevious;
-
+class DocumentUpload extends ConsumerStatefulWidget {
   const DocumentUpload({
     super.key,
-    this.onNext,
     this.onPrevious,
   });
 
+  final VoidCallback? onPrevious;
+
   @override
-  State<DocumentUpload> createState() => _DocumentUploadState();
+  ConsumerState<DocumentUpload> createState() => _DocumentUploadState();
 }
 
-class _DocumentUploadState extends State<DocumentUpload> {
+class _DocumentUploadState extends ConsumerState<DocumentUpload> {
+  File? _cacFile;
+  File? _tinFile;
+  File? _proofOfAddressFile;
+
+  String? _cacUrl;
+  String? _tinUrl;
+  String? _proofOfAddressUrl;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -64,9 +72,24 @@ class _DocumentUploadState extends State<DocumentUpload> {
               ),
               YBox(20),
               UploadWidget(
-                documentName: "buildershub CAC.pdf",
+                documentName: _cacFile?.path.split('/').last,
                 buttomTextDesc:
                     "Upload a copy of your Corporate Affairs Commission Certificate",
+                onUpload: () async {
+                  final file = await ImageAndDocUtils.pickDocument();
+                  if (file != null) {
+                    _cacFile = file;
+                    final r =
+                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    _cacUrl = r.data?.first.url;
+                    setState(() {});
+                  }
+                },
+                onRemove: () {
+                  _cacFile = null;
+                  _cacUrl = null;
+                  setState(() {});
+                },
               ),
               YBox(20),
               CustomTextField(
@@ -78,14 +101,46 @@ class _DocumentUploadState extends State<DocumentUpload> {
               ),
               YBox(20),
               UploadWidget(
-                documentName: "buildershub CAC.pdf",
+                documentName: _tinFile?.path.split('/').last,
                 buttomTextDesc:
                     "Upload a copy of your Tax Identification Certificate",
+                onUpload: () async {
+                  // Reset progress tracking for any previous uploads
+                  ref.read(fileUploadVm).resetProgress();
+
+                  final file = await ImageAndDocUtils.pickDocument();
+                  if (file != null) {
+                    _tinFile = file;
+                    final r =
+                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    _tinUrl = r.data?.first.url;
+                  }
+                },
+                onRemove: () {
+                  _tinFile = null;
+                  _tinUrl = null;
+                  setState(() {});
+                },
               ),
               YBox(20),
               UploadWidget(
                 labelText: 'Proof of Address',
-                documentName: "buildershub CAC.pdf",
+                documentName: _proofOfAddressFile?.path.split('/').last,
+                onUpload: () async {
+                  final file = await ImageAndDocUtils.pickDocument();
+                  if (file != null) {
+                    _proofOfAddressFile = file;
+                    final r =
+                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    _proofOfAddressUrl = r.data?.first.url;
+                    setState(() {});
+                  }
+                },
+                onRemove: () {
+                  _proofOfAddressFile = null;
+                  _proofOfAddressUrl = null;
+                  setState(() {});
+                },
                 buttomTextDesc:
                     "Upload a copy of your utility bill for proof of address",
               ),
@@ -119,7 +174,9 @@ class _DocumentUploadState extends State<DocumentUpload> {
             Expanded(
               child: CustomBtn.solid(
                 text: "Next",
-                onTap: widget.onNext ?? () {},
+                onTap: () {
+                  // widget.onNext
+                },
               ),
             ),
           ],
@@ -128,108 +185,103 @@ class _DocumentUploadState extends State<DocumentUpload> {
       ],
     );
   }
-}
 
-class UploadWidget extends StatelessWidget {
-  const UploadWidget({
-    super.key,
-    this.documentName,
-    this.buttomTextDesc,
-    this.labelText,
-    this.onUpload,
-    this.onRemove,
-  });
-
-  final String? documentName;
-  final String? buttomTextDesc;
-  final String? labelText;
-  final VoidCallback? onUpload;
-  final VoidCallback? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                labelText ?? "Certificate",
-                style: textTheme.text14,
-              ),
-              YBox(6),
-              if (documentName != null)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Sizer.width(16),
-                    vertical: Sizer.height(10),
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.neutral5),
-                    borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(AppSvgs.attachment),
-                      XBox(8),
-                      Expanded(
-                        child: Text(documentName!,
-                            style: textTheme.text14?.copyWith(
-                              color: colorScheme.primaryColor,
-                            )),
-                      ),
-                      InkWell(
-                        onTap: onRemove,
-                        child: SvgPicture.asset(AppSvgs.delete),
-                      ),
-                    ],
-                  ),
-                )
-              else
-                InkWell(
-                  onTap: onUpload,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizer.width(16),
-                      vertical: Sizer.height(16),
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.neutral5),
-                      borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(AppSvgs.upload),
-                        XBox(8),
-                        Text(
-                          "Click to upload certificate",
-                          style: textTheme.text14,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              if (buttomTextDesc != null)
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: Sizer.height(4),
-                  ),
-                  child: Text(
-                    buttomTextDesc!,
-                    style: textTheme.text12?.copyWith(
-                      color: colorScheme.black45,
-                    ),
-                  ),
-                )
-            ],
-          ),
+  submitForm() async {
+    final result = await ModalWrapper.bottomSheet(
+      context: context,
+      widget: ConfirmationModal(
+        modalConfirmationArg: ModalConfirmationArg(
+          iconPath: AppSvgs.checkIcon,
+          title: "Submit Registration Form",
+          description:
+              "Are you sure you want to submit this form? Kindly check that all information is correctly filled.",
+          solidBtnText: "Yes Submit",
+          onSolidBtnOnTap: () {
+            Navigator.pop(context, true);
+          },
         ),
-      ],
+      ),
+    );
+
+    printty("result $result");
+
+    if (result is bool && result) {
+      _completeRegistration();
+    }
+  }
+
+  void _completeRegistration() async {
+    final onboardVm = ref.read(onboardVmodel);
+    final cacMedia = Media(
+      name: "cac",
+      url: _cacUrl,
+      metadata: Iddata(
+        identificationNumber: _cacUrl,
+      ),
+    );
+
+    final tinMedia = Media(
+      name: "tin",
+      url: _tinUrl,
+      metadata: Iddata(
+        identificationNumber: _tinUrl,
+      ),
+    );
+
+    final proofOfAddressMedia = Media(
+      name: "proofOfAddress",
+      url: _proofOfAddressUrl,
+      metadata: Iddata(
+        identificationNumber: _proofOfAddressUrl,
+      ),
+    );
+
+    final res = await onboardVm.completeOnboarding(
+      onboardParams: OnboardParams(
+        media: [
+          cacMedia,
+          tinMedia,
+          proofOfAddressMedia,
+        ],
+      ),
+    );
+
+    handleApiResponse(
+      response: res,
+      onSuccess: () {
+        ModalWrapper.bottomSheet(
+          context: context,
+          canDismiss: false,
+          widget: ConfirmationModal(
+            modalConfirmationArg: ModalConfirmationArg(
+              iconPath: AppSvgs.checkIcon,
+              title: "Registration Form Submitted",
+              description: res.data['message'],
+              solidBtnText: "Okay",
+              onSolidBtnOnTap: () {
+                final ctx = NavKey.appNavKey.currentContext!;
+                Navigator.pop(ctx);
+                Navigator.pushNamed(
+                  ctx,
+                  RoutePath.subscriptionSuccessScreen,
+                  arguments: SubscriptionSuccessArg(
+                    header: "Welcome Onboard!",
+                    content: AppText.welcomeOnBoard,
+                    btnText: "Create Password",
+                    onTap: () {
+                      Navigator.pushReplacementNamed(
+                        ctx,
+                        RoutePath.vendorRegistrationScreen,
+                        arguments: res.data["data"]["reference"],
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

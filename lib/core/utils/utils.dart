@@ -4,7 +4,6 @@ export 'debouncer.dart';
 export 'flushbar_notify.dart';
 export 'form_controller.dart';
 export 'image_and_doc_utils.dart';
-export 'image_picker_utils.dart';
 export 'modal_wrapper.dart';
 export 'printty.dart';
 export 'sizer.dart';

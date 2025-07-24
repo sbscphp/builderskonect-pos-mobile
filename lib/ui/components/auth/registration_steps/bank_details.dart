@@ -160,9 +160,26 @@ class _BankDetailsState extends ConsumerState<BankDetails> {
             Expanded(
               child: CustomBtn.solid(
                   text: "Next",
-                  onTap: () {
+                  onTap: () async {
                     if (formKey.currentState?.validate() ?? false) {
-                      widget.onNext?.call();
+                      final params = OnboardParams(
+                        bankId: selectedBank?.id ?? 0,
+                        accountNumber: accountNumberC.text.trim(),
+                        accountName: accountNameC.text.trim(),
+                      );
+
+                      final res = await ref
+                          .read(onboardVmodel)
+                          .validateBank(onboardParams: params);
+
+                      handleApiResponse(
+                        response: res,
+                        showSuccessToast: false,
+                        onSuccess: () {
+                          ref.read(onboardVmodel).setBankOnboardParams(params);
+                          widget.onNext?.call();
+                        },
+                      );
                     }
                   }),
             ),

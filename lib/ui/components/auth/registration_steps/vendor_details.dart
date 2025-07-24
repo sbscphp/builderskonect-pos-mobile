@@ -3,7 +3,7 @@ import 'package:builders_konnect/ui/components/components.dart';
 import 'package:flutter/services.dart';
 
 class VendorDetails extends ConsumerStatefulWidget {
-  final VoidCallback? onNext;
+  final Function()? onNext;
   final String reference;
 
   const VendorDetails({
@@ -315,24 +315,28 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
           text: "Next",
           onTap: () async {
             if (formKey.currentState!.validate()) {
-              final res = await ref.read(onboardVmodel).completeOnboarding(
-                    onboardParams: OnboardParams(
-                      businessName: businessNameC.text.trim(),
-                      categoryId: selectedCategory?.id,
-                      businessType: selectedType?.id,
-                      contactName: contactNameC.text.trim(),
-                      email: emailC.text.trim(),
-                      phone: phoneC.text.trim(),
-                      address: addressC.text.trim(),
-                      stateId: selectedState?.id ?? 0,
-                      cityId: selectedCity?.id ?? 0,
-                      // postalCode: postalCodeC.text.trim(),
-                    ),
-                  );
+              final onboardParams = OnboardParams(
+                businessName: businessNameC.text.trim(),
+                categoryId: selectedCategory?.id,
+                businessType: selectedType?.id,
+                contactName: contactNameC.text.trim(),
+                email: emailC.text.trim(),
+                phone: phoneC.text.trim(),
+                address: addressC.text.trim(),
+                stateId: selectedState?.id ?? 0,
+                cityId: selectedCity?.id ?? 0,
+                // postalCode: postalCodeC.text.trim(),
+              );
+              final res = await ref
+                  .read(onboardVmodel)
+                  .completeOnboarding(onboardParams: onboardParams);
 
               handleApiResponse(
                   response: res,
                   onSuccess: () {
+                    ref
+                        .read(onboardVmodel)
+                        .setVendorOnboardParams(onboardParams);
                     widget.onNext?.call();
                   });
             }

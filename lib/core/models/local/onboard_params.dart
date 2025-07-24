@@ -9,7 +9,7 @@ class OnboardParams {
   final int? stateId;
   final int? cityId;
   final String? accountNumber;
-  final String? bankId;
+  final int? bankId;
   final String? accountName;
   final String? callbackUrl;
   final String? providerReference;

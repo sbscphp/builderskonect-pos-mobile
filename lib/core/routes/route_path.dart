@@ -10,6 +10,7 @@ class RoutePath {
   static const forgotPasswordScreen = '/forgotPasswordScreen';
   static const newPasswordScreen = '/newPasswordScreen';
   static const otpScreen = '/otpScreen';
+  static const createPasswordScreen = '/createPasswordScreen';
 
   // Notification
   static const notificationScreen = '/notificationScreen';

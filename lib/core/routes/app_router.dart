@@ -53,6 +53,12 @@ class AppRouter {
         }
         return errorScreen(settings);
 
+      case RoutePath.createPasswordScreen:
+        return TransitionUtils.buildTransition(
+          const CreatePasswordScreen(),
+          settings,
+        );
+
       // Notification
       case RoutePath.notificationScreen:
         return TransitionUtils.buildTransition(

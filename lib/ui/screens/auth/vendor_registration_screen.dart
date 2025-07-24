@@ -119,11 +119,6 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
                               ),
                             _ => DocumentUpload(
                                 key: const ValueKey('document_upload'),
-                                onNext: () {
-                                  // Handle registration completion
-                                  // You can add your registration logic here
-                                  Navigator.pop(context);
-                                },
                                 onPrevious: () {
                                   setState(() {
                                     regSteps = 2;

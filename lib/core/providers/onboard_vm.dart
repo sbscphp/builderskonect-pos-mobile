@@ -1,6 +1,20 @@
 import 'package:builders_konnect/core/core.dart';
 
 class OnboardVm extends BaseVm {
+  OnboardParams? _vendorOnboardParams;
+  OnboardParams? get vendorOnboardParams => _vendorOnboardParams;
+  void setVendorOnboardParams(OnboardParams? params) {
+    _vendorOnboardParams = params;
+    reBuildUI();
+  }
+
+  OnboardParams? _bankOnboardParams;
+  OnboardParams? get bankOnboardParams => _bankOnboardParams;
+  void setBankOnboardParams(OnboardParams? params) {
+    _bankOnboardParams = params;
+    reBuildUI();
+  }
+
   // Get Business categorization
   List<BusinessCategoryTypeModel> _businessCategories = [];
   List<BusinessCategoryTypeModel> get businessCategories => _businessCategories;
@@ -61,15 +75,26 @@ class OnboardVm extends BaseVm {
   Future<ApiResponse> completeOnboarding({
     required OnboardParams onboardParams,
   }) async {
-    final body = onboardParams.toJson();
-    body.removeWhere((k, v) => v == null || v == "");
+    // Helper function to clean map data
+    Map<String, dynamic> cleanMap(Map<String, dynamic>? map) {
+      if (map == null) return {};
+      final cleaned = Map<String, dynamic>.from(map);
+      cleaned.removeWhere((_, v) => v == null || v == "");
+      return cleaned;
+    }
+
+    // Clean and merge all details
+    final body = {
+      ...cleanMap(_vendorOnboardParams?.toJson()),
+      ...cleanMap(_bankOnboardParams?.toJson()),
+      ...cleanMap(onboardParams.toJson()),
+    };
+
     return await performApiCall(
       url: "/api/v1/merchants/onboarding/complete",
       method: apiService.post,
       body: body,
-      onSuccess: (data) {
-        return apiResponse;
-      },
+      onSuccess: (data) => apiResponse,
     );
   }
 }

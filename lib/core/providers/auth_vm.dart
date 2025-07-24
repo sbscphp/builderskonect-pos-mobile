@@ -32,6 +32,28 @@ class AuthVm extends BaseVm {
     );
   }
 
+  Future<ApiResponse> createPassword({
+    required String code,
+    required String token,
+    required String password,
+    required String passwordConfirm,
+  }) async {
+    return await performApiCall(
+      url: "/merchants/onboarding/add-password",
+      method: apiService.post,
+      body: {
+        "code": code,
+        "token": token,
+        "password": password,
+        "password_confirmation": passwordConfirm,
+        "entity": "merchant",
+      },
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
   Future<ApiResponse> resetPassword({
     required String identifier,
   }) async {

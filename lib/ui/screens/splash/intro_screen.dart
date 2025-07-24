@@ -72,8 +72,8 @@ class IntroScreen extends StatelessWidget {
                       onTap: () {
                         printty("Login");
                         Navigator.of(context).pushNamed(
-                          RoutePath.vendorRegistrationScreen,
-                          arguments: "login",
+                          RoutePath.createPasswordScreen,
+                          // arguments: "login",
                         );
                       },
                     ),
