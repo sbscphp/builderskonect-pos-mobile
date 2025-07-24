@@ -265,18 +265,6 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
 
     final res = await onboardVm.completeOnboarding(
       onboardParams: OnboardParams(
-        businessName: "Rex Comapny",
-        categoryId: "cat_3QFk8DbmP-2qVCbNYQJR8",
-        businessType: "cat_aEwSiWRW0mYJswsHxsEox",
-        contactName: "Mr Rex",
-        email: "rextest@yopmail.com",
-        phone: "06012344322",
-        address: "Queens",
-        stateId: 293,
-        cityId: 153366,
-        accountNumber: "2085739468",
-        bankId: 196,
-        accountName: "PRAISE OBIADERI EDODOR",
         media: mediaList.isNotEmpty ? mediaList : null,
       ),
     );

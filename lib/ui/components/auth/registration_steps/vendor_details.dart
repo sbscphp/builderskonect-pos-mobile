@@ -322,7 +322,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                 address: addressC.text.trim(),
                 stateId: selectedState?.id ?? 0,
                 cityId: selectedCity?.id ?? 0,
-                callbackUrl: callbackUrl,
+                callbackUrl: "${AppConfig.callBackUrl}/auth/create-password",
                 providerReference: widget.reference,
                 // postalCode: postalCodeC.text.trim(),
               );
@@ -332,6 +332,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
 
               handleApiResponse(
                   response: res,
+                  showSuccessToast: false,
                   onSuccess: () {
                     ref
                         .read(onboardVmodel)

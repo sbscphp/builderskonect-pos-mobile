@@ -280,7 +280,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       priceItemId: widget.arg?.priceItem.id,
                       provider: "paystack",
                       callbackUrl:
-                          "https://builders-konnect-main.onrender.com/auth/register-vendor",
+                          "${AppConfig.callBackUrl}/auth/register-vendor",
                     ),
                   );
 
