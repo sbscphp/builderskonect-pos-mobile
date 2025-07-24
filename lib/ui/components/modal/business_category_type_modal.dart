@@ -64,7 +64,7 @@ class _CustomListModalState extends ConsumerState<BusinessCategoryTypeModal> {
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: onboardVm.isBusy,
+              isBusy: onboardVm.busy(categoryTypeState),
               items: widget.isCategory
                   ? onboardVm.businessCategories
                   : onboardVm.businessTypes,

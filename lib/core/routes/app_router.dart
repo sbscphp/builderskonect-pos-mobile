@@ -39,10 +39,13 @@ class AppRouter {
         );
 
       case RoutePath.otpScreen:
-        return TransitionUtils.buildTransition(
-          const OtpScreen(),
-          settings,
-        );
+        if (args is ForgotArg) {
+          return TransitionUtils.buildTransition(
+            OtpScreen(args: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.vendorRegistrationScreen:
         if (args is String) {
@@ -53,11 +56,14 @@ class AppRouter {
         }
         return errorScreen(settings);
 
-      case RoutePath.createPasswordScreen:
-        return TransitionUtils.buildTransition(
-          const CreatePasswordScreen(),
-          settings,
-        );
+      case RoutePath.newPasswordScreen:
+        if (args is ForgotArg) {
+          return TransitionUtils.buildTransition(
+            NewPasswordScreen(args: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Notification
       case RoutePath.notificationScreen:

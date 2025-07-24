@@ -16,6 +16,12 @@ class DocumentUpload extends ConsumerStatefulWidget {
 }
 
 class _DocumentUploadState extends ConsumerState<DocumentUpload> {
+  final tinC = TextEditingController();
+  final cacC = TextEditingController();
+
+  final tinF = FocusNode();
+  final cacF = FocusNode();
+
   File? _cacFile;
   File? _tinFile;
   File? _proofOfAddressFile;
@@ -23,6 +29,15 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
   String? _cacUrl;
   String? _tinUrl;
   String? _proofOfAddressUrl;
+
+  @override
+  void dispose() {
+    tinC.dispose();
+    cacC.dispose();
+    tinF.dispose();
+    cacF.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +80,8 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               ),
               YBox(24),
               CustomTextField(
+                controller: cacC,
+                focusNode: cacF,
                 isRequired: false,
                 labelText: 'CAC Number',
                 hintText: 'Enter CAC number',
@@ -93,7 +110,9 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               ),
               YBox(20),
               CustomTextField(
-                isRequired: true,
+                controller: tinC,
+                focusNode: tinF,
+                isRequired: false,
                 labelText: 'TIN Number',
                 hintText: 'Enter TIN number',
                 showLabelHeader: true,
@@ -148,7 +167,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                    onPressed: () {},
+                    onPressed: submitForm,
                     child: Text(
                       "Skip",
                       style: textTheme.text16?.copyWith(
@@ -174,9 +193,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
             Expanded(
               child: CustomBtn.solid(
                 text: "Next",
-                onTap: () {
-                  // widget.onNext
-                },
+                onTap: submitForm,
               ),
             ),
           ],
@@ -212,42 +229,61 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
 
   void _completeRegistration() async {
     final onboardVm = ref.read(onboardVmodel);
-    final cacMedia = Media(
-      name: "cac",
-      url: _cacUrl,
-      metadata: Iddata(
-        identificationNumber: _cacUrl,
-      ),
-    );
 
-    final tinMedia = Media(
-      name: "tin",
-      url: _tinUrl,
-      metadata: Iddata(
-        identificationNumber: _tinUrl,
-      ),
-    );
+    // Create media list and filter out null/empty values
+    List<Media> mediaList = [];
 
-    final proofOfAddressMedia = Media(
-      name: "proofOfAddress",
-      url: _proofOfAddressUrl,
-      metadata: Iddata(
-        identificationNumber: _proofOfAddressUrl,
-      ),
-    );
+    // CAC media
+    if (_cacUrl != null && _cacUrl!.isNotEmpty) {
+      mediaList.add(Media(
+        name: "cac",
+        url: _cacUrl,
+        metadata: Iddata(
+          identificationNumber: null, // Set to null as per payload requirement
+        ),
+      ));
+    }
+
+    // TIN media
+    if (_tinUrl != null && _tinUrl!.isNotEmpty) {
+      mediaList.add(Media(
+        name: "tin",
+        url: _tinUrl,
+        metadata: Iddata(
+          identificationNumber: null, // Set to null as per payload requirement
+        ),
+      ));
+    }
+
+    // Proof of Address media
+    if (_proofOfAddressUrl != null && _proofOfAddressUrl!.isNotEmpty) {
+      mediaList.add(Media(
+        name: "proofOfAddress",
+        url: _proofOfAddressUrl,
+      ));
+    }
 
     final res = await onboardVm.completeOnboarding(
       onboardParams: OnboardParams(
-        media: [
-          cacMedia,
-          tinMedia,
-          proofOfAddressMedia,
-        ],
+        businessName: "Rex Comapny",
+        categoryId: "cat_3QFk8DbmP-2qVCbNYQJR8",
+        businessType: "cat_aEwSiWRW0mYJswsHxsEox",
+        contactName: "Mr Rex",
+        email: "rextest@yopmail.com",
+        phone: "06012344322",
+        address: "Queens",
+        stateId: 293,
+        cityId: 153366,
+        accountNumber: "2085739468",
+        bankId: 196,
+        accountName: "PRAISE OBIADERI EDODOR",
+        media: mediaList.isNotEmpty ? mediaList : null,
       ),
     );
 
     handleApiResponse(
       response: res,
+      showSuccessToast: false,
       onSuccess: () {
         ModalWrapper.bottomSheet(
           context: context,
@@ -261,21 +297,10 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               onSolidBtnOnTap: () {
                 final ctx = NavKey.appNavKey.currentContext!;
                 Navigator.pop(ctx);
-                Navigator.pushNamed(
+                Navigator.pushNamedAndRemoveUntil(
                   ctx,
-                  RoutePath.subscriptionSuccessScreen,
-                  arguments: SubscriptionSuccessArg(
-                    header: "Welcome Onboard!",
-                    content: AppText.welcomeOnBoard,
-                    btnText: "Create Password",
-                    onTap: () {
-                      Navigator.pushReplacementNamed(
-                        ctx,
-                        RoutePath.vendorRegistrationScreen,
-                        arguments: res.data["data"]["reference"],
-                      );
-                    },
-                  ),
+                  RoutePath.introScreen,
+                  (r) => false,
                 );
               },
             ),

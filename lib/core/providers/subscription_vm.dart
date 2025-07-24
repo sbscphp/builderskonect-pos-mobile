@@ -1,5 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 
+const String confirmSubState = "confirmSubState";
+
 class SubscriptionVm extends BaseVm {
   List<SubscriptionPlan> _subscriptionPlans = [];
   List<SubscriptionPlan> get subscriptionPlans => _subscriptionPlans;
@@ -58,6 +60,7 @@ class SubscriptionVm extends BaseVm {
     return await performApiCall<SubscriptionVerifcationModel>(
       url: "/api/v1/merchants/onboarding/verify-subscription/$reference",
       method: apiService.get,
+      busyObjectName: confirmSubState,
       onSuccess: (data) {
         final res =
             subscriptionVerifcationModelFromJson(json.encode(data["data"]));

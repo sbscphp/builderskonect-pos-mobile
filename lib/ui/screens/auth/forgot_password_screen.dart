@@ -24,7 +24,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
     return BusyOverlay(
-      show: ref.watch(authVModel).isBusy,
+      show: ref.watch(authVmodel).isBusy,
       child: Scaffold(
         body: Container(
           height: Sizer.screenHeight,
@@ -103,9 +103,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           text: "Reset Password",
                           onTap: () async {
                             FocusScope.of(context).unfocus();
-                            Navigator.pushNamed(context, RoutePath.otpScreen);
                             if (_formKey.currentState!.validate()) {
-                              Navigator.pushNamed(context, RoutePath.otpScreen);
+                              _submit();
                             }
                           },
                         ),
@@ -119,6 +118,27 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  _submit() async {
+    final r = await ref
+        .read(authVmodel)
+        .resetPassword(identifier: _emailController.text.trim());
+
+    handleApiResponse(
+      response: r,
+      onSuccess: () {
+        Navigator.pushNamed(
+          context,
+          RoutePath.otpScreen,
+          arguments: ForgotArg(
+            token: r.data,
+            entity: "merchant",
+            email: _emailController.text.trim(),
+          ),
+        );
+      },
     );
   }
 }

@@ -10,6 +10,7 @@ class CustomTextField extends StatefulWidget {
   final Color? labelColor;
   final TextEditingController? controller;
   final ValueChanged<String>? onChanged;
+  final Function(String?)? onSubmit;
   final String? Function(String?)? validator;
   final Function()? onTsp;
   final List<TextInputFormatter>? inputFormatters;
@@ -44,6 +45,7 @@ class CustomTextField extends StatefulWidget {
     this.labelColor,
     this.controller,
     this.onChanged,
+    this.onSubmit,
     this.validator,
     this.onTsp,
     this.inputFormatters,
@@ -155,6 +157,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   color: widget.textColor,
                 ),
                 onChanged: widget.onChanged,
+                onFieldSubmitted: widget.onSubmit,
                 onTap: widget.onTsp,
                 keyboardType: widget.keyboardType,
                 inputFormatters: widget.inputFormatters,

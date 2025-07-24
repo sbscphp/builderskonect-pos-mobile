@@ -1,15 +1,17 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class CreatePasswordScreen extends ConsumerStatefulWidget {
-  const CreatePasswordScreen({super.key});
+class NewPasswordScreen extends ConsumerStatefulWidget {
+  const NewPasswordScreen({super.key, required this.args});
+
+  final ForgotArg args;
 
   @override
-  ConsumerState<CreatePasswordScreen> createState() =>
+  ConsumerState<NewPasswordScreen> createState() =>
       _CreatePasswordScreenState();
 }
 
-class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
+class _CreatePasswordScreenState extends ConsumerState<NewPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _passwordC = TextEditingController();
   final _confirmPasswordC = TextEditingController();
@@ -26,7 +28,7 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
     return BusyOverlay(
-      show: ref.watch(authVModel).isBusy,
+      show: ref.watch(authVmodel).isBusy,
       child: Scaffold(
         body: Container(
           height: Sizer.screenHeight,
@@ -119,7 +121,9 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
                           text: "Create Password",
                           onTap: () async {
                             FocusScope.of(context).unfocus();
-                            if (_formKey.currentState?.validate() ?? false) {}
+                            if (_formKey.currentState?.validate() ?? false) {
+                              _submit();
+                            }
                           },
                         ),
                       ],
@@ -131,6 +135,44 @@ class _CreatePasswordScreenState extends ConsumerState<CreatePasswordScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  _submit() async {
+    final r = await ref.read(authVmodel).recoverPassword(
+            forgotArg: ForgotArg(
+          token: widget.args.token,
+          password: _passwordC.text.trim(),
+          confirmPassword: _confirmPasswordC.text.trim(),
+          code: widget.args.code,
+          entity: widget.args.entity,
+        ));
+
+    handleApiResponse(
+      response: r,
+      onSuccess: () {
+        ModalWrapper.bottomSheet(
+          context: context,
+          canDismiss: false,
+          widget: ConfirmationModal(
+            modalConfirmationArg: ModalConfirmationArg(
+              iconPath: AppSvgs.checkIcon,
+              title: "Password Successfully Changed",
+              description: r.data['message'],
+              solidBtnText: "Log in",
+              onSolidBtnOnTap: () {
+                final ctx = NavKey.appNavKey.currentContext!;
+                Navigator.pop(ctx);
+                Navigator.pushNamedAndRemoveUntil(
+                  ctx,
+                  RoutePath.loginScreen,
+                  (r) => false,
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }

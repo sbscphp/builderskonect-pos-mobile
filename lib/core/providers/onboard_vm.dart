@@ -1,5 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 
+const String categoryTypeState = "categoryTypeState";
+
 class OnboardVm extends BaseVm {
   OnboardParams? _vendorOnboardParams;
   OnboardParams? get vendorOnboardParams => _vendorOnboardParams;
@@ -29,6 +31,7 @@ class OnboardVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.get,
+      busyObjectName: categoryTypeState,
       onSuccess: (data) {
         final res =
             businessCategoryTypeModelFromJson(json.encode(data["data"]));

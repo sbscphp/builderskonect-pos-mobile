@@ -1,8 +1,11 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class OtpScreen extends ConsumerStatefulWidget {
-  const OtpScreen({super.key});
+  const OtpScreen({super.key, required this.args});
+
+  final ForgotArg args;
 
   @override
   ConsumerState<OtpScreen> createState() => _OtpScreenState();
@@ -10,11 +13,13 @@ class OtpScreen extends ConsumerStatefulWidget {
 
 class _OtpScreenState extends ConsumerState<OtpScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _otpC = TextEditingController();
+  final _otpF = FocusNode();
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _otpC.dispose();
+    _otpF.dispose();
     super.dispose();
   }
 
@@ -23,7 +28,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
     return BusyOverlay(
-      show: ref.watch(authVModel).isBusy,
+      show: ref.watch(authVmodel).isBusy,
       child: Scaffold(
         body: Container(
           height: Sizer.screenHeight,
@@ -79,30 +84,37 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           child: Column(
                             children: [
                               CustomTextField(
-                                controller: _emailController,
+                                controller: _otpC,
+                                focusNode: _otpF,
                                 isRequired: true,
-                                labelText: 'Email',
-                                hintText: 'Enter your email',
+                                labelText: 'OTP Code',
+                                hintText: 'Enter code',
                                 showLabelHeader: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  setState(() {});
-                                },
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(6),
+                                ],
+                                validator: Validators.passcode(length: 6),
                               ),
                             ],
                           ),
                         ),
-                        YBox(30),
+                        YBox(24),
+                        ResendCode(
+                          onResendCode: () async {
+                            await ref.read(authVmodel).resetPassword(
+                                identifier: widget.args.email ?? '');
+                          },
+                        ),
+                        YBox(32),
                         CustomBtn.solid(
                           text: "Verify",
                           onTap: () async {
                             FocusScope.of(context).unfocus();
-                            // Navigator.pushNamed(context, RoutePath.newPasswordScreen);
+                            if (_formKey.currentState!.validate()) {
+                              _submitForm();
+                            }
                           },
                         ),
                         YBox(26),
@@ -116,5 +128,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
         ),
       ),
     );
+  }
+
+  _submitForm() {
+    Navigator.pushNamed(context, RoutePath.newPasswordScreen,
+        arguments: widget.args.copyWith(
+          code: () => _otpC.text,
+        ));
   }
 }

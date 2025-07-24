@@ -278,7 +278,8 @@ class Validators {
     if (isRequired) {
       rules.add(RequiredRule(errorMessage: emptyTextField));
     }
-    rules.add(ExactLengthRule(length, errorMessage: incorrectPasscodeLength));
+    rules.add(ExactLengthRule(length,
+        errorMessage: 'OTP must be exactly $length digits'));
 
     final validator = CompositeValidationRule(rules);
     return validator.validate;

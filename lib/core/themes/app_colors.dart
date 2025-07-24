@@ -44,6 +44,7 @@ class AppColors {
   // Red
   static const red2D = Color(0xFFF5222D);
   static const red4F = Color(0xFFFF4D4F);
+  static const red22 = Color(0xFFCF1322);
 
   // Yellow
   static const yellow3D = Color(0xFFFFC53D);

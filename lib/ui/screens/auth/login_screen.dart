@@ -25,7 +25,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return BusyOverlay(
-      show: ref.watch(authVModel).isBusy,
+      show: ref.watch(authVmodel).isBusy,
       child: Scaffold(
         body: Container(
           height: Sizer.screenHeight,
@@ -58,7 +58,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           alignment: Alignment.topLeft,
                           child: InkWell(
                             onTap: () {
-                              Navigator.pop(context);
+                              if (Navigator.canPop(context)) {
+                                Navigator.pop(context);
+                              }
                             },
                             child: SvgPicture.asset(AppSvgs.circleBack),
                           ),
@@ -95,7 +97,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 isRequired: true,
                                 labelText: 'Password',
                                 hintText: 'Enter your password',
-                                // isPassword: true,
+                                isPassword: true,
                                 showLabelHeader: true,
                                 validator: (p0) {
                                   if (p0 == null || p0.isEmpty) {
@@ -116,7 +118,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           onTap: () async {
                             FocusScope.of(context).unfocus();
                             if (_formKey.currentState?.validate() ?? false) {
-                              final res = await ref.read(authVModel).login(
+                              final res = await ref.read(authVmodel).login(
                                     identifier: _emailController.text.trim(),
                                     password: _passwordController.text.trim(),
                                   );

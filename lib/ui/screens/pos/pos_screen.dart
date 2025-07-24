@@ -31,9 +31,9 @@ class PosScreen extends ConsumerWidget {
               )),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(Sizer.radius(40)),
-            child: ref.watch(authVModel).user?.avatar != null
+            child: ref.watch(authVmodel).user?.avatar != null
                 ? MyCachedNetworkImage(
-                    imageUrl: ref.watch(authVModel).user!.avatar,
+                    imageUrl: ref.watch(authVmodel).user!.avatar,
                     fit: BoxFit.cover,
                   )
                 : Icon(

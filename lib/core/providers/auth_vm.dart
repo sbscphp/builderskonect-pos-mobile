@@ -71,21 +71,21 @@ class AuthVm extends BaseVm {
     );
   }
 
-  // Future<ApiResponse> recoverPassword({
-  //   required ForgotArg forgotArg,
-  // }) async {
-  //   final body = forgotArg.toMap();
-  //   body.removeWhere((k, v) => v == "");
-  //   return await performApiCall(
-  //     url: "/api/v1/auth/forgot-password/recover",
-  //     method: apiService.post,
-  //     isFormData: true,
-  //     body: body,
-  //     onSuccess: (data) {
-  //       return apiResponse;
-  //     },
-  //   );
-  // }
+  Future<ApiResponse> recoverPassword({
+    required ForgotArg forgotArg,
+  }) async {
+    final body = forgotArg.toMap();
+    body.removeWhere((k, v) => v == "");
+    return await performApiCall(
+      url: "/api/v1/auth/forgot-password/recover",
+      method: apiService.post,
+      isFormData: true,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
 
   Future<ApiResponse> updateProfile({
     String? name,
@@ -149,4 +149,4 @@ class AuthVm extends BaseVm {
   }
 }
 
-final authVModel = ChangeNotifierProvider((ref) => AuthVm());
+final authVmodel = ChangeNotifierProvider((ref) => AuthVm());

@@ -41,6 +41,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
 
   final formKey = GlobalKey<FormState>();
 
+  String? callbackUrl;
   StateModel? selectedState;
   CityModel? selectedCity;
   BusinessCategoryTypeModel? selectedCategory;
@@ -93,7 +94,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
         phoneC.text = res.data?.metadata?.phone ?? "";
         contactNameC.text = res.data?.metadata?.name ?? "";
         businessNameC.text = res.data?.metadata?.company ?? "";
-
+        callbackUrl = res.data?.metadata?.callbackUrl;
         setState(() {});
       },
     );
@@ -104,210 +105,206 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
     return Column(
       children: [
         Expanded(
-          child: RefreshIndicator(
-            onRefresh: _confirmPayment,
-            child: Form(
-              key: formKey,
-              child: ListView(
-                padding: EdgeInsets.only(
-                  top: Sizer.height(30),
-                  bottom: Sizer.height(60),
-                ),
-                children: [
-                  CustomTextField(
-                    controller: businessNameC,
-                    focusNode: businessNameF,
-                    isRequired: true,
-                    labelText: 'Business Name',
-                    hintText: 'Builer\'sHub',
-                    showLabelHeader: true,
-                    validator: Validators.required(),
-                  ),
-                  YBox(20),
-                  CustomTextField(
-                    controller: businessCategoryC,
-                    focusNode: businessCategoryF,
-                    isRequired: true,
-                    readOnly: true,
-                    labelText: 'Business Category',
-                    hintText: 'Select category',
-                    showLabelHeader: true,
-                    validator: Validators.required(),
-                    suffixIcon: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: Sizer.radius(20),
-                      color: AppColors.neutral7,
-                    ),
-                    onTsp: () async {
-                      final res = await ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: BusinessCategoryTypeModal(),
-                      );
-
-                      if (res is BusinessCategoryTypeModel) {
-                        businessCategoryC.text = res.name ?? "";
-                        selectedCategory = res;
-                      }
-                    },
-                  ),
-                  YBox(20),
-                  CustomTextField(
-                    controller: businessTypeC,
-                    focusNode: businessTypeF,
-                    isRequired: true,
-                    labelText: 'Business Type',
-                    hintText: 'Select business type',
-                    showLabelHeader: true,
-                    readOnly: true,
-                    validator: Validators.required(),
-                    suffixIcon: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: Sizer.radius(20),
-                      color: AppColors.neutral7,
-                    ),
-                    onTsp: () async {
-                      final res = await ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: BusinessCategoryTypeModal(isCategory: false),
-                      );
-                      if (res is BusinessCategoryTypeModel) {
-                        businessTypeC.text = res.name ?? "";
-                        selectedType = res;
-                      }
-                    },
-                  ),
-                  YBox(20),
-                  CustomTextField(
-                    controller: contactNameC,
-                    focusNode: contactNameF,
-                    isRequired: true,
-                    labelText: 'Contact Name',
-                    hintText: 'example',
-                    showLabelHeader: true,
-                    validator: Validators.required(),
-                  ),
-                  YBox(20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: emailC,
-                          focusNode: emailF,
-                          isRequired: true,
-                          labelText: 'Email address',
-                          hintText: 'example',
-                          showLabelHeader: true,
-                          validator: Validators.email(),
-                        ),
-                      ),
-                      XBox(20),
-                      Expanded(
-                        child: CustomTextField(
-                          controller: phoneC,
-                          focusNode: phoneF,
-                          isRequired: true,
-                          labelText: 'Phone Number',
-                          hintText: 'example',
-                          showLabelHeader: true,
-                          keyboardType: TextInputType.phone,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(11),
-                          ],
-                          validator: Validators.phoneNumber(),
-                        ),
-                      ),
-                    ],
-                  ),
-                  YBox(20),
-                  CustomTextField(
-                    controller: addressC,
-                    focusNode: addressF,
-                    isRequired: true,
-                    labelText: 'Business Address',
-                    hintText: 'example',
-                    showLabelHeader: true,
-                    validator: Validators.required(),
-                  ),
-                  YBox(20),
-                  CustomTextField(
-                    controller: stateC,
-                    focusNode: stateF,
-                    isRequired: true,
-                    labelText: 'State',
-                    hintText: 'example',
-                    showLabelHeader: true,
-                    readOnly: true,
-                    validator: Validators.required(),
-                    suffixIcon: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: Sizer.radius(20),
-                      color: AppColors.neutral7,
-                    ),
-                    onTsp: () async {
-                      final res = await ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: StateModal(),
-                      );
-                      if (res is StateModel) {
-                        stateC.text = res.name ?? "";
-                        selectedState = res;
-                      }
-                    },
-                  ),
-                  YBox(20),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: CustomTextField(
-                          controller: cityC,
-                          focusNode: cityF,
-                          isRequired: true,
-                          labelText: 'City/Region',
-                          hintText: 'example',
-                          showLabelHeader: true,
-                          readOnly: true,
-                          validator: Validators.required(),
-                          suffixIcon: Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: Sizer.radius(20),
-                            color: AppColors.neutral7,
-                          ),
-                          onTsp: () async {
-                            if (selectedState == null) {
-                              FlushBarToast.fLSnackBar(
-                                snackBarType: SnackBarType.warning,
-                                message: "Please select state first",
-                              );
-                              return;
-                            }
-                            final res = await ModalWrapper.bottomSheet(
-                              context: context,
-                              widget:
-                                  CityModal(stateId: selectedState?.id ?? 0),
-                            );
-                            if (res is CityModel) {
-                              cityC.text = res.name ?? "";
-                              selectedCity = res;
-                            }
-                          },
-                        ),
-                      ),
-                      XBox(20),
-                      Expanded(
-                        child: CustomTextField(
-                          controller: postalCodeC,
-                          focusNode: postalCodeF,
-                          isRequired: false,
-                          labelText: 'Postal Code',
-                          hintText: 'example',
-                          showLabelHeader: true,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+          child: Form(
+            key: formKey,
+            child: ListView(
+              padding: EdgeInsets.only(
+                top: Sizer.height(30),
+                bottom: Sizer.height(60),
               ),
+              children: [
+                CustomTextField(
+                  controller: businessNameC,
+                  focusNode: businessNameF,
+                  isRequired: true,
+                  labelText: 'Business Name',
+                  hintText: 'Builer\'sHub',
+                  showLabelHeader: true,
+                  validator: Validators.required(),
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: businessCategoryC,
+                  focusNode: businessCategoryF,
+                  isRequired: true,
+                  readOnly: true,
+                  labelText: 'Business Category',
+                  hintText: 'Select category',
+                  showLabelHeader: true,
+                  validator: Validators.required(),
+                  suffixIcon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: Sizer.radius(20),
+                    color: AppColors.neutral7,
+                  ),
+                  onTsp: () async {
+                    final res = await ModalWrapper.bottomSheet(
+                      context: context,
+                      widget: BusinessCategoryTypeModal(),
+                    );
+
+                    if (res is BusinessCategoryTypeModel) {
+                      businessCategoryC.text = res.name ?? "";
+                      selectedCategory = res;
+                    }
+                  },
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: businessTypeC,
+                  focusNode: businessTypeF,
+                  isRequired: true,
+                  labelText: 'Business Type',
+                  hintText: 'Select business type',
+                  showLabelHeader: true,
+                  readOnly: true,
+                  validator: Validators.required(),
+                  suffixIcon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: Sizer.radius(20),
+                    color: AppColors.neutral7,
+                  ),
+                  onTsp: () async {
+                    final res = await ModalWrapper.bottomSheet(
+                      context: context,
+                      widget: BusinessCategoryTypeModal(isCategory: false),
+                    );
+                    if (res is BusinessCategoryTypeModel) {
+                      businessTypeC.text = res.name ?? "";
+                      selectedType = res;
+                    }
+                  },
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: contactNameC,
+                  focusNode: contactNameF,
+                  isRequired: true,
+                  labelText: 'Contact Name',
+                  hintText: 'example',
+                  showLabelHeader: true,
+                  validator: Validators.required(),
+                ),
+                YBox(20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        controller: emailC,
+                        focusNode: emailF,
+                        isRequired: true,
+                        labelText: 'Email address',
+                        hintText: 'example',
+                        showLabelHeader: true,
+                        validator: Validators.email(),
+                      ),
+                    ),
+                    XBox(20),
+                    Expanded(
+                      child: CustomTextField(
+                        controller: phoneC,
+                        focusNode: phoneF,
+                        isRequired: true,
+                        labelText: 'Phone Number',
+                        hintText: 'example',
+                        showLabelHeader: true,
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(11),
+                        ],
+                        validator: Validators.phoneNumber(),
+                      ),
+                    ),
+                  ],
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: addressC,
+                  focusNode: addressF,
+                  isRequired: true,
+                  labelText: 'Business Address',
+                  hintText: 'example',
+                  showLabelHeader: true,
+                  validator: Validators.required(),
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: stateC,
+                  focusNode: stateF,
+                  isRequired: true,
+                  labelText: 'State',
+                  hintText: 'example',
+                  showLabelHeader: true,
+                  readOnly: true,
+                  validator: Validators.required(),
+                  suffixIcon: Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: Sizer.radius(20),
+                    color: AppColors.neutral7,
+                  ),
+                  onTsp: () async {
+                    final res = await ModalWrapper.bottomSheet(
+                      context: context,
+                      widget: StateModal(),
+                    );
+                    if (res is StateModel) {
+                      stateC.text = res.name ?? "";
+                      selectedState = res;
+                    }
+                  },
+                ),
+                YBox(20),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomTextField(
+                        controller: cityC,
+                        focusNode: cityF,
+                        isRequired: true,
+                        labelText: 'City/Region',
+                        hintText: 'example',
+                        showLabelHeader: true,
+                        readOnly: true,
+                        validator: Validators.required(),
+                        suffixIcon: Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          size: Sizer.radius(20),
+                          color: AppColors.neutral7,
+                        ),
+                        onTsp: () async {
+                          if (selectedState == null) {
+                            FlushBarToast.fLSnackBar(
+                              snackBarType: SnackBarType.warning,
+                              message: "Please select state first",
+                            );
+                            return;
+                          }
+                          final res = await ModalWrapper.bottomSheet(
+                            context: context,
+                            widget: CityModal(stateId: selectedState?.id ?? 0),
+                          );
+                          if (res is CityModel) {
+                            cityC.text = res.name ?? "";
+                            selectedCity = res;
+                          }
+                        },
+                      ),
+                    ),
+                    XBox(20),
+                    Expanded(
+                      child: CustomTextField(
+                        controller: postalCodeC,
+                        focusNode: postalCodeF,
+                        isRequired: false,
+                        labelText: 'Postal Code',
+                        hintText: 'example',
+                        showLabelHeader: true,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
@@ -325,11 +322,13 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                 address: addressC.text.trim(),
                 stateId: selectedState?.id ?? 0,
                 cityId: selectedCity?.id ?? 0,
+                callbackUrl: callbackUrl,
+                providerReference: widget.reference,
                 // postalCode: postalCodeC.text.trim(),
               );
               final res = await ref
                   .read(onboardVmodel)
-                  .completeOnboarding(onboardParams: onboardParams);
+                  .validateMerchantDetails(onboardParams: onboardParams);
 
               handleApiResponse(
                   response: res,
