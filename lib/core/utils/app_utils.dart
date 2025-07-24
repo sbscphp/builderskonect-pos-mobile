@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
   static String nairaSymbol = "₦";
@@ -140,5 +141,72 @@ class AppUtils {
     String lastInitial = lastName[0].toUpperCase();
 
     return firstInitial + lastInitial;
+  }
+
+  launchPhone(String phoneNumber) async {
+    final Uri phoneUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+
+    try {
+      if (await canLaunchUrl(phoneUri)) {
+        await launchUrl(phoneUri);
+      } else {
+        _showErrorMessage('Unable to open phone dialer');
+      }
+    } catch (e) {
+      printty('Error launching phone: $e');
+      _showErrorMessage('Unable to open phone dialer');
+    }
+  }
+
+  /// Launch email app with pre-filled recipient
+  Future<void> launchEmail(String email) async {
+    final Uri emailUri = Uri(
+      scheme: 'mailto',
+      path: email,
+      query: 'subject=${Uri.encodeComponent('Support Request')}',
+    );
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(emailUri);
+      } else {
+        _showErrorMessage('Unable to open email app');
+      }
+    } catch (e) {
+      printty('Error launching email: $e');
+      _showErrorMessage('Unable to open email app');
+    }
+  }
+
+  /// Launch WhatsApp with pre-filled number
+  Future<void> launchWhatsApp(String phoneNumber) async {
+    final Uri whatsappUri = Uri.parse(
+      'https://wa.me/$phoneNumber?text=${Uri.encodeComponent('Hello! I need assistance with my order.')}',
+    );
+
+    try {
+      if (await canLaunchUrl(whatsappUri)) {
+        await launchUrl(
+          whatsappUri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        _showErrorMessage('WhatsApp is not installed on this device');
+      }
+    } catch (e) {
+      printty('Error launching WhatsApp: $e');
+      _showErrorMessage('Unable to open WhatsApp');
+    }
+  }
+
+  /// Show error message to user
+  void _showErrorMessage(String message) {
+    FlushBarToast.fLSnackBar(
+      snackBarType: SnackBarType.warning,
+      message: message,
+    );
   }
 }

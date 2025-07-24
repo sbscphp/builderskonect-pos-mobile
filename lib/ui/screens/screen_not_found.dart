@@ -7,8 +7,14 @@ class ScreenNotFound extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Page Not Found')),
+      appBar: AppBar(
+        title: Text(
+          'Page Not Found',
+          style: textTheme.text20,
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -32,10 +38,28 @@ class ScreenNotFound extends StatelessWidget {
               ),
             ],
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.pushReplacementNamed(
-                  context, RoutePath.bottomNavScreen),
-              child: const Text('Return to Home'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 16.0,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                ),
+                onPressed: () => Navigator.pushReplacementNamed(
+                    context, RoutePath.bottomNavScreen),
+                child: const Text(
+                  'Return to Home',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
             ),
           ],
         ),

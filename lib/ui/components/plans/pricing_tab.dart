@@ -75,7 +75,7 @@ class _PricingTabState extends State<PricingTab>
 
   @override
   Widget build(BuildContext context) {
-    final tabWidth = Sizer.width(100);
+    final tabWidth = Sizer.width(80);
     final spacing = Sizer.width(16);
     final totalWidth = (tabWidth * 2) + spacing;
 
@@ -142,7 +142,7 @@ class _PricingTabState extends State<PricingTab>
                                   style: textTheme.text12?.medium.copyWith(
                                     color: isSelected
                                         ? colorScheme.white
-                                        : colorScheme.primary,
+                                        : colorScheme.black45,
                                   ),
                                 ),
                               ),
@@ -178,7 +178,7 @@ class _PricingTabState extends State<PricingTab>
                                   style: textTheme.text12?.medium.copyWith(
                                     color: isSelected
                                         ? colorScheme.white
-                                        : colorScheme.primary,
+                                        : colorScheme.black45,
                                   ),
                                 ),
                               ),

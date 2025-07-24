@@ -4,12 +4,14 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppbar({
     super.key,
     required this.title,
+    this.bgColor,
     this.trailingWidget,
     this.leadingWidget,
     this.onBack,
   });
 
   final String title;
+  final Color? bgColor;
   final Widget? trailingWidget;
   final Widget? leadingWidget;
   final VoidCallback? onBack;
@@ -21,10 +23,10 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
       preferredSize: Size.fromHeight(Sizer.height(50)),
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.gray50,
+          color: bgColor ?? AppColors.gray50,
           border: Border(
             bottom: BorderSide(
-              color: AppColors.grayF2,
+              color: bgColor ?? AppColors.grayF2,
             ),
           ),
         ),

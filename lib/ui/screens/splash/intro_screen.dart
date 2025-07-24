@@ -71,7 +71,10 @@ class IntroScreen extends StatelessWidget {
                       textStyle: textTheme.text16,
                       onTap: () {
                         printty("Login");
-                        Navigator.of(context).pushNamed(RoutePath.loginScreen);
+                        Navigator.of(context).pushNamed(
+                          RoutePath.vendorRegistrationScreen,
+                          arguments: "login",
+                        );
                       },
                     ),
                   ],

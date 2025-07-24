@@ -1,536 +1,531 @@
 import 'package:builders_konnect/core/core.dart';
-import 'package:builders_konnect/ui/components/components.dart';
 import 'package:flutter/services.dart';
 
 class CustomTextField extends StatefulWidget {
-  final String? labelText, hintText, optionalText;
-  final int? maxLines;
-  final TextEditingController? controller;
-  final Function(String)? onChanged;
-  final Function(String)? onSubmitted;
-  final bool? isPassword, isConfirmPassword, showSuffixIcon, showfillColor;
-  final Widget? suffixIcon, prefix, prefixIcon;
-  final KeyboardType keyboardType;
-  final double? width, height, labelSize;
-  final double? borderRadius;
-  final bool? isReadOnly;
-  final FocusNode? focusNode;
-  final bool showLabelHeader, hideBorder;
+  final String labelText;
+  final String optionalText;
+  final double labelSize;
+  final FontWeight labelFontWeight;
   final Color? labelColor;
-  final Color? fillColor;
-  final Color? borderColor;
-  final Color? textfieldColor;
-  final TextAlign textAlign;
-  final TextStyle? hintStyle;
-  final EdgeInsetsGeometry? contentPadding;
-  final bool? enableInteractiveSelection;
-  final bool? showCursor;
-  final TextInputType? inputType;
-  final Function()? onTap;
+  final TextEditingController? controller;
+  final ValueChanged<String>? onChanged;
+  final String? Function(String?)? validator;
+  final Function()? onTsp;
   final List<TextInputFormatter>? inputFormatters;
-
-  // Simplified validation properties
-  final String? fieldId; // Unique identifier for the field
-  final FieldType? fieldType; // Predefined field type
-  final List<ValidationRule>? customValidationRules; // Custom rules if needed
-  final CustomFormController? formController; // Form controller
-  final bool showIsRequiredIcon; // Simple required flag
-  final bool isRequired; // Simple required flag
+  final TextInputType? keyboardType;
+  final double textSize;
+  final Color textColor;
+  final bool obscure;
+  final Widget? suffixIcon;
+  final Widget? prefixIcon;
+  final String hintText;
+  final String bottomHintText;
+  final double hintSize, borderRadius;
+  final Color? hintColor;
+  final bool enabled;
+  final bool readOnly;
+  final bool isRequired;
+  final bool hideBorder;
+  final FocusNode? focusNode;
+  final int maxLines;
+  final bool isMoneyValue;
+  final Color? bgColor;
+  final Color? fillColor;
+  final bool showLabelHeader;
+  final double? height;
 
   const CustomTextField({
     super.key,
-    this.maxLines,
-    this.labelText,
-    this.hintText,
-    this.optionalText,
+    this.labelText = '',
+    this.optionalText = '',
+    this.labelSize = 14,
+    this.labelFontWeight = FontWeight.w500,
     this.labelColor,
-    this.textfieldColor,
-    this.fillColor,
-    this.borderColor,
-    this.labelSize,
     this.controller,
-    this.isPassword = false,
-    this.isConfirmPassword = false,
-    this.showSuffixIcon = false,
-    this.hideBorder = false,
-    this.showfillColor,
-    this.suffixIcon,
-    this.prefix,
-    this.prefixIcon,
-    this.width,
-    this.height,
-    this.borderRadius,
-    this.isReadOnly = false,
-    this.keyboardType = KeyboardType.regular,
-    this.showLabelHeader = false,
-    this.focusNode,
     this.onChanged,
-    this.onSubmitted,
-    this.textAlign = TextAlign.start,
-    this.hintStyle,
-    this.contentPadding,
-    this.enableInteractiveSelection,
-    this.showCursor,
-    this.onTap,
-    this.inputType,
+    this.validator,
+    this.onTsp,
     this.inputFormatters,
-    // Simplified validation
-    this.fieldId,
-    this.fieldType,
-    this.customValidationRules,
-    this.formController,
-    this.isRequired = false,
-    this.showIsRequiredIcon = false,
+    this.keyboardType = TextInputType.text,
+    this.textSize = 14,
+    this.textColor = Colors.black,
+    this.obscure = false,
+    this.suffixIcon,
+    this.hintText = '',
+    this.hintSize = 16,
+    this.hintColor,
+    this.enabled = true,
+    this.readOnly = false,
+    this.prefixIcon,
+    this.bottomHintText = '',
+    this.isRequired = true,
+    this.hideBorder = false,
+    this.focusNode,
+    this.maxLines = 1,
+    this.isMoneyValue = false,
+    this.bgColor,
+    this.fillColor,
+    this.showLabelHeader = true,
+    this.borderRadius = 0,
+    this.height,
   });
 
   @override
-  State<CustomTextField> createState() => CustomTextFieldState();
+  State<CustomTextField> createState() => _CustomTextFieldState();
 }
 
-class CustomTextFieldState extends State<CustomTextField> {
-  bool showPassword = false;
-  String? errorText;
-  bool hasBeenValidated = false;
-  late TextEditingController controller;
-  List<ValidationRule> validationRules = [];
-
-  @override
-  void initState() {
-    super.initState();
-    controller = widget.controller ?? TextEditingController();
-
-    _setupValidationRules();
-
-    List<KeyboardType> numsKeyboardType = [
-      KeyboardType.decimal,
-      KeyboardType.number,
-    ];
-
-    if (widget.focusNode != null &&
-        numsKeyboardType.contains(widget.keyboardType)) {
-      KeyboardOverlay.addRemoveFocusNode(context, widget.focusNode!);
-    }
-
-    // Register with form controller if provided
-    if (widget.formController != null && widget.fieldId != null) {
-      widget.formController!.registerField(widget.fieldId!, this);
-    }
-
-    // Listen to text changes for real-time validation
-    controller.addListener(_onTextChanged);
-  }
-
-  void _setupValidationRules() {
-    validationRules.clear();
-
-    // Add required validation if needed
-    if (widget.isRequired) {
-      validationRules.add(ValidationRules.required());
-    }
-
-    // Add predefined validation based on field type
-    if (widget.fieldType != null) {
-      switch (widget.fieldType!) {
-        case FieldType.email:
-          validationRules.add(ValidationRules.email());
-          break;
-        case FieldType.password:
-          validationRules.add(ValidationRules.password());
-          break;
-        case FieldType.phone:
-          validationRules.add(ValidationRules.phone());
-          break;
-        case FieldType.name:
-          validationRules.add(ValidationRules.minLength(2));
-          break;
-        case FieldType.number:
-          validationRules.add(ValidationRules.numeric());
-          break;
-        case FieldType.text:
-          // No additional rules for basic text
-          break;
-      }
-    }
-
-    // Add custom validation rules
-    if (widget.customValidationRules != null) {
-      validationRules.addAll(widget.customValidationRules!);
-    }
-  }
+class _CustomTextFieldState extends State<CustomTextField> {
+  //final FocusNode _focusNode = FocusNode();
+  //bool _isActive = false;
 
   @override
   void dispose() {
-    controller.removeListener(_onTextChanged);
-
-    // Unregister from form controller BEFORE disposing
-    if (widget.formController != null && widget.fieldId != null) {
-      widget.formController!.unregisterField(widget.fieldId!);
-    }
-
-    // Only dispose controller if it was created internally
-    // Note: If using enhanced FormController, it will handle disposal
-    if (widget.controller == null && widget.formController == null) {
-      controller.dispose();
-    }
-
+    //_focusNode.dispose();
     super.dispose();
   }
-
-  void _onTextChanged() {
-    if (hasBeenValidated) {
-      _validateField(controller.text);
-    }
-  }
-
-  String? _validateField(String value) {
-    if (validationRules.isEmpty) {
-      return null;
-    }
-
-    for (final rule in validationRules) {
-      final error = rule.validate(value);
-      if (error != null) {
-        setState(() {
-          errorText = error;
-        });
-
-        // Update form controller
-        if (widget.formController != null && widget.fieldId != null) {
-          widget.formController!.updateFieldValidation(widget.fieldId!, false);
-        }
-
-        return error;
-      }
-    }
-
-    setState(() {
-      errorText = null;
-    });
-
-    // Update form controller
-    if (widget.formController != null && widget.fieldId != null) {
-      widget.formController!.updateFieldValidation(widget.fieldId!, true);
-    }
-
-    return null;
-  }
-
-  void validateField() {
-    hasBeenValidated = true;
-    _validateField(controller.text);
-  }
-
-  void clearValidation() {
-    setState(() {
-      errorText = null;
-      hasBeenValidated = false;
-    });
-
-    // Update form controller
-    if (widget.formController != null && widget.fieldId != null) {
-      widget.formController!.updateFieldValidation(widget.fieldId!, false);
-    }
-  }
-
-  bool get isValid =>
-      errorText == null && (validationRules.isEmpty || hasBeenValidated);
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (widget.showLabelHeader)
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    if (widget.showIsRequiredIcon)
-                      TextSpan(
-                        text: '* ',
-                        style: TextStyle(
-                          color: AppColors.red4F,
-                          fontSize: widget.labelSize ?? 14.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    TextSpan(
-                      text: widget.labelText ?? '',
-                      style: textTheme.text14,
-                    ),
-                    WidgetSpan(child: SizedBox(width: 4)),
-                    TextSpan(
-                      text: widget.optionalText ?? '',
-                      style: TextStyle(
-                        color: AppColors.black.withValues(alpha: 0.45),
-                        fontSize: 12.sp,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const YBox(6)
-            ],
-          ),
-        Container(
-          width: widget.width ?? Sizer.screenWidth,
-          height: widget.maxLines != null ? null : widget.height ?? 52.h,
-          alignment: Alignment.center,
-          child: Center(
-            child: TextFormField(
-              enableInteractiveSelection: widget.enableInteractiveSelection,
-              showCursor: widget.showCursor,
-              maxLines: widget.maxLines ?? 1,
-              textAlign: widget.textAlign,
-              cursorHeight: 16.sp,
-              cursorColor: AppColors.black,
-              focusNode: widget.focusNode,
-              style: TextStyle(
-                color: widget.textfieldColor ?? AppColors.black,
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w400,
-              ),
-              controller: controller,
-              obscureText: widget.isPassword! && !showPassword,
-              keyboardType: widget.inputType ?? inputType(widget.keyboardType),
-              onFieldSubmitted: (value) {
-                validateField();
-                widget.onSubmitted?.call(value);
-              },
-              inputFormatters:
-                  widget.inputFormatters ?? inputFormatter(widget.keyboardType),
-              onChanged: (value) {
-                widget.onChanged?.call(value);
-              },
-              onTap: widget.onTap,
-              readOnly: widget.isReadOnly!,
-              decoration: InputDecoration(
-                errorText: null, // We handle errors manually
-                contentPadding: widget.contentPadding ??
-                    EdgeInsets.only(
-                      top: 20.h,
-                      bottom: 0.h,
-                      left: 14.w,
-                      right: 10.w,
-                    ),
-                hintText: widget.hintText,
-                hintStyle: widget.hintStyle ??
-                    TextStyle(
-                      fontSize: Sizer.text(14),
+          RichText(
+            text: TextSpan(
+              children: [
+                if (widget.isRequired)
+                  TextSpan(
+                    text: '* ',
+                    style: TextStyle(
+                      color: AppColors.red4F,
+                      fontSize: widget.labelSize,
                       fontWeight: FontWeight.w400,
-                      color: AppColors.black.withValues(alpha: 0.45),
                     ),
-                suffixIcon: widget.suffixIcon ?? suffixIcon(),
-                prefix: widget.prefix,
-                prefixIcon: widget.prefixIcon,
-                fillColor: widget.fillColor ?? AppColors.white,
-                filled: widget.showfillColor ?? true,
-                enabledBorder: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: errorText != null
-                              ? AppColors.red.withValues(alpha: 0.8)
-                              : widget.borderColor ?? AppColors.neutral5,
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
+                  ),
+                TextSpan(
+                  text: widget.labelText,
+                  style: textTheme.text14,
                 ),
-                disabledBorder: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: errorText != null
-                              ? AppColors.red.withOpacity(0.8)
-                              : AppColors.neutral5,
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
+                WidgetSpan(child: SizedBox(width: 4)),
+                TextSpan(
+                  text: widget.optionalText,
+                  style: TextStyle(
+                    color: AppColors.black.withValues(alpha: 0.45),
+                    fontSize: 12.sp,
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: errorText != null
-                              ? AppColors.red.withOpacity(0.8)
-                              : AppColors.neutral5,
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
-                ),
-                errorBorder: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: AppColors.red.withValues(alpha: 0.8)),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
-                ),
-                focusedErrorBorder: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: AppColors.red.withValues(alpha: 0.8)),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: widget.hideBorder
-                      ? BorderSide.none
-                      : BorderSide(
-                          width: 1,
-                          color: errorText != null
-                              ? AppColors.red.withValues(alpha: 0.8)
-                              : AppColors.primaryBlue.withValues(alpha: 0.4),
-                        ),
-                  borderRadius:
-                      BorderRadius.circular(widget.borderRadius ?? 8.r),
-                ),
-              ),
+              ],
             ),
           ),
-        ),
-        errorText == null
-            ? const SizedBox.shrink()
-            : Padding(
-                padding: EdgeInsets.only(top: 4.h),
-                child: Text(
-                  errorText!,
-                  style: TextStyle(
-                      color: AppColors.red.withOpacity(0.8), fontSize: 12.sp),
+        if (widget.showLabelHeader) YBox(4),
+        Container(
+          height: widget.maxLines > 1 ? null : (widget.height ?? 58.h),
+          width: double.infinity,
+          decoration: BoxDecoration(
+              //color: ColorPath.athensGrey2,
+              color: widget.bgColor,
+              //border: Border.all(color: ColorPath.mischkaGrey, width: 1.w),
+              borderRadius: BorderRadius.all(
+                  Radius.circular(Sizer.radius(widget.borderRadius)))
+              // borderRadius: BorderRadius.only(
+              //     topLeft: Radius.circular(8.r),
+              //     topRight: Radius.circular(8.r)
+              // )
+              ),
+          child: Center(
+            child: TextFormField(
+                maxLines: widget.maxLines,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                enabled: widget.enabled,
+                readOnly: widget.readOnly,
+                validator: widget.validator,
+                controller: widget.controller,
+                focusNode: widget.focusNode,
+                obscureText: widget.obscure,
+                style: TextStyle(
+                  fontSize: widget.textSize.sp,
+                  color: widget.textColor,
                 ),
-              )
+                onChanged: widget.onChanged,
+                onTap: widget.onTsp,
+                keyboardType: widget.keyboardType,
+                inputFormatters: widget.inputFormatters,
+                decoration: InputDecoration(
+                  errorStyle: textTheme.text12?.copyWith(
+                    color: AppColors.red4F,
+                  ),
+                  isDense: false,
+                  errorMaxLines: 3,
+                  hintText: widget.hintText,
+                  hintStyle: textTheme.text14?.copyWith(
+                      color: widget.hintColor?.withValues(alpha: 0.3) ??
+                          colorScheme.black25,
+                      fontSize: widget.labelSize,
+                      fontWeight: FontWeight.w500),
+                  suffixIcon: widget.suffixIcon,
+                  suffixIconConstraints: BoxConstraints(
+                    minWidth: 30.w,
+                    minHeight: 30.h,
+                  ),
+                  prefixIcon: widget.prefixIcon,
+                  prefixIconConstraints: BoxConstraints(
+                    minWidth: 40.w,
+                    minHeight: 30.h,
+                  ),
+                  filled: true,
+                  fillColor: widget.fillColor,
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: EdgeInsets.only(
+                    top: widget.maxLines > 1 ? 12 : 0,
+                    left: 16.w,
+                    right: 16.w,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: widget.hideBorder
+                            ? Colors.transparent
+                            : AppColors.neutral5,
+                        width: 1.w),
+                    borderRadius: BorderRadius.circular(
+                        Sizer.radius(widget.borderRadius)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: widget.hideBorder
+                            ? Colors.transparent
+                            : AppColors.neutral5,
+                        width: 1.w),
+                    borderRadius: BorderRadius.circular(
+                        Sizer.radius(widget.borderRadius)),
+                  ),
+                  disabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: widget.hideBorder
+                            ? Colors.transparent
+                            : AppColors.neutral5,
+                        width: 1.w),
+                    borderRadius: BorderRadius.circular(
+                        Sizer.radius(widget.borderRadius)),
+                  ),
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: widget.hideBorder
+                          ? Colors.transparent
+                          : AppColors.neutral5,
+                      width: 1.w,
+                    ),
+                    borderRadius: BorderRadius.circular(
+                        Sizer.radius(widget.borderRadius)),
+                  ),
+                )),
+          ),
+        ),
+        if (widget.bottomHintText.isNotEmpty) SizedBox(height: 4.h),
+        if (widget.bottomHintText.isNotEmpty)
+          Text(
+            widget.bottomHintText,
+            style: textTheme.bodySmall?.copyWith(
+                color: colorScheme.black25, fontWeight: FontWeight.w400),
+            textAlign: TextAlign.left,
+          ),
       ],
     );
   }
-
-  Widget? suffixIcon() {
-    if (widget.isPassword! || widget.isConfirmPassword!) {
-      return GestureDetector(
-          onTap: () => setState(() {
-                showPassword = !showPassword;
-              }),
-          child: PasswordSuffixWidget(
-            showPassword: showPassword,
-          ));
-    }
-    if (widget.showSuffixIcon! && widget.suffixIcon == null) {
-      return const Icon(
-        Iconsax.arrow_down,
-        size: 18,
-        color: AppColors.black,
-      );
-    }
-
-    if (widget.showSuffixIcon! && widget.suffixIcon != null) {
-      return widget.suffixIcon;
-    }
-    return null;
-  }
 }
 
-// Example usage - Much simpler now!
+// class Two extends StatefulWidget {
+//   final String? errorText, labelText, hintText, optionalText;
+//   final int? maxLines;
+//   final TextEditingController? controller;
+//   final Function(String)? onChanged;
+//   final Function(String)? onSubmitted;
+//   final bool isRequired,
+//       isPassword,
+//       isConfirmPassword,
+//       showSuffixIcon,
+//       showfillColor;
+//   final Widget? suffixIcon, prefix, prefixIcon;
+//   final KeyboardType keyboardType;
+//   final double? width, height, labelSize;
+//   final double? borderRadius;
+//   final bool? isReadOnly;
+//   final FocusNode? focusNode;
+//   final bool showLabelHeader, hideBorder;
+//   final Color? labelColor;
+//   final Color? fillColor;
+//   final Color? borderColor;
+//   final Color? textfieldColor;
+//   final TextAlign textAlign;
+//   final TextStyle? hintStyle;
+//   final EdgeInsetsGeometry? contentPadding;
+//   final bool? enableInteractiveSelection;
+//   final bool? showCursor;
+//   final TextInputType? inputType;
+//   final String? Function(String?)? validator;
+//   final Function()? onTap;
+//   final List<TextInputFormatter>? inputFormatters;
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+//   const Two(
+//       {super.key,
+//       this.maxLines,
+//       this.labelText,
+//       this.hintText,
+//       this.optionalText,
+//       this.labelColor,
+//       this.textfieldColor,
+//       this.fillColor,
+//       this.borderColor,
+//       this.labelSize,
+//       this.controller,
+//       this.isRequired = false,
+//       this.isPassword = false,
+//       this.isConfirmPassword = false,
+//       this.showSuffixIcon = false,
+//       this.hideBorder = false,
+//       this.showfillColor = false,
+//       this.suffixIcon,
+//       this.prefix,
+//       this.prefixIcon,
+//       this.errorText,
+//       this.width,
+//       this.height,
+//       this.borderRadius,
+//       this.isReadOnly = false,
+//       this.keyboardType = KeyboardType.regular,
+//       this.showLabelHeader = false,
+//       this.focusNode,
+//       this.onChanged,
+//       this.onSubmitted,
+//       this.textAlign = TextAlign.start,
+//       this.hintStyle,
+//       this.contentPadding,
+//       this.enableInteractiveSelection,
+//       this.showCursor,
+//       this.onTap,
+//       this.inputType,
+//       this.validator,
+//       this.inputFormatters});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
+//   @override
+//   State<Two> createState() => _TwoState();
+// }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final CustomFormController _formController = CustomFormController();
+// class _TwoState extends State<Two> {
+//   bool showPassword = false;
 
-  @override
-  void dispose() {
-    _formController.dispose();
-    super.dispose();
-  }
+//   @override
+//   void initState() {
+//     super.initState();
+//     List<KeyboardType> numsKeyboardType = [
+//       KeyboardType.decimal,
+//       KeyboardType.number,
+//     ];
+//     // KeyboardOverlay.showOverlay(context);
+//     if (widget.focusNode != null &&
+//         numsKeyboardType.contains(widget.keyboardType)) {
+//       KeyboardOverlay.addRemoveFocusNode(context, widget.focusNode!);
+//     }
+//   }
 
-  void _onLoginPressed() {
-    if (_formController.validateAllFields()) {
-      // Get all field values
-      final values = _formController.getFieldValues();
-      printty('Email: ${values['email']}');
-      printty('Password: ${values['password']}');
+//   @override
+//   Widget build(BuildContext context) {
+//     final textTheme = Theme.of(context).textTheme;
+//     final colorScheme = Theme.of(context).colorScheme;
+//     return Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       mainAxisSize: MainAxisSize.min,
+//       children: [
+//         if (widget.showLabelHeader)
+//           Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               RichText(
+//                 text: TextSpan(
+//                   children: [
+//                     if (widget.isRequired)
+//                       TextSpan(
+//                         text: '* ',
+//                         style: TextStyle(
+//                           color: AppColors.red4F,
+//                           fontSize: widget.labelSize ?? 14.sp,
+//                           fontWeight: FontWeight.w400,
+//                         ),
+//                       ),
+//                     TextSpan(
+//                       text: widget.labelText ?? '',
+//                       style: textTheme.text14,
+//                     ),
+//                     WidgetSpan(child: SizedBox(width: 4)),
+//                     TextSpan(
+//                       text: widget.optionalText ?? '',
+//                       style: TextStyle(
+//                         color: AppColors.black.withValues(alpha: 0.45),
+//                         fontSize: 12.sp,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//               const YBox(4)
+//             ],
+//           ),
+//         Container(
+//           // color: AppColors.red.withOpacity(0.1),
+//           width: widget.width ?? Sizer.screenWidth,
+//           height: widget.maxLines != null ? null : widget.height ?? 52.h,
+//           alignment: Alignment.center,
+//           child: Center(
+//             child: TextFormField(
+//               enableInteractiveSelection: widget.enableInteractiveSelection,
+//               showCursor: widget.showCursor,
+//               maxLines: widget.maxLines ?? 1,
+//               textAlign: widget.textAlign,
+//               cursorHeight: 16.sp,
+//               cursorColor: AppColors.black,
+//               focusNode: widget.focusNode,
+//               style: TextStyle(
+//                 color: widget.textfieldColor ?? AppColors.black,
+//                 fontSize: 16.sp,
+//                 fontWeight: FontWeight.w400,
+//               ),
+//               controller: widget.controller,
+//               obscureText: widget.isPassword && !showPassword,
+//               keyboardType: widget.inputType ?? inputType(widget.keyboardType),
+//               validator: widget.validator,
+//               onFieldSubmitted: widget.onSubmitted,
+//               inputFormatters:
+//                   widget.inputFormatters ?? inputFormatter(widget.keyboardType),
+//               onChanged: widget.onChanged,
+//               onTap: widget.onTap,
+//               readOnly: widget.isReadOnly!,
+//               decoration: InputDecoration(
+//                 errorText: widget.errorText,
+//                 errorStyle: TextStyle(
+//                     color: AppColors.red, fontSize: 0.01.sp, height: 0.2),
+//                 contentPadding: widget.contentPadding ??
+//                     EdgeInsets.only(
+//                       //left: 16.w,
+//                       top: 20.h,
+//                       bottom: 0.h,
+//                       left: 14.w,
+//                       right: 10.w,
+//                     ),
+//                 // labelText: widget.labelText,
+//                 hintText: widget.hintText,
+//                 hintStyle: widget.hintStyle ??
+//                     TextStyle(
+//                       fontSize: Sizer.text(16),
+//                       fontWeight: FontWeight.w400,
+//                       color: colorScheme.black25,
+//                     ),
+//                 suffixIcon: widget.suffixIcon ?? suffixIcon(),
+//                 prefix: widget.prefix,
+//                 prefixIcon: widget.prefixIcon,
+//                 // suffixIconColor: AppColors.brandOrange,
 
-      // Proceed with login
-      _performLogin();
-    }
-  }
+//                 fillColor: widget.fillColor ?? AppColors.white,
+//                 filled: widget.showfillColor,
+//                 // isCollapsed: true,
+//                 // isDense: true,
+//                 // labelStyle: TextStyle(color: bluishGrey, fontSize: 14.sp),
+//                 enabledBorder: OutlineInputBorder(
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : BorderSide(
+//                           width: 1,
+//                           color: widget.borderColor ?? AppColors.neutral5,
+//                         ),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//                 disabledBorder: OutlineInputBorder(
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : const BorderSide(
+//                           width: 1,
+//                           color: AppColors.neutral5,
+//                         ),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//                 border: OutlineInputBorder(
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : const BorderSide(
+//                           width: 1,
+//                           color: AppColors.neutral5,
+//                         ),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//                 errorBorder: OutlineInputBorder(
+//                   //borderSide: BorderSide.none,
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : BorderSide(
+//                           width: 1, color: AppColors.red.withOpacity(0.8)),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//                 focusedErrorBorder: OutlineInputBorder(
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : BorderSide(
+//                           width: 1, color: AppColors.red.withOpacity(0.8)),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//                 focusedBorder: OutlineInputBorder(
+//                   borderSide: widget.hideBorder
+//                       ? BorderSide.none
+//                       : BorderSide(
+//                           width: 1,
+//                           color: AppColors.primaryBlue.withValues(alpha: 0.4),
+//                         ),
+//                   borderRadius:
+//                       BorderRadius.circular(widget.borderRadius ?? 8.r),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//         widget.errorText == null
+//             ? const SizedBox.shrink()
+//             : Text(
+//                 widget.errorText ?? "",
+//                 style: TextStyle(
+//                     color: AppColors.red.withOpacity(0.8), fontSize: 12.sp),
+//               )
+//       ],
+//     );
+//   }
 
-  void _performLogin() {
-    // Your login logic here
-    printty('Logging in...');
-  }
+//   Widget? suffixIcon() {
+//     if (widget.isPassword || widget.isConfirmPassword) {
+//       return GestureDetector(
+//           onTap: () => setState(() {
+//                 showPassword = !showPassword;
+//               }),
+//           child: PasswordSuffixWidget(
+//             showPassword: showPassword,
+//           ));
+//     }
+//     if (widget.showSuffixIcon && widget.suffixIcon == null) {
+//       return const Icon(
+//         Iconsax.arrow_down,
+//         size: 18,
+//         color: AppColors.black,
+//       );
+//     }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          const YBox(100),
-          // Email field - automatically validates email format
-          CustomTextField(
-            fieldId: 'email',
-            fieldType: FieldType.email,
-            isRequired: true,
-            formController: _formController,
-            labelText: 'Email',
-            hintText: 'Enter your email',
-            showLabelHeader: true,
-          ),
-
-          const SizedBox(height: 16),
-
-          // Password field - automatically validates password strength
-          CustomTextField(
-            fieldId: 'password',
-            fieldType: FieldType.password,
-            isRequired: true,
-            formController: _formController,
-            labelText: 'Password',
-            hintText: 'Enter your password',
-            isPassword: true,
-            showLabelHeader: true,
-          ),
-
-          const SizedBox(height: 24),
-          // For custom validation, it's still simple:
-          CustomTextField(
-            fieldId: 'username',
-            fieldType: FieldType.text,
-            isRequired: true,
-            formController: _formController,
-            customValidationRules: [
-              ValidationRules.minLength(3, message: "Shey dem de worry u ni"),
-              ValidationRules.custom(
-                condition: (value) => !value.contains(' '),
-                message: 'Username cannot contain spaces',
-              ),
-            ],
-            labelText: 'Username',
-            hintText: 'Enter username',
-            showLabelHeader: true,
-          ),
-          const SizedBox(height: 24),
-
-          // Single button press validates everything
-          ElevatedButton(
-            onPressed: _onLoginPressed,
-            child: const Text('Login'),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//     if (widget.showSuffixIcon && widget.suffixIcon != null) {
+//       //return const Icon(FontAwesomeIcons.circleCheck, size: 16, color: green);
+//       return widget.suffixIcon;
+//     }
+//     return null;
+//   }
+// }

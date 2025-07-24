@@ -1,3 +1,8 @@
 export 'auth_vm.dart';
+export 'bank_vm.dart';
 export 'base_vm.dart';
+export 'file_upload_vm.dart';
+export 'geography_vm.dart';
+export 'onboard_vm.dart';
+export 'subscription_vm.dart';
 export 'theme_view_model.dart';

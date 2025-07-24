@@ -39,6 +39,7 @@ class AppColors {
   static const grayA4 = Color(0xFFA4A4A4);
   static const grayDD = Color(0xFFD0D5DD);
   static const grayF5 = Color(0xFFF0F2F5);
+  static const gray7F8 = Color(0xFFF7F7F8);
 
   // Red
   static const red2D = Color(0xFFF5222D);
@@ -49,6 +50,7 @@ class AppColors {
   static const yellowE6 = Color(0xFFFFFBE6);
   static const yellow6 = Color(0xFFFAAD14);
   static const yellow4 = Color(0xFFFFD666);
+  static const yellow8F = Color(0xFFFFE58F);
 
   static const magenta6 = Color(0xFFEB2F96);
   static const magenta4 = Color(0xFFFF85C0);
@@ -65,4 +67,6 @@ class AppColors {
   static const opacityRed100 = Color(0xFFFFF8F7);
   static const greenDE = Color(0xFFEAF9DE);
   static const green2E = Color(0xFF65DE2E);
+
+  static const mischkaGrey = Color(0xffD0D5DD);
 }

@@ -1,9 +1,10 @@
 import 'package:builders_konnect/core/core.dart';
-import 'package:builders_konnect/core/themes/custom_text_theme.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class VendorRegistrationScreen extends StatefulWidget {
-  const VendorRegistrationScreen({super.key});
+  const VendorRegistrationScreen({super.key, required this.reference});
+
+  final String reference;
 
   @override
   State<VendorRegistrationScreen> createState() =>
@@ -11,7 +12,7 @@ class VendorRegistrationScreen extends StatefulWidget {
 }
 
 class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
-  int regSteps = 2;
+  int regSteps = 1;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -69,27 +70,68 @@ class _VendorRegistrationScreenState extends State<VendorRegistrationScreen> {
                           RegSteps(
                             number: "1",
                             text: "Vendor Details",
-                            isActive: true,
+                            isActive: regSteps == 1,
                           ),
                           XBox(6),
                           RegSteps(
                             number: "2",
                             text: "Bank Details",
+                            isActive: regSteps == 2,
                           ),
                           XBox(6),
                           RegSteps(
                             number: "3",
                             text: "Document Upload",
+                            isActive: regSteps == 3,
                           ),
                         ],
                       ),
                       YBox(10),
                       Expanded(
-                        child: switch (regSteps) {
-                          1 => VendorDetails(),
-                          2 => BankDetails(),
-                          _ => DocumentUpload(),
-                        },
+                        child: AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 400),
+                          transitionBuilder:
+                              (Widget child, Animation<double> animation) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                          child: switch (regSteps) {
+                            1 => VendorDetails(
+                                key: const ValueKey('vendor_details'),
+                                reference: widget.reference,
+                                onNext: () {
+                                  regSteps = 2;
+                                  setState(() {});
+                                },
+                              ),
+                            2 => BankDetails(
+                                key: const ValueKey('bank_details'),
+                                onNext: () {
+                                  regSteps = 3;
+                                  setState(() {});
+                                },
+                                onPrevious: () {
+                                  regSteps = 1;
+                                  setState(() {});
+                                },
+                              ),
+                            _ => DocumentUpload(
+                                key: const ValueKey('document_upload'),
+                                onNext: () {
+                                  // Handle registration completion
+                                  // You can add your registration logic here
+                                  Navigator.pop(context);
+                                },
+                                onPrevious: () {
+                                  setState(() {
+                                    regSteps = 2;
+                                  });
+                                },
+                              ),
+                          },
+                        ),
                       ),
                     ],
                   ),

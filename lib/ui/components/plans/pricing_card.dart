@@ -31,10 +31,6 @@ class PricingCard extends StatelessWidget {
       padding: EdgeInsets.all(Sizer.radius(16)),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        // border: Border.all(
-        //   color: AppColors.dayBreakBlue3,
-        //   width: 2,
-        // ),
         image: const DecorationImage(
           image: AssetImage(AppImages.planCard),
           fit: BoxFit.cover,
@@ -93,7 +89,7 @@ class PricingCard extends StatelessWidget {
               child: Text(
                 'Learn more about this plan',
                 style: textTheme.text14?.copyWith(
-                  color: colorScheme.primary,
+                  color: colorScheme.primaryColor,
                 ),
               ),
             ),

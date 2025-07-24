@@ -7,3 +7,4 @@ export 'pos/pos.dart';
 export 'procurement/procurement.dart';
 export 'screen_not_found.dart';
 export 'splash/splash.dart';
+export 'webview/webview.dart';

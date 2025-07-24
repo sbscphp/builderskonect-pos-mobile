@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:builders_konnect/core/core.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class BusyOverlay extends StatefulWidget {
   final Widget child;
@@ -31,11 +31,9 @@ class _BusyOverlayState extends State<BusyOverlay> {
               visible: widget.show,
               child: BackdropFilter(
                 filter: ImageFilter.blur(
-                    sigmaX: 12, sigmaY: 12), // Adjust the blur intensity
+                    sigmaX: 10, sigmaY: 10), // Adjust the blur intensity
                 child: Container(
-                  color: Colors.black12.withOpacity(
-                    0.3,
-                  ), // Adjust the background color and opacity
+                  color: AppColors.mischkaGrey.withValues(alpha: 0.3),
                 ),
               ),
             ),
@@ -44,7 +42,7 @@ class _BusyOverlayState extends State<BusyOverlay> {
                 ignoring: !widget.show,
                 child: Visibility(
                   visible: widget.show,
-                  child: const LoaderIcon(),
+                  child: const SpinKitLoader(),
                 ),
               ),
             ),
@@ -68,48 +66,25 @@ class SizerLoader extends StatelessWidget {
     return SizedBox(
       height: Sizer.height(height ?? 200),
       child: const Center(
-        child: LoaderIcon(size: 40),
+        child: SpinKitLoader(size: 40),
       ),
     );
   }
 }
 
-class LoaderIcon extends StatelessWidget {
-  const LoaderIcon({
-    super.key,
-    this.size,
-    this.color,
-  });
-
+class SpinKitLoader extends StatelessWidget {
+  const SpinKitLoader({super.key, this.size});
   final double? size;
-  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    return LoadingAnimationWidget.fourRotatingDots(
-      color: color ?? AppColors.primaryBlue,
-      size: Sizer.radius(size ?? 50),
+    return Center(
+      child: SpinKitSpinningCircle(
+        size: size ?? 50, //200
+        itemBuilder: (BuildContext context, int i) {
+          return Image.asset(AppImages.bk);
+        },
+      ),
     );
   }
 }
-
-// class SpinKitLoader extends StatelessWidget {
-//   const SpinKitLoader({super.key, this.size});
-//   final double? size;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Center(
-//       child: SpinKitSpinningCircle(
-//         size: size ?? 30, //200
-//         itemBuilder: (BuildContext context, int index) {
-//           return Container(
-//             height: Sizer.height(10),
-//             width: Sizer.height(10),
-//             color: index.isEven ? AppColors.primaryBlue : AppColors.blue5,
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }

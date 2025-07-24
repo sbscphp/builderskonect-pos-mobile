@@ -32,11 +32,26 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.vendorRegistrationScreen:
+      case RoutePath.forgotPasswordScreen:
         return TransitionUtils.buildTransition(
-          const VendorRegistrationScreen(),
+          const ForgotPasswordScreen(),
           settings,
         );
+
+      case RoutePath.otpScreen:
+        return TransitionUtils.buildTransition(
+          const OtpScreen(),
+          settings,
+        );
+
+      case RoutePath.vendorRegistrationScreen:
+        if (args is String) {
+          return TransitionUtils.buildTransition(
+            VendorRegistrationScreen(reference: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Notification
       case RoutePath.notificationScreen:
@@ -53,10 +68,31 @@ class AppRouter {
         );
 
       case RoutePath.getStartedScreen:
-        return TransitionUtils.buildTransition(
-          const GetStartedScreen(),
-          settings,
-        );
+        if (args is PlanFeatureArg) {
+          return TransitionUtils.buildTransition(
+            GetStartedScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.planLearnMoreScreen:
+        if (args is PlanFeatureArg) {
+          return TransitionUtils.buildTransition(
+            PlanLearnMoreScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.subscriptionSuccessScreen:
+        if (args is SubscriptionSuccessArg) {
+          return TransitionUtils.buildTransition(
+            SubscriptionSuccessScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // POS
       case RoutePath.moreScreen:
@@ -64,6 +100,16 @@ class AppRouter {
           const MoreScreen(),
           settings,
         );
+
+      // Webview
+      case RoutePath.customWebviewScreen:
+        if (args is WebViewArg) {
+          return TransitionUtils.buildTransition(
+            CustomWebviewScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       default:
         return errorScreen(settings);

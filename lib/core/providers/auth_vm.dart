@@ -17,8 +17,7 @@ class AuthVm extends BaseVm {
     final body = {
       "identifier": identifier,
       "password": password,
-      "entity": entity ??
-          "fulfilment-officer" // fulfilment-officer, merchant, customer
+      "entity": entity ?? "merchant" // fulfilment-officer, merchant, customer
     };
     body.removeWhere((k, v) => v == "");
     return await performApiCall(
@@ -39,7 +38,6 @@ class AuthVm extends BaseVm {
     return await performApiCall(
       url: "/api/v1/auth/forgot-password/reset",
       method: apiService.post,
-      isFormData: true,
       body: {"identifier": identifier},
       onSuccess: (data) {
         return ApiResponse(
@@ -129,6 +127,4 @@ class AuthVm extends BaseVm {
   }
 }
 
-final authVmodel = ChangeNotifierProvider((ref) {
-  return AuthVm();
-});
+final authVModel = ChangeNotifierProvider((ref) => AuthVm());

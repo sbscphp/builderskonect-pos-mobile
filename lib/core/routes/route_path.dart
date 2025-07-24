@@ -8,8 +8,8 @@ class RoutePath {
   static const loginScreen = '/loginScreen';
   static const vendorRegistrationScreen = '/vendorRegistrationScreen';
   static const forgotPasswordScreen = '/forgotPasswordScreen';
-  static const forgotPasswordOtpScreen = '/forgotPasswordOtpScreen';
   static const newPasswordScreen = '/newPasswordScreen';
+  static const otpScreen = '/otpScreen';
 
   // Notification
   static const notificationScreen = '/notificationScreen';
@@ -17,7 +17,12 @@ class RoutePath {
   // Plans
   static const pricingPlansScreen = '/pricingPlansScreen';
   static const getStartedScreen = '/getStartedScreen';
+  static const planLearnMoreScreen = '/planLearnMoreScreen';
+  static const subscriptionSuccessScreen = '/subscriptionSuccessScreen';
 
   // POS
   static const moreScreen = '/moreScreen';
+
+  // Webview
+  static const customWebviewScreen = '/customWebviewScreen';
 }
