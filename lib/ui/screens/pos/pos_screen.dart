@@ -1,13 +1,29 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class PosScreen extends ConsumerWidget {
+class PosScreen extends ConsumerStatefulWidget {
   const PosScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PosScreen> createState() => _PosScreenState();
+}
+
+class _PosScreenState extends ConsumerState<PosScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(dashboardVmodel)
+        ..getDashboardStats()
+        ..getProductOverview();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final dashVm = ref.watch(dashboardVmodel);
     return Scaffold(
       appBar: CustomAppbar(
         title: "Dashboard",
@@ -44,8 +60,10 @@ class PosScreen extends ConsumerWidget {
         ),
       ),
       body: ListView(
-        padding: EdgeInsets.symmetric(
-          horizontal: Sizer.width(16),
+        padding: EdgeInsets.only(
+          left: Sizer.width(16),
+          right: Sizer.width(16),
+          bottom: Sizer.height(50),
         ),
         children: [
           YBox(16),
@@ -161,54 +179,6 @@ class PosScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Quick Actions", style: textTheme.text16?.medium),
-                YBox(16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    QuickActionCol(
-                      title: "Profile",
-                      svgPath: AppSvgs.profile,
-                      onTap: () {
-                        // Navigator.pushNamed(context, RoutePath.profileScreen);
-                      },
-                    ),
-                    QuickActionCol(
-                      title: "Products",
-                      svgPath: AppSvgs.product,
-                      onTap: () {
-                        // Navigator.pushNamed(context, RoutePath.profileScreen);
-                      },
-                    ),
-                    QuickActionCol(
-                      title: "Sales",
-                      svgPath: AppSvgs.shopping,
-                      onTap: () {
-                        // Navigator.pushNamed(context, RoutePath.profileScreen);
-                      },
-                    ),
-                    QuickActionCol(
-                      title: "More",
-                      svgPath: AppSvgs.menu,
-                      onTap: () {
-                        Navigator.pushNamed(context, RoutePath.moreScreen);
-                      },
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          YBox(16),
-          Container(
-            padding: EdgeInsets.all(Sizer.radius(16)),
-            decoration: BoxDecoration(
-              color: colorScheme.white,
-              borderRadius: BorderRadius.circular(Sizer.radius(4)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
                 Text("My To-dos", style: textTheme.text16?.medium),
                 YBox(16),
                 Row(
@@ -260,11 +230,8 @@ class PosScreen extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: StatCard(
-                            title: "Total Orders",
-                            amount: "₦${AppUtils.formatNumber(
-                              number: 330,
-                              decimalPlaces: 2,
-                            )}",
+                            title: "Total Products",
+                            value: dashVm.statModel?.totalProducts ?? "0",
                             bgColor: AppColors.blueFF,
                             borderColor: AppColors.blue5,
                             amountColor: AppColors.primaryBlue,
@@ -274,10 +241,8 @@ class PosScreen extends ConsumerWidget {
                         XBox(16),
                         Expanded(
                           child: StatCard(
-                            title: "Pending",
-                            amount: AppUtils.formatNumber(
-                              number: 34,
-                            ),
+                            title: "Revenue Generated",
+                            value: dashVm.statModel?.revenueGenerated ?? "0",
                             bgColor: AppColors.magentaF8,
                             borderColor: AppColors.magenta4,
                             borderButtomColor: AppColors.magenta2,
@@ -292,8 +257,8 @@ class PosScreen extends ConsumerWidget {
                       children: [
                         Expanded(
                           child: StatCard(
-                            title: "In Progress",
-                            amount: "${AppUtils.formatNumber(number: 340)}%",
+                            title: "Total Sales Order",
+                            value: dashVm.statModel?.totalSalesOrders ?? "0",
                             borderButtomColor: AppColors.purple2,
                             bgColor: AppColors.yellowE6,
                             borderColor: AppColors.yellow4,
@@ -304,10 +269,10 @@ class PosScreen extends ConsumerWidget {
                         XBox(16),
                         Expanded(
                           child: StatCard(
-                            title: "Completed",
-                            amount: "${AppUtils.formatNumber(
-                              number: 234,
-                            )}%",
+                            title: "Total Customers",
+                            value:
+                                dashVm.statModel?.totalCustomers?.toString() ??
+                                    "0",
                             bgColor: AppColors.greenED,
                             borderColor: AppColors.green4,
                             borderButtomColor: AppColors.purple2,
@@ -324,6 +289,161 @@ class PosScreen extends ConsumerWidget {
             ),
           ),
           YBox(16),
+          Container(
+            padding: EdgeInsets.all(Sizer.radius(16)),
+            decoration: BoxDecoration(
+              color: colorScheme.white,
+              borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Revenue Analytics",
+                              style: textTheme.text16?.medium),
+                          Text(
+                              "Get insights into revenue analytics right here.",
+                              style: textTheme.text12
+                                  ?.copyWith(color: colorScheme.black45)),
+                        ],
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: SvgPicture.asset(
+                        AppSvgs.filter,
+                        height: Sizer.height(32),
+                      ),
+                    )
+                  ],
+                ),
+                YBox(16),
+                StatCard(
+                  title: "Total Revenue",
+                  value: dashVm.revenueAndTrafficModel?.revenue ?? "0",
+                  bgColor: AppColors.yellowE8,
+                  borderColor: AppColors.yellow1C,
+                  borderButtomColor: AppColors.yellowBF,
+                  amountColor: AppColors.yellow1C,
+                  onTap: () {},
+                ),
+              ],
+            ),
+          ),
+          YBox(16),
+          Container(
+            padding: EdgeInsets.all(Sizer.radius(16)),
+            decoration: BoxDecoration(
+              color: colorScheme.white,
+              borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text("Customer Traffic",
+                          style: textTheme.text16?.medium),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: SvgPicture.asset(
+                        AppSvgs.filter,
+                        height: Sizer.height(32),
+                      ),
+                    )
+                  ],
+                ),
+                YBox(16),
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: StatCard(
+                            title: "Walk-in",
+                            value: dashVm.revenueAndTrafficModel?.traffic?.pos
+                                    ?.value ??
+                                "0",
+                            bgColor: AppColors.blueFF,
+                            borderColor: AppColors.blue5,
+                            amountColor: AppColors.primaryBlue,
+                            onTap: () {},
+                          ),
+                        ),
+                        XBox(16),
+                        Expanded(
+                          child: StatCard(
+                            title: "Online",
+                            value: dashVm.revenueAndTrafficModel?.traffic?.omp
+                                    ?.value ??
+                                "0",
+                            bgColor: AppColors.magentaF8,
+                            borderColor: AppColors.magenta4,
+                            borderButtomColor: AppColors.magenta2,
+                            amountColor: AppColors.magenta6,
+                            onTap: () {},
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          YBox(16),
+          OverviewWidget(
+            title: 'Products Overview',
+            subtitle: 'View top selling products and total amount sold',
+            data: [
+              OverviewData(
+                name: 'Cement',
+                amount: 4544,
+                color: const Color(0xFF4F8EF7),
+                percentage: 25,
+              ),
+              OverviewData(
+                name: 'Paint',
+                amount: 4544,
+                color: const Color(0xFF00BCD4),
+                percentage: 20,
+              ),
+              OverviewData(
+                name: 'Tiles',
+                amount: 4544,
+                color: const Color(0xFF4CAF50),
+                percentage: 15,
+              ),
+              OverviewData(
+                name: 'Cement Mixer',
+                amount: 4544,
+                color: const Color(0xFFFFA726),
+                percentage: 20,
+              ),
+              OverviewData(
+                name: 'Paint brush',
+                amount: 4544,
+                color: const Color(0xFFEF5350),
+                percentage: 10,
+              ),
+              OverviewData(
+                name: 'Others',
+                amount: 4544,
+                color: const Color(0xFF9C27B0),
+                percentage: 10,
+              ),
+            ],
+            totalValue: 0,
+            totalLabel: 'Products sold',
+            valuePrefix: '₦',
+          ),
         ],
       ),
     );

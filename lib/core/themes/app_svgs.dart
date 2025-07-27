@@ -7,6 +7,7 @@ class AppSvgs {
   static const String pos = "$svgIcon/pos.svg";
   static const String accounting = "$svgIcon/accounting.svg";
   static const String procurement = "$svgIcon/procurement.svg";
+  static const String dashboard = "$svgIcon/dashboard.svg";
 
   static const String circleBack = "$svgIcon/circleBack.svg";
   static const String bag = "$svgIcon/bag.svg";
@@ -35,4 +36,5 @@ class AppSvgs {
   static const String delete = "$svgIcon/delete.svg";
   static const String attachment = "$svgIcon/attachment.svg";
   static const String logomark = "$svgIcon/logomark.svg";
+  static const String filter = "$svgIcon/filter.svg";
 }

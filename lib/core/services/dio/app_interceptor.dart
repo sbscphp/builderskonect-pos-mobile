@@ -11,9 +11,13 @@ class AppInterceptors extends QueuedInterceptorsWrapper {
   FutureOr<dynamic> onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     String? token = await StorageService.getStringItem(StorageKey.accessToken);
+    String? tenantId = await StorageService.getStringItem(StorageKey.xTenantId);
 
     // printty(token.toString());
-    options.headers.addAll({"authorization": "Bearer $token"});
+    options.headers.addAll({
+      "authorization": "Bearer $token",
+      "X-Tenant-ID": tenantId,
+    });
     handler.next(options);
     // printty("url headers:===> ${options.headers.toString()}");
   }

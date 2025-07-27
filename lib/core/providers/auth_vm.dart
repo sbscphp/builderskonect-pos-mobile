@@ -27,6 +27,12 @@ class AuthVm extends BaseVm {
       onSuccess: (data) {
         final result = authUserModelFromJson(json.encode(data["data"]));
         StorageService.storeAccessToken(result.accessToken ?? "");
+        StorageService.storeStringItem(
+            StorageKey.xTenantId,
+            (result.user?.merchantAccount?.isNotEmpty == true
+                    ? result.user!.merchantAccount!.first.id
+                    : "") ??
+                "");
         return apiResponse;
       },
     );

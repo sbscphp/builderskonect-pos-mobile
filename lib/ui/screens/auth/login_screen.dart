@@ -11,6 +11,8 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'totaa@yopmail.com');
+  // final _emailController =
+  //     TextEditingController(text: ' bunyanman@yopmail.com');
   final _passwordController = TextEditingController();
 
   @override
@@ -127,7 +129,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 response: res,
                                 onSuccess: () {
                                   Navigator.pushNamed(
-                                      context, RoutePath.bottomNavScreen);
+                                      context, RoutePath.selectModuleScreen);
                                 },
                               );
                             }

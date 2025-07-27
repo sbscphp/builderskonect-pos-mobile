@@ -27,88 +27,104 @@ class AuthUserModel {
 
 class User {
   final String? id;
-  final String? identifierNo;
+  final dynamic avatar;
   final String? name;
   final String? email;
   final String? phone;
-  final String? avatar;
-  final dynamic provider;
-  final dynamic providerId;
-  final String? officerID;
-  final String? location;
+  final String? assignedRoles;
+  final List<dynamic>? roles;
+  final String? currentStoreId;
   final String? status;
-  final String? activityStatus;
-  final dynamic lastActive;
-  final String? isActive;
-  final String? dateJoined;
-  final dynamic deletedAt;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final List<dynamic>? store;
+  final String? staffId;
+  final DateTime? lastActive;
+  final List<MerchantAccount>? merchantAccount;
+  final List<dynamic>? permissions;
 
   User({
     this.id,
-    this.identifierNo,
+    this.avatar,
     this.name,
     this.email,
     this.phone,
-    this.avatar,
-    this.provider,
-    this.providerId,
-    this.officerID,
-    this.location,
+    this.assignedRoles,
+    this.roles,
+    this.currentStoreId,
     this.status,
-    this.activityStatus,
+    this.store,
+    this.staffId,
     this.lastActive,
-    this.isActive,
-    this.dateJoined,
-    this.deletedAt,
-    this.createdAt,
-    this.updatedAt,
+    this.merchantAccount,
+    this.permissions,
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         id: json["id"],
-        identifierNo: json["identifier_no"],
+        avatar: json["avatar"],
         name: json["name"],
         email: json["email"],
         phone: json["phone"],
-        avatar: json["avatar"],
-        provider: json["provider"],
-        providerId: json["provider_id"],
-        officerID: json["officer_id"],
-        location: json["location"],
+        assignedRoles: json["assigned_roles"],
+        roles: json["roles"] == null
+            ? []
+            : List<dynamic>.from(json["roles"]!.map((x) => x)),
+        currentStoreId: json["current_store_id"],
         status: json["status"],
-        activityStatus: json["activity_status"],
-        lastActive: json["last_active"],
-        isActive: json["is_active"],
-        dateJoined: json["date_joined"],
-        deletedAt: json["deleted_at"],
-        createdAt: json["created_at"] == null
+        store: json["store"] == null
+            ? []
+            : List<dynamic>.from(json["store"]!.map((x) => x)),
+        staffId: json["staffID"],
+        lastActive: json["last_active"] == null
             ? null
-            : DateTime.parse(json["created_at"]),
-        updatedAt: json["updated_at"] == null
-            ? null
-            : DateTime.parse(json["updated_at"]),
+            : DateTime.parse(json["last_active"]),
+        merchantAccount: json["merchant_account"] == null
+            ? []
+            : List<MerchantAccount>.from(json["merchant_account"]!
+                .map((x) => MerchantAccount.fromJson(x))),
+        permissions: json["permissions"] == null
+            ? []
+            : List<dynamic>.from(json["permissions"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "identifier_no": identifierNo,
+        "avatar": avatar,
         "name": name,
         "email": email,
         "phone": phone,
-        "avatar": avatar,
-        "provider": provider,
-        "provider_id": providerId,
-        "officer_id": officerID,
-        "location": location,
+        "assigned_roles": assignedRoles,
+        "roles": roles == null ? [] : List<dynamic>.from(roles!.map((x) => x)),
+        "current_store_id": currentStoreId,
         "status": status,
-        "activity_status": activityStatus,
-        "last_active": lastActive,
-        "is_active": isActive,
-        "date_joined": dateJoined,
-        "deleted_at": deletedAt,
-        "created_at": createdAt?.toIso8601String(),
-        "updated_at": updatedAt?.toIso8601String(),
+        "store": store == null ? [] : List<dynamic>.from(store!.map((x) => x)),
+        "staffID": staffId,
+        "last_active": lastActive?.toIso8601String(),
+        "merchant_account": merchantAccount == null
+            ? []
+            : List<dynamic>.from(merchantAccount!.map((x) => x.toJson())),
+        "permissions": permissions == null
+            ? []
+            : List<dynamic>.from(permissions!.map((x) => x)),
+      };
+}
+
+class MerchantAccount {
+  final String? id;
+  final String? name;
+
+  MerchantAccount({
+    this.id,
+    this.name,
+  });
+
+  factory MerchantAccount.fromJson(Map<String, dynamic> json) =>
+      MerchantAccount(
+        id: json["id"],
+        name: json["name"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
       };
 }

@@ -2,6 +2,20 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
 
+class DashboardNav {
+  final String name;
+  final String iconPath;
+  final Widget screen;
+  final Function()? onTap;
+
+  DashboardNav({
+    required this.name,
+    required this.iconPath,
+    required this.screen,
+    this.onTap,
+  });
+}
+
 class BottomNavScreen extends ConsumerStatefulWidget {
   const BottomNavScreen({
     super.key,
@@ -17,22 +31,27 @@ class BottomNavScreen extends ConsumerStatefulWidget {
 class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
   int currentIndex = 0;
 
-  List<Map<String, Object>> screensMap = [
-    {
-      "name": "Point of Sales",
-      "screen": const PosScreen(),
-      "iconPath": AppSvgs.pos,
-    },
-    {
-      "name": "Accounting",
-      "screen": const AccountingScreen(),
-      "iconPath": AppSvgs.accounting,
-    },
-    {
-      "name": "Procurement",
-      "screen": const ProcurementScreen(),
-      "iconPath": AppSvgs.procurement,
-    },
+  List<DashboardNav> items = [
+    DashboardNav(
+      name: "Dashboard",
+      iconPath: AppSvgs.dashboard,
+      screen: const PosScreen(),
+    ),
+    DashboardNav(
+      name: "Products",
+      iconPath: AppSvgs.product,
+      screen: const ProductScreen(),
+    ),
+    DashboardNav(
+      name: "Sales",
+      iconPath: AppSvgs.bag,
+      screen: const SalesScreen(),
+    ),
+    DashboardNav(
+      name: "More",
+      iconPath: AppSvgs.more,
+      screen: const MoreScreen(),
+    ),
   ];
 
   @override
@@ -55,7 +74,7 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
       child: BusyOverlay(
         show: false,
         child: Scaffold(
-          body: screensMap[currentIndex]["screen"] as Widget,
+          body: items[currentIndex].screen,
           backgroundColor: AppColors.white,
           bottomNavigationBar: Container(
             height: Sizer.height(84),
@@ -72,12 +91,12 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                ...screensMap.map((e) {
-                  final index = screensMap.indexOf(e);
+                ...items.map((e) {
+                  final index = items.indexOf(e);
                   return BottomNavColumn(
-                    icon: e["iconPath"],
+                    icon: e.iconPath,
                     isActive: currentIndex == index,
-                    labelText: e["name"] as String,
+                    labelText: e.name,
                     onPressed: () {
                       currentIndex = index;
                       setState(() {});

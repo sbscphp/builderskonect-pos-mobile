@@ -4,7 +4,7 @@ class StatCard extends StatelessWidget {
   const StatCard({
     super.key,
     required this.title,
-    required this.amount,
+    required this.value,
     this.iconPath,
     required this.bgColor,
     required this.borderColor,
@@ -14,7 +14,7 @@ class StatCard extends StatelessWidget {
   });
 
   final String title;
-  final String amount;
+  final String value;
   final String? iconPath;
   final Color bgColor;
   final Color borderColor;
@@ -51,13 +51,16 @@ class StatCard extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Text(
-                    title,
-                    style: textTheme.text12?.copyWith(
-                      color: colorScheme.black45,
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.text12?.copyWith(
+                        color: colorScheme.black45,
+                      ),
                     ),
                   ),
-                  Spacer(),
                   Skeleton.replace(
                     replacement: Bone.circle(
                       size: Sizer.height(14),
@@ -75,7 +78,9 @@ class StatCard extends StatelessWidget {
             ),
             YBox(16),
             Text(
-              amount,
+              value,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: textTheme.text20?.medium.copyWith(
                 color: amountColor,
               ),

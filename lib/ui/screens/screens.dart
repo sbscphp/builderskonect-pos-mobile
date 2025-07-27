@@ -1,10 +1,14 @@
 export 'accounting/accounting.dart';
 export 'auth/auth.dart';
 export 'bottom_nav_screen.dart';
+export 'module/module.dart';
+export 'more/more.dart';
 export 'notifications/notifications.dart';
 export 'plans/plans.dart';
 export 'pos/pos.dart';
 export 'procurement/procurement.dart';
+export 'product/product.dart';
+export 'sales/sales.dart';
 export 'screen_not_found.dart';
 export 'splash/splash.dart';
 export 'webview/webview.dart';

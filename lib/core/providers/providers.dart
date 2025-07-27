@@ -1,6 +1,7 @@
 export 'auth_vm.dart';
 export 'bank_vm.dart';
 export 'base_vm.dart';
+export 'dashboard_vm.dart';
 export 'file_upload_vm.dart';
 export 'geography_vm.dart';
 export 'onboard_vm.dart';
