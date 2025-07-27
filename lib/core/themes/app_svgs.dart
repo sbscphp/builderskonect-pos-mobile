@@ -37,4 +37,5 @@ class AppSvgs {
   static const String attachment = "$svgIcon/attachment.svg";
   static const String logomark = "$svgIcon/logomark.svg";
   static const String filter = "$svgIcon/filter.svg";
+  static const String logout = "$svgIcon/logout.svg";
 }

@@ -9,6 +9,8 @@ class PosScreen extends ConsumerStatefulWidget {
 }
 
 class _PosScreenState extends ConsumerState<PosScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +27,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final dashVm = ref.watch(dashboardVmodel);
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: const CustomDrawer(),
       appBar: CustomAppbar(
         title: "Dashboard",
         trailingWidget: InkWell(
@@ -36,27 +40,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             height: Sizer.height(32),
           ),
         ),
-        leadingWidget: Container(
-          height: Sizer.height(40),
-          width: Sizer.width(40),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(Sizer.radius(40)),
-              border: Border.all(
-                color: AppColors.primaryBlue,
-                width: 2,
-              )),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(Sizer.radius(40)),
-            child: ref.watch(authVmodel).user?.avatar != null
-                ? MyCachedNetworkImage(
-                    imageUrl: ref.watch(authVmodel).user!.avatar,
-                    fit: BoxFit.cover,
-                  )
-                : Icon(
-                    Iconsax.user,
-                    size: Sizer.width(20),
-                  ),
-          ),
+        leadingWidget: CustomCircleAvatar(
+          avatarUrl: ref.read(authVmodel).user?.avatar,
+          onTap: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
         ),
       ),
       body: ListView(
