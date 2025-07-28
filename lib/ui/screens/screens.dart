@@ -8,6 +8,7 @@ export 'plans/plans.dart';
 export 'pos/pos.dart';
 export 'procurement/procurement.dart';
 export 'product/product.dart';
+export 'profile/profile.dart';
 export 'sales/sales.dart';
 export 'screen_not_found.dart';
 export 'splash/splash.dart';

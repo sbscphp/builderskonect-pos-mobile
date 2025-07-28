@@ -31,25 +31,26 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
               CustomCircleAvatar(
                 size: 60,
                 avatarUrl: user?.avatar,
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, RoutePath.profileScreen);
+                },
               ),
               YBox(16),
               Text(
-                user?.name ?? 'Olugbenga Daniels',
+                user?.name ?? '',
                 style: textTheme.text16?.medium,
               ),
 
               Text(
-                user?.email ?? 'daniels@buildershub.com.ng',
+                user?.email ?? '',
                 style: textTheme.text12?.copyWith(
                   color: colorScheme.black45,
                 ),
               ),
               YBox(2),
               RadiusBorder(textTheme: textTheme, text: 'Finance Manager'),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizer.height(16)),
-                child: Divider(color: AppColors.neutral4, height: 1),
-              ),
+              HDivider(),
               // Current Account Section
               Row(
                 children: [
@@ -100,10 +101,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 title: "Island store",
                 onTap: () {},
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizer.height(16)),
-                child: Divider(color: AppColors.neutral4, height: 1),
-              ),
+              HDivider(),
 
               // Switch Module
               Text(
@@ -129,15 +127,34 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
               ),
 
               Spacer(),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: Sizer.height(16)),
-                child: Divider(color: AppColors.neutral4, height: 1),
-              ),
+              HDivider(),
               // Logout Button
               CustomBtn.withChild(
                 isOutline: true,
                 height: Sizer.height(40),
-                onTap: () {},
+                onTap: () {
+                  ModalWrapper.bottomSheet(
+                    context: context,
+                    widget: ConfirmationModal(
+                      modalConfirmationArg: ModalConfirmationArg(
+                        iconPath: AppSvgs.infoCircleRed,
+                        title: "Log out",
+                        description:
+                            "Are you sure you want to log out of this account? Your last changes will be saved.",
+                        solidBtnText: "Yes, Logout",
+                        onSolidBtnOnTap: () {
+                          final ctx = NavKey.appNavKey.currentContext!;
+                          Navigator.pop(ctx);
+                          Navigator.pop(ctx);
+                          ref.read(authVmodel).logout();
+                        },
+                        onOutlineBtnOnTap: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                    ),
+                  );
+                },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

@@ -11,11 +11,11 @@ class RoutePath {
   static const newPasswordScreen = '/newPasswordScreen';
   static const otpScreen = '/otpScreen';
 
-  // Module
   static const selectModuleScreen = '/selectModuleScreen';
 
-  // Notification
   static const notificationScreen = '/notificationScreen';
+
+  static const profileScreen = '/profileScreen';
 
   // Plans
   static const pricingPlansScreen = '/pricingPlansScreen';

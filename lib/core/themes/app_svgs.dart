@@ -38,4 +38,11 @@ class AppSvgs {
   static const String logomark = "$svgIcon/logomark.svg";
   static const String filter = "$svgIcon/filter.svg";
   static const String logout = "$svgIcon/logout.svg";
+
+  static const String mail = "$svgIcon/mail.svg";
+  static const String phone = "$svgIcon/phone.svg";
+  static const String copy = "$svgIcon/copy.svg";
+  static const String profileEdit = "$svgIcon/profileEdit.svg";
+  static const String search = "$svgIcon/search.svg";
+  static const String circleAdd = "$svgIcon/circleAdd.svg";
 }

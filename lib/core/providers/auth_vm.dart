@@ -3,9 +3,6 @@ import 'package:builders_konnect/core/core.dart';
 const String updateProfileState = "updateProfileState";
 
 class AuthVm extends BaseVm {
-  AuthUserModel? _authUser;
-  AuthUserModel? get authUser => _authUser;
-
   User? _user;
   User? get user => _user;
 
@@ -26,6 +23,8 @@ class AuthVm extends BaseVm {
       body: body,
       onSuccess: (data) {
         final result = authUserModelFromJson(json.encode(data["data"]));
+
+        _user = result.user;
         StorageService.storeAccessToken(result.accessToken ?? "");
         StorageService.storeStringItem(
             StorageKey.xTenantId,

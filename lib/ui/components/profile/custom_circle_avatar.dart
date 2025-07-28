@@ -27,7 +27,7 @@ class CustomCircleAvatar extends StatelessWidget {
             )),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(Sizer.radius(40)),
-          child: avatarUrl != null
+          child: (avatarUrl != null && avatarUrl != "")
               ? MyCachedNetworkImage(
                   imageUrl: avatarUrl,
                   fit: BoxFit.cover,

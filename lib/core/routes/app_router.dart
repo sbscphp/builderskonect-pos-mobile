@@ -65,17 +65,22 @@ class AppRouter {
         }
         return errorScreen(settings);
 
-      // Module
       case RoutePath.selectModuleScreen:
         return TransitionUtils.buildTransition(
           const SelectModuleScreen(),
           settings,
         );
 
-      // Notification
       case RoutePath.notificationScreen:
         return TransitionUtils.buildTransition(
           const NotificationScreen(),
+          settings,
+        );
+
+      // Profile
+      case RoutePath.profileScreen:
+        return TransitionUtils.buildTransition(
+          const ProfileScreen(),
           settings,
         );
 
