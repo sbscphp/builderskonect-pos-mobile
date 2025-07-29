@@ -54,27 +54,21 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildColText(
-                      textTheme,
-                      colorScheme,
+                    ProductColText(
                       title: "TOTAL STORES",
                       value: "2",
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildColText(
+                        ProductColText(
                           textColor: colorScheme.black85,
-                          textTheme,
-                          colorScheme,
                           title: "Active Stores",
                           value: "2",
                           valueColor: AppColors.green1A,
                         ),
-                        _buildColText(
+                        ProductColText(
                           textColor: colorScheme.black85,
-                          textTheme,
-                          colorScheme,
                           title: "Deactivated Stores",
                           value: "2",
                           valueColor: AppColors.red2D,
@@ -151,37 +145,6 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                 },
               ),
             ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildColText(
-    TextTheme textTheme,
-    ColorScheme colorScheme, {
-    required String title,
-    required String value,
-    Color? valueColor,
-    Color? textColor,
-    double? valueTextSize,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: textTheme.text12?.copyWith(
-            fontWeight: textColor == null ? FontWeight.w500 : FontWeight.w400,
-            color: textColor ?? colorScheme.black45,
-          ),
-        ),
-        YBox(4),
-        Text(
-          value,
-          style: textTheme.text20?.medium.copyWith(
-            fontSize: valueTextSize,
-            color: valueColor ?? colorScheme.primaryColor,
           ),
         ),
       ],
