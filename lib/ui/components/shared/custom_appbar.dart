@@ -53,7 +53,8 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
                       ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(right: Sizer.height(20)),
+                  padding: EdgeInsets.only(
+                      right: Sizer.height(trailingWidget != null ? 0 : 20)),
                   child: Text(
                     title,
                     style: textTheme.text14?.medium,

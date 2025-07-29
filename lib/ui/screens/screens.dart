@@ -12,4 +12,5 @@ export 'profile/profile.dart';
 export 'sales/sales.dart';
 export 'screen_not_found.dart';
 export 'splash/splash.dart';
+export 'store/store.dart';
 export 'webview/webview.dart';

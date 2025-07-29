@@ -6,6 +6,7 @@ class UploadWidget extends StatelessWidget {
     this.documentName,
     this.buttomTextDesc,
     this.labelText,
+    this.uploadText,
     this.onUpload,
     this.onRemove,
   });
@@ -13,6 +14,7 @@ class UploadWidget extends StatelessWidget {
   final String? documentName;
   final String? buttomTextDesc;
   final String? labelText;
+  final String? uploadText;
   final VoidCallback? onUpload;
   final VoidCallback? onRemove;
 
@@ -80,7 +82,7 @@ class UploadWidget extends StatelessWidget {
                         SvgPicture.asset(AppSvgs.upload),
                         XBox(8),
                         Text(
-                          "Click to upload certificate",
+                          uploadText ?? "Click to upload certificate",
                           style: textTheme.text14,
                         ),
                       ],

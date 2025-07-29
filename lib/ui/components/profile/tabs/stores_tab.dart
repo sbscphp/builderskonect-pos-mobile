@@ -21,7 +21,7 @@ class _StoresTabState extends ConsumerState<StoresTab> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return ListView(
       padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
@@ -39,7 +39,10 @@ class _StoresTabState extends ConsumerState<StoresTab> {
               FilterHeader(
                 title: "All Stores",
                 subTitle: "This shows the stores created under this vendor ",
-                onFilter: () {},
+                svgIcon: AppSvgs.circleAdd,
+                onFilter: () {
+                  Navigator.pushNamed(context, RoutePath.newStoreScreen);
+                },
               ),
               YBox(16),
               Container(
@@ -65,12 +68,14 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                           textColor: colorScheme.black85,
                           title: "Active Stores",
                           value: "2",
+                          valueTextSize: 12,
                           valueColor: AppColors.green1A,
                         ),
                         ProductColText(
                           textColor: colorScheme.black85,
                           title: "Deactivated Stores",
                           value: "2",
+                          valueTextSize: 12,
                           valueColor: AppColors.red2D,
                         ),
                       ],
@@ -141,6 +146,12 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                     secondColText: "Mainland Store",
                     status: "Expired",
                     date: DateTime.now(),
+                    onTap: () {
+                      ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: StoreOptionModal(),
+                      );
+                    },
                   );
                 },
               ),

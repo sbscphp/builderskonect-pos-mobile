@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -60,12 +62,63 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
-    // final textTheme = Theme.of(context).textTheme;
+    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: CustomAppbar(
         bgColor: AppColors.transparent,
         title: "Vendor Profile",
+        trailingWidget: InkWell(
+          onTap: () {
+            showMenu(
+              context: context,
+              position: RelativeRect.fromLTRB(100, 100, 0, 0),
+              items: [
+                PopupMenuItem(
+                  value: 'contact_support',
+                  child: Text('Contact Support', style: textTheme.text14),
+                ),
+                PopupMenuItem(
+                  value: 'change_password',
+                  child: Text('Change Password', style: textTheme.text14),
+                ),
+                PopupMenuItem(
+                  value: 'log_out',
+                  child: Text('Log out',
+                      style: textTheme.text14?.copyWith(
+                        color: AppColors.red2D,
+                      )),
+                ),
+              ],
+            ).then((value) {
+              // Handle the selected option
+              if (value != null) {
+                // Implement the action for the selected option
+                printty('Selected: $value');
+                switch (value) {
+                  case 'contact_support':
+                    Navigator.pushNamed(
+                        context, RoutePath.contactSupportScreen);
+                    break;
+                  case 'change_password':
+                    Navigator.pushNamed(
+                        context, RoutePath.changePasswordScreen);
+                    break;
+                  case 'log_out':
+                    Navigator.pushNamed(
+                        context, RoutePath.renewSubscriptionScreen);
+                    break;
+                  default:
+                    break;
+                }
+              }
+            });
+          },
+          child: Icon(
+            Icons.more_vert,
+            color: colorScheme.black85,
+          ),
+        ),
       ),
       body: Column(
         children: [

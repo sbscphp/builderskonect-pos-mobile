@@ -84,6 +84,36 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.contactSupportScreen:
+        return TransitionUtils.buildTransition(
+          const ContactSupportScreen(),
+          settings,
+        );
+
+      case RoutePath.changePasswordScreen:
+        return TransitionUtils.buildTransition(
+          const ChangePasswordScreen(),
+          settings,
+        );
+
+      case RoutePath.editProfileScreen:
+        return TransitionUtils.buildTransition(
+          const EditProfileScreen(),
+          settings,
+        );
+
+      case RoutePath.editFinanceScreen:
+        return TransitionUtils.buildTransition(
+          const EditFinanceScreen(),
+          settings,
+        );
+
+      case RoutePath.editDocumentsScreen:
+        return TransitionUtils.buildTransition(
+          const EditDocumentsScreen(),
+          settings,
+        );
+
       // Plans
       case RoutePath.pricingPlansScreen:
         return TransitionUtils.buildTransition(
@@ -127,6 +157,19 @@ class AppRouter {
       case RoutePath.renewSubscriptionScreen:
         return TransitionUtils.buildTransition(
           RenewSubscriptionScreen(),
+          settings,
+        );
+
+      // Store
+      case RoutePath.newStoreScreen:
+        return TransitionUtils.buildTransition(
+          const NewStoreScreen(),
+          settings,
+        );
+
+      case RoutePath.viewStoreScreen:
+        return TransitionUtils.buildTransition(
+          const ViewStoreScreen(),
           settings,
         );
 

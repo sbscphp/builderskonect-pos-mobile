@@ -75,6 +75,7 @@ class AppColors {
   static const greenED = Color(0xFFF6FFED);
   static const green1A = Color(0xFF52C41A);
   static const purple2 = Color(0xFFEFDBFF);
+  static const purple6 = Color(0xFF722ED1);
 
   // Flushbar
   static const opacityRed100 = Color(0xFFFFF8F7);

@@ -91,7 +91,12 @@ class ProfileInformationTab extends StatelessWidget {
                     style: textTheme.text16?.medium,
                   ),
                   XBox(8),
-                  SvgPicture.asset(AppSvgs.profileEdit),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, RoutePath.editProfileScreen);
+                    },
+                    child: SvgPicture.asset(AppSvgs.profileEdit),
+                  ),
                 ],
               ),
               YBox(16),
@@ -146,7 +151,128 @@ class ProfileInformationTab extends StatelessWidget {
               ),
             ],
           ),
-        )
+        ),
+        YBox(16),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+          padding: EdgeInsets.symmetric(
+            horizontal: Sizer.width(16),
+            vertical: Sizer.height(16),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            color: colorScheme.white,
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Bank Details",
+                    style: textTheme.text16?.medium,
+                  ),
+                  XBox(8),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, RoutePath.editFinanceScreen);
+                    },
+                    child: SvgPicture.asset(AppSvgs.profileEdit),
+                  ),
+                ],
+              ),
+              YBox(16),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(Sizer.radius(16)),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral3,
+                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileColText(
+                      title: "Bank name",
+                      subTitle: "Builder’s Hub Construction",
+                    ),
+                    YBox(16),
+                    ProfileColText(
+                      title: "Account number",
+                      subTitle: "1234567890",
+                    ),
+                    YBox(16),
+                    ProfileColText(
+                      title: "Account name",
+                      subTitle: "Construction",
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        YBox(16),
+        Container(
+          margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+          padding: EdgeInsets.symmetric(
+            horizontal: Sizer.width(16),
+            vertical: Sizer.height(16),
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            color: colorScheme.white,
+          ),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Documents",
+                    style: textTheme.text16?.medium,
+                  ),
+                  XBox(8),
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, RoutePath.editDocumentsScreen);
+                    },
+                    child: SvgPicture.asset(AppSvgs.profileEdit),
+                  ),
+                ],
+              ),
+              YBox(16),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(Sizer.radius(16)),
+                decoration: BoxDecoration(
+                  color: AppColors.neutral3,
+                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileColText(
+                      title: "CAC No",
+                      subTitle: "1234567890",
+                    ),
+                    YBox(16),
+                    ProfileColText(
+                      title: "CAC Document",
+                      subTitle: "1234567890",
+                    ),
+                    YBox(16),
+                    ProfileColText(
+                      title: "Account name",
+                      subTitle: "Construction",
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }
