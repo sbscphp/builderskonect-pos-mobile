@@ -5,11 +5,13 @@ class FilterHeader extends StatelessWidget {
     super.key,
     required this.title,
     required this.subTitle,
+    this.svgIcon,
     this.onFilter,
   });
 
   final String title;
   final String subTitle;
+  final String? svgIcon;
   final Function()? onFilter;
 
   @override
@@ -32,13 +34,14 @@ class FilterHeader extends StatelessWidget {
             ],
           ),
         ),
-        InkWell(
-          onTap: onFilter,
-          child: SvgPicture.asset(
-            AppSvgs.filter,
-            height: Sizer.height(32),
-          ),
-        )
+        if (onFilter != null)
+          InkWell(
+            onTap: onFilter,
+            child: SvgPicture.asset(
+              svgIcon ?? AppSvgs.filter,
+              height: Sizer.height(32),
+            ),
+          )
       ],
     );
   }

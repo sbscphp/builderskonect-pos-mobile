@@ -42,7 +42,7 @@ class BottomNavColumn extends StatelessWidget {
           Text(
             labelText,
             style: textTheme.text12?.copyWith(
-              color: isActive ? colorScheme.primary : AppColors.neutral9,
+              color: isActive ? colorScheme.primaryColor : AppColors.neutral9,
             ),
           ),
         ],

@@ -118,6 +118,18 @@ class AppRouter {
         }
         return errorScreen(settings);
 
+      case RoutePath.subscriptionDetailsScreen:
+        return TransitionUtils.buildTransition(
+          SubscriptionDetailsScreen(),
+          settings,
+        );
+
+      case RoutePath.renewSubscriptionScreen:
+        return TransitionUtils.buildTransition(
+          RenewSubscriptionScreen(),
+          settings,
+        );
+
       // POS
       case RoutePath.moreScreen:
         return TransitionUtils.buildTransition(

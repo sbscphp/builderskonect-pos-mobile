@@ -17,11 +17,13 @@ class RoutePath {
 
   static const profileScreen = '/profileScreen';
 
-  // Plans
+  // Subscription Plans
   static const pricingPlansScreen = '/pricingPlansScreen';
   static const getStartedScreen = '/getStartedScreen';
   static const planLearnMoreScreen = '/planLearnMoreScreen';
   static const subscriptionSuccessScreen = '/subscriptionSuccessScreen';
+  static const subscriptionDetailsScreen = '/subscriptionDetailsScreen';
+  static const renewSubscriptionScreen = '/renewSubscriptionScreen';
 
   // POS
   static const moreScreen = '/moreScreen';

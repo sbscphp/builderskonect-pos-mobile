@@ -97,6 +97,12 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                     secondColText: "N 3000",
                     status: "Expired",
                     date: DateTime.now(),
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        RoutePath.subscriptionDetailsScreen,
+                      );
+                    },
                   );
                 },
               ),

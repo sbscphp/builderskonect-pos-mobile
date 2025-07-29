@@ -44,5 +44,7 @@ class AppSvgs {
   static const String copy = "$svgIcon/copy.svg";
   static const String profileEdit = "$svgIcon/profileEdit.svg";
   static const String search = "$svgIcon/search.svg";
+
   static const String circleAdd = "$svgIcon/circleAdd.svg";
+  static const String circleMenu = "$svgIcon/circleMenu.svg";
 }
