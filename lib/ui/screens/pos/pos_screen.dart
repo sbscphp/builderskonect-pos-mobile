@@ -10,6 +10,7 @@ class PosScreen extends ConsumerStatefulWidget {
 
 class _PosScreenState extends ConsumerState<PosScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  bool _isExpanded = false;
 
   @override
   void initState() {
@@ -61,54 +62,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             ),
             children: [
               YBox(16),
-              Container(
-                padding: EdgeInsets.all(
-                  Sizer.radius(12),
-                ),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  border: Border.all(color: AppColors.yellow3D),
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Row(
-                        children: [
-                          SvgPicture.asset(
-                            AppSvgs.reviewIcon,
-                            height: Sizer.height(32),
-                          ),
-                          XBox(16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Account Under Review",
-                                  style: textTheme.text14?.medium,
-                                ),
-                                YBox(2),
-                                Text(
-                                  "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: textTheme.text12,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    XBox(10),
-                    Icon(
-                      Icons.keyboard_arrow_down,
-                      size: Sizer.width(24),
-                    )
-                  ],
-                ),
+              InfoContainer(
+                show: _isExpanded,
+                title: "Account Under Review",
+                content:
+                    "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
+                onTap: () {
+                  _isExpanded = !_isExpanded;
+                  setState(() {});
+                },
               ),
               YBox(16),
               Container(

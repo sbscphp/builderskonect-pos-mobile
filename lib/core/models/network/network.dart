@@ -5,6 +5,7 @@ export 'city_model.dart';
 export 'merchant_check_list_model.dart';
 export 'plan_break_down_model.dart';
 export 'product_overview_model.dart';
+export 'profile_model.dart';
 export 'revenue_and_traffic_model.dart';
 export 'stat_model.dart';
 export 'state_model.dart';

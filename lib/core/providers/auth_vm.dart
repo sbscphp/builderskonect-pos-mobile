@@ -119,12 +119,15 @@ class AuthVm extends BaseVm {
     );
   }
 
-  Future<ApiResponse> getUser() async {
+  ProfileModel? _vendorProfile;
+  ProfileModel? get vendorProfile => _vendorProfile;
+
+  Future<ApiResponse> getVendorProfile() async {
     return await performApiCall(
-      url: "/api/v1/fulfilment-officers/profile",
+      url: "/api/v1/merchants/profile/view",
       method: apiService.getWithAuth,
       onSuccess: (data) {
-        _user = User.fromJson(data["data"]);
+        _vendorProfile = profileModelFromJson(json.encode(data["data"]));
         return apiResponse;
       },
     );
