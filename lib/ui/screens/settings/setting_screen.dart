@@ -15,7 +15,9 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileVmodel).getUserProfile();
+      ref.read(profileVmodel)
+        ..getVendorProfile()
+        ..getUserProfile();
     });
   }
 
@@ -54,26 +56,39 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                           context, RoutePath.changePasswordScreen);
                       break;
                     case 'log_out':
+                      final loadingProvider =
+                          StateProvider<bool>((ref) => false);
                       ModalWrapper.bottomSheet(
                         context: context,
-                        widget: ConfirmationModal(
-                          modalConfirmationArg: ModalConfirmationArg(
-                            iconPath: AppSvgs.infoCircleRed,
-                            title: "Log out",
-                            description:
-                                "Are you sure you want to log out of this account? Your last changes will be saved.",
-                            solidBtnText: "Yes, Logout",
-                            onSolidBtnOnTap: () {
-                              final ctx = NavKey.appNavKey.currentContext!;
-                              Navigator.pop(ctx);
-                              Navigator.pop(ctx);
-                              ref.read(authVmodel).logout();
-                            },
-                            onOutlineBtnOnTap: () {
-                              Navigator.pop(context);
-                            },
-                          ),
-                        ),
+                        widget: Consumer(builder: (context, ref, child) {
+                          final isLoading = ref.watch(loadingProvider);
+                          return ConfirmationModal(
+                            modalConfirmationArg: ModalConfirmationArg(
+                              iconPath: AppSvgs.infoCircleRed,
+                              title: "Log out",
+                              description:
+                                  "Are you sure you want to log out of this account? Your last changes will be saved.",
+                              solidBtnText: "Yes, Logout",
+                              isLoading: isLoading,
+                              onSolidBtnOnTap: () async {
+                                // Set loading to true
+                                ref.read(loadingProvider.notifier).state = true;
+                                try {
+                                  await ref.read(authVmodel).logout();
+                                } finally {
+                                  // Check if the widget is still mounted before using ref
+                                  if (context.mounted) {
+                                    ref.read(loadingProvider.notifier).state =
+                                        false;
+                                  }
+                                }
+                              },
+                              onOutlineBtnOnTap: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          );
+                        }),
                       );
                       break;
                     default:
@@ -112,12 +127,12 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                 ),
                 children: [
                   YBox(16),
-                  // ProfileTopWidget(
-                  //   avatarUrl: ref.watch(authVmodel).user?.avatarUrl ?? "",
-                  //   storeName: ref.watch(authVmodel).user?.storeName ?? "",
-                  //   email: ref.watch(authVmodel).user?.email ?? "",
-                  //   phone: ref.watch(authVmodel).user?.phone ?? "",
-                  // ),
+                  ProfileTopWidget(
+                    avatarUrl: profileVm.userProfile?.avatar ?? "",
+                    storeName: profileVm.userProfile?.name ?? "",
+                    email: profileVm.userProfile?.email ?? "",
+                    phone: profileVm.userProfile?.phone ?? "",
+                  ),
                   YBox(16),
                   Container(
                     margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),

@@ -66,15 +66,19 @@ class SizerLoader extends StatelessWidget {
     return SizedBox(
       height: Sizer.height(height ?? 200),
       child: const Center(
-        child: SpinKitLoader(size: 40),
+        child: SpinKitLoader(
+          size: 40,
+          color: AppColors.neutral5,
+        ),
       ),
     );
   }
 }
 
 class SpinKitLoader extends StatelessWidget {
-  const SpinKitLoader({super.key, this.size});
+  const SpinKitLoader({super.key, this.size, this.color});
   final double? size;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +86,7 @@ class SpinKitLoader extends StatelessWidget {
       child: SpinKitSpinningCircle(
         size: size ?? 50, //200
         itemBuilder: (BuildContext context, int i) {
-          return Image.asset(AppImages.bk);
+          return Image.asset(AppImages.bk, color: color);
         },
       ),
     );

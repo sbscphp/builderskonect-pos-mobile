@@ -1,7 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
 
-const String updateProfileState = "updateProfileState";
-
 class AuthVm extends BaseVm {
   User? _user;
   User? get user => _user;
@@ -85,33 +83,6 @@ class AuthVm extends BaseVm {
       url: "/api/v1/auth/forgot-password/recover",
       method: apiService.post,
       isFormData: true,
-      body: body,
-      onSuccess: (data) {
-        return apiResponse;
-      },
-    );
-  }
-
-  Future<ApiResponse> updateProfile({
-    String? name,
-    String? phone,
-    String? email,
-    String? avatar,
-    String? activityStatus,
-    String? busyObjectName,
-  }) async {
-    final body = {
-      "name": name,
-      "phone": phone,
-      "email": email,
-      "avatar": avatar,
-      "activity_status": activityStatus, //available, busy, offline
-    };
-    body.removeWhere((k, v) => v == null || v == "");
-    return await performApiCall(
-      url: "/api/v1/fulfilment-officers/profile",
-      method: apiService.putWithAuth,
-      busyObjectName: busyObjectName ?? updateProfileState,
       body: body,
       onSuccess: (data) {
         return apiResponse;

@@ -27,6 +27,33 @@ class ProfileVm extends BaseVm {
       },
     );
   }
+
+  Future<ApiResponse> updateProfile({
+    String? name,
+    String? avatar,
+    String? password,
+    String? passwordConfirm,
+    String? currentPassword,
+    String? busyObjectName,
+  }) async {
+    final body = {
+      "name": name,
+      "avatar": avatar,
+      "password": password,
+      "password_confirmation": passwordConfirm,
+      "current_password": currentPassword,
+    };
+    body.removeWhere((k, v) => v == null || v == "");
+    return await performApiCall(
+      url: "/api/v1/merchants/staff/update/profile",
+      method: apiService.putWithAuth,
+      busyObjectName: busyObjectName,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
 }
 
 final profileVmodel = ChangeNotifierProvider((ref) => ProfileVm());

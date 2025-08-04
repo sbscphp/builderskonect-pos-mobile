@@ -11,6 +11,7 @@ const String passwordLengthError =
 const String usernameLengthError =
     'Username must be at least 6 characters long';
 const String incorrectPasscodeLength = 'Passcode must be exactly 6 digits';
+const String passwordMismatchError = 'Passwords do not match';
 
 abstract class ValidationRule {
   String? validate(String? value);
@@ -185,6 +186,27 @@ class CustomRule extends ValidationRule {
   }
 }
 
+class PasswordMatchRule extends ValidationRule {
+  final String? Function() getPasswordValue;
+  final String errorMessage;
+
+  PasswordMatchRule({
+    required this.getPasswordValue,
+    this.errorMessage = passwordMismatchError,
+  });
+
+  @override
+  String? validate(String? value) {
+    if (value == null || value.isEmpty) return null;
+    
+    final passwordValue = getPasswordValue();
+    if (passwordValue != value) {
+      return errorMessage;
+    }
+    return null;
+  }
+}
+
 class Validators {
   // Email validators
   static String? Function(String?) email(
@@ -325,6 +347,26 @@ class Validators {
         errorMessage: 'Password must contain at least one special character',
       ));
     }
+
+    final validator = CompositeValidationRule(rules);
+    return validator.validate;
+  }
+
+  // Password confirmation validator
+  static String? Function(String?) passwordConfirmation({
+    required String? Function() getPasswordValue,
+    bool isRequired = true,
+    String? errorMessage,
+  }) {
+    final rules = <ValidationRule>[];
+
+    if (isRequired) {
+      rules.add(RequiredRule(errorMessage: emptyPasswordField));
+    }
+    rules.add(PasswordMatchRule(
+      getPasswordValue: getPasswordValue,
+      errorMessage: errorMessage ?? passwordMismatchError,
+    ));
 
     final validator = CompositeValidationRule(rules);
     return validator.validate;

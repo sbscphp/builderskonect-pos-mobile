@@ -4,6 +4,7 @@ class ModalConfirmationArg {
   final String description;
   final String solidBtnText;
   final String? outlineBtnText;
+  final bool isLoading;
   final Function()? onSolidBtnOnTap;
   final Function()? onOutlineBtnOnTap;
 
@@ -13,6 +14,7 @@ class ModalConfirmationArg {
     required this.description,
     required this.solidBtnText,
     this.outlineBtnText,
+    this.isLoading = false,
     this.onSolidBtnOnTap,
     this.onOutlineBtnOnTap,
   });

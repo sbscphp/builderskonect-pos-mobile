@@ -19,7 +19,9 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileVmodel).getVendorProfile();
+      ref.read(profileVmodel)
+        ..getVendorProfile()
+        ..getUserProfile();
     });
   }
 
@@ -117,7 +119,12 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                 ),
               ),
               YBox(16),
-              // ProfileTopWidget(),
+              ProfileTopWidget(
+                avatarUrl: profileVm.userProfile?.avatar ?? "",
+                storeName: profileVm.userProfile?.name ?? "",
+                email: profileVm.userProfile?.email ?? "",
+                phone: profileVm.userProfile?.phone ?? "",
+              ),
               YBox(16),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),

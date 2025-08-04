@@ -47,18 +47,27 @@ class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
             style: textTheme.text14,
           ),
           YBox(40),
-          CustomBtn.solid(
-            text: widget.modalConfirmationArg.solidBtnText,
-            onTap: widget.modalConfirmationArg.onSolidBtnOnTap,
-          ),
-          if (widget.modalConfirmationArg.onOutlineBtnOnTap != null) YBox(16),
-          if (widget.modalConfirmationArg.onOutlineBtnOnTap != null)
-            CustomBtn.solid(
-              text: widget.modalConfirmationArg.outlineBtnText ?? "No, cancel",
-              isOutline: true,
-              outlineColor: AppColors.neutral5,
-              textStyle: textTheme.text16,
-              onTap: widget.modalConfirmationArg.onOutlineBtnOnTap,
+          if (widget.modalConfirmationArg.isLoading)
+            const BtnLoadState()
+          else
+            Column(
+              children: [
+                CustomBtn.solid(
+                  text: widget.modalConfirmationArg.solidBtnText,
+                  onTap: widget.modalConfirmationArg.onSolidBtnOnTap,
+                ),
+                if (widget.modalConfirmationArg.onOutlineBtnOnTap != null) ...[
+                  const YBox(16),
+                  CustomBtn.solid(
+                    text: widget.modalConfirmationArg.outlineBtnText ??
+                        "No, cancel",
+                    isOutline: true,
+                    outlineColor: AppColors.neutral5,
+                    textStyle: textTheme.text16,
+                    onTap: widget.modalConfirmationArg.onOutlineBtnOnTap,
+                  ),
+                ],
+              ],
             ),
           YBox(30),
         ],

@@ -180,6 +180,7 @@ class BtnLoadState extends StatelessWidget {
       ),
       child: const Center(
         child: SpinKitLoader(
+          color: AppColors.neutral5,
           size: 30,
         ),
       ),
