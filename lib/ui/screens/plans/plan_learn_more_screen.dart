@@ -30,6 +30,13 @@ class _PlanLearnMoreScreenState extends ConsumerState<PlanLearnMoreScreen> {
               "${widget.arg.name} Feature",
               style: textTheme.text20?.medium,
             ),
+            YBox(8),
+            Text(
+              "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(widget.arg.priceItem.amount ?? '0') ?? 0)} ${widget.arg.duration}",
+              style: textTheme.text14?.copyWith(
+                color: colorScheme.primaryColor,
+              ),
+            ),
             YBox(15),
             Expanded(
                 child: ListView(
@@ -38,46 +45,46 @@ class _PlanLearnMoreScreenState extends ConsumerState<PlanLearnMoreScreen> {
                 bottom: Sizer.height(50),
               ),
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    vertical: Sizer.height(14),
-                    horizontal: Sizer.height(16),
-                  ),
-                  decoration: BoxDecoration(
-                      color: AppColors.neutral3,
-                      border: Border(
-                        top: BorderSide(
-                            color: AppColors.black.withValues(alpha: 0.06),
-                            width: 1),
-                        bottom: BorderSide(
-                            color: AppColors.black.withValues(alpha: 0.06),
-                            width: 1),
-                      )),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Feature",
-                        style: textTheme.text14,
-                      ),
-                      Column(
-                        children: [
-                          Text(
-                            widget.arg.name,
-                            style: textTheme.text14,
-                          ),
-                          YBox(4),
-                          Text(
-                            "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(widget.arg.priceItem.amount ?? '0') ?? 0)} ${widget.arg.duration}",
-                            style: textTheme.text12?.copyWith(
-                              color: colorScheme.black45,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   padding: EdgeInsets.symmetric(
+                //     vertical: Sizer.height(14),
+                //     horizontal: Sizer.height(16),
+                //   ),
+                //   decoration: BoxDecoration(
+                //       color: AppColors.neutral3,
+                //       border: Border(
+                //         top: BorderSide(
+                //             color: AppColors.black.withValues(alpha: 0.06),
+                //             width: 1),
+                //         bottom: BorderSide(
+                //             color: AppColors.black.withValues(alpha: 0.06),
+                //             width: 1),
+                //       )),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(
+                //         "Feature",
+                //         style: textTheme.text14,
+                //       ),
+                //       Column(
+                //         children: [
+                //           Text(
+                //             widget.arg.name,
+                //             style: textTheme.text14,
+                //           ),
+                //           YBox(4),
+                //           Text(
+                //             "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(widget.arg.priceItem.amount ?? '0') ?? 0)} ${widget.arg.duration}",
+                //             style: textTheme.text12?.copyWith(
+                //               color: colorScheme.black45,
+                //             ),
+                //           ),
+                //         ],
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),

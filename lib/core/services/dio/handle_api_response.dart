@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 
+/// Handles API response and shows appropriate toasts and executes callbacks
 void handleApiResponse({
   required ApiResponse response,
   String? successMsg,
@@ -9,18 +10,29 @@ void handleApiResponse({
   void Function()? onError,
 }) {
   if (response.success) {
-    if (onSuccess != null) onSuccess();
+    onSuccess?.call();
+
     if (showSuccessToast) {
-      FlushBarToast.fLSnackBar(
-          snackBarType: SnackBarType.success,
-          message: successMsg ?? response.message ?? 'Operation successful');
+      showSuccessToastMessage(
+          successMsg ?? response.message ?? 'Operation successful');
     }
   } else {
-    if (onError != null) onError();
+    onError?.call();
     if (showErrorToast) {
-      FlushBarToast.fLSnackBar(
-          snackBarType: SnackBarType.warning,
-          message: response.message ?? 'Something went wrong');
+      showWarningToast(response.message ?? 'Something went wrong');
     }
   }
+}
+
+/// Shows an error toast message
+void showWarningToast(String msg) {
+  FlushBarToast.fLSnackBar(message: msg);
+}
+
+/// Shows a success toast message
+void showSuccessToastMessage(String msg) {
+  FlushBarToast.fLSnackBar(
+    message: msg,
+    snackBarType: SnackBarType.success,
+  );
 }

@@ -37,10 +37,14 @@ class ProfileColText extends StatelessWidget {
                   child: SvgPicture.asset(AppSvgs.copy),
                 ),
               ),
-            Text(
-              subTitle,
-              style: textTheme.text14?.medium.copyWith(
-                color: AppColors.black23,
+            Expanded(
+              child: Text(
+                subTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: textTheme.text14?.medium.copyWith(
+                  color: AppColors.black23,
+                ),
               ),
             ),
           ],

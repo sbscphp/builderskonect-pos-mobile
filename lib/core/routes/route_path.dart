@@ -17,7 +17,6 @@ class RoutePath {
 
   static const profileScreen = '/profileScreen';
   static const contactSupportScreen = '/contactSupportScreen';
-  static const changePasswordScreen = '/changePasswordScreen';
   static const editProfileScreen = '/editProfileScreen';
   static const editFinanceScreen = '/editFinanceScreen';
   static const editDocumentsScreen = '/editDocumentScreen';
@@ -30,9 +29,23 @@ class RoutePath {
   static const subscriptionDetailsScreen = '/subscriptionDetailsScreen';
   static const renewSubscriptionScreen = '/renewSubscriptionScreen';
 
+  // Product
+  static const searchAddProductScreen = '/searchAddProductScreen';
+  static const addProductScreen = '/addProductScreen';
+  static const addProductRequestScreen = '/addProductRequestScreen';
+  static const inventoryScreen = '/inventoryScreen';
+
+  // Settings
+  static const settingScreen = '/settingScreen';
+  static const changePasswordScreen = '/changePasswordScreen';
+
   // Store
   static const newStoreScreen = '/newStoreScreen';
   static const viewStoreScreen = '/viewStoreScreen';
+
+  // Returns
+  static const returnRefundScreen = '/returnRefundScreen';
+  static const logNewReturnScreen = '/logNewReturnScreen';
 
   // POS
   static const moreScreen = '/moreScreen';

@@ -4,12 +4,12 @@ import 'package:builders_konnect/ui/components/components.dart';
 class MoreMenu {
   final String title;
   final String icon;
-  final Function()? onTap;
+  final String? routePath;
 
   MoreMenu({
     required this.title,
     required this.icon,
-    this.onTap,
+    this.routePath,
   });
 }
 
@@ -23,34 +23,31 @@ class MoreScreen extends ConsumerStatefulWidget {
 class _MoreScreenState extends ConsumerState<MoreScreen> {
   List<MoreMenu> moremenus = [
     MoreMenu(
-      title: "Customers",
+      title: "Vendor Profile",
       icon: AppSvgs.product,
-      onTap: () {},
+      routePath: RoutePath.profileScreen,
     ),
     MoreMenu(
-      title: "Returns",
+      title: "Customers",
       icon: AppSvgs.product,
-      onTap: () {},
+    ),
+    MoreMenu(
+      title: "Returns and Refund",
+      icon: AppSvgs.product,
+      routePath: RoutePath.returnRefundScreen,
     ),
     MoreMenu(
       title: "Discounts",
       icon: AppSvgs.product,
-      onTap: () {},
     ),
     MoreMenu(
       title: "Staff Management",
       icon: AppSvgs.product,
-      onTap: () {},
-    ),
-    MoreMenu(
-      title: "Reports",
-      icon: AppSvgs.product,
-      onTap: () {},
     ),
     MoreMenu(
       title: "Settings",
       icon: AppSvgs.product,
-      onTap: () {},
+      routePath: RoutePath.settingScreen,
     ),
   ];
   @override
@@ -59,7 +56,8 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
     // final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: CustomAppbar(
-        title: "More",
+        title: "Profile",
+        leadingWidget: SizedBox.shrink(),
       ),
       body: ListView.separated(
         shrinkWrap: true,
@@ -72,10 +70,16 @@ class _MoreScreenState extends ConsumerState<MoreScreen> {
         ),
         separatorBuilder: (_, __) => YBox(16),
         itemBuilder: (_, i) {
-          return MenuCard(
-            title: moremenus[i].title,
-            icon: moremenus[i].icon,
-            onTap: moremenus[i].onTap,
+          return InkWell(
+            onTap: () {
+              if (moremenus[i].routePath != null) {
+                Navigator.pushNamed(context, moremenus[i].routePath!);
+              }
+            },
+            child: MenuCard(
+              title: moremenus[i].title,
+              icon: moremenus[i].icon,
+            ),
           );
         },
       ),

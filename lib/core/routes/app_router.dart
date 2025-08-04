@@ -90,12 +90,6 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.changePasswordScreen:
-        return TransitionUtils.buildTransition(
-          const ChangePasswordScreen(),
-          settings,
-        );
-
       case RoutePath.editProfileScreen:
         return TransitionUtils.buildTransition(
           const EditProfileScreen(),
@@ -111,6 +105,19 @@ class AppRouter {
       case RoutePath.editDocumentsScreen:
         return TransitionUtils.buildTransition(
           const EditDocumentsScreen(),
+          settings,
+        );
+
+      // Settings
+      case RoutePath.settingScreen:
+        return TransitionUtils.buildTransition(
+          const SettingScreen(),
+          settings,
+        );
+
+      case RoutePath.changePasswordScreen:
+        return TransitionUtils.buildTransition(
+          const ChangePasswordScreen(),
           settings,
         );
 
@@ -160,6 +167,31 @@ class AppRouter {
           settings,
         );
 
+      // Product
+      case RoutePath.searchAddProductScreen:
+        return TransitionUtils.buildTransition(
+          const SearchAddProductScreen(),
+          settings,
+        );
+
+      case RoutePath.addProductScreen:
+        return TransitionUtils.buildTransition(
+          const AddProductScreen(),
+          settings,
+        );
+
+      case RoutePath.addProductRequestScreen:
+        return TransitionUtils.buildTransition(
+          const AddProductRequestScreen(),
+          settings,
+        );
+
+      case RoutePath.inventoryScreen:
+        return TransitionUtils.buildTransition(
+          const InventoryScreen(),
+          settings,
+        );
+
       // Store
       case RoutePath.newStoreScreen:
         return TransitionUtils.buildTransition(
@@ -170,6 +202,19 @@ class AppRouter {
       case RoutePath.viewStoreScreen:
         return TransitionUtils.buildTransition(
           const ViewStoreScreen(),
+          settings,
+        );
+
+      // Returns
+      case RoutePath.returnRefundScreen:
+        return TransitionUtils.buildTransition(
+          const ReturnRefundScreen(),
+          settings,
+        );
+
+      case RoutePath.logNewReturnScreen:
+        return TransitionUtils.buildTransition(
+          const LogNewReturnScreen(),
           settings,
         );
 

@@ -119,20 +119,6 @@ class AuthVm extends BaseVm {
     );
   }
 
-  ProfileModel? _vendorProfile;
-  ProfileModel? get vendorProfile => _vendorProfile;
-
-  Future<ApiResponse> getVendorProfile() async {
-    return await performApiCall(
-      url: "/api/v1/merchants/profile/view",
-      method: apiService.getWithAuth,
-      onSuccess: (data) {
-        _vendorProfile = profileModelFromJson(json.encode(data["data"]));
-        return apiResponse;
-      },
-    );
-  }
-
   Future<ApiResponse> logout() async {
     try {
       setBusy(true);

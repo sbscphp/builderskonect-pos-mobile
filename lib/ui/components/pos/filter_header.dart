@@ -6,12 +6,14 @@ class FilterHeader extends StatelessWidget {
     required this.title,
     required this.subTitle,
     this.svgIcon,
+    this.trailingWidget,
     this.onFilter,
   });
 
   final String title;
   final String subTitle;
   final String? svgIcon;
+  final Widget? trailingWidget;
   final Function()? onFilter;
 
   @override
@@ -34,15 +36,59 @@ class FilterHeader extends StatelessWidget {
             ],
           ),
         ),
-        if (onFilter != null)
-          InkWell(
-            onTap: onFilter,
-            child: SvgPicture.asset(
-              svgIcon ?? AppSvgs.filter,
-              height: Sizer.height(32),
-            ),
-          )
+        Container(
+          child: trailingWidget ??
+              (onFilter == null
+                  ? SizedBox.shrink()
+                  : InkWell(
+                      onTap: onFilter,
+                      child: SvgPicture.asset(
+                        svgIcon ?? AppSvgs.filter,
+                        height: Sizer.height(32),
+                      ),
+                    )),
+        )
       ],
+    );
+  }
+}
+
+class NewButtonWidget extends StatelessWidget {
+  const NewButtonWidget({
+    super.key,
+    required this.onTap,
+  });
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: Sizer.width(8),
+          vertical: Sizer.height(10),
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.dayBreakBlue,
+          borderRadius: BorderRadius.circular(Sizer.radius(8)),
+        ),
+        child: Row(
+          children: [
+            SvgPicture.asset(AppSvgs.plusCircle2),
+            XBox(8),
+            Text(
+              "New",
+              style: textTheme.text14?.medium.copyWith(
+                color: colorScheme.primaryColor,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

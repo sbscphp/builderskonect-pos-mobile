@@ -17,7 +17,7 @@ class PlanTableRow extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          flex: 7,
+          // flex: 6,
           child: Container(
             padding: EdgeInsets.symmetric(
               vertical: Sizer.height(25),
@@ -36,7 +36,7 @@ class PlanTableRow extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 5,
+          // flex: 5,
           child: Center(
             child: 1 + 1 == 2
                 ? Icon(

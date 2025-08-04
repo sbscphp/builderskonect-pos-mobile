@@ -1,14 +1,14 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class SalesScreen extends ConsumerStatefulWidget {
-  const SalesScreen({super.key});
+class ReturnRefundScreen extends ConsumerStatefulWidget {
+  const ReturnRefundScreen({super.key});
 
   @override
-  ConsumerState<SalesScreen> createState() => _SalesScreenState();
+  ConsumerState<ReturnRefundScreen> createState() => _ReturnRefundScreenState();
 }
 
-class _SalesScreenState extends ConsumerState<SalesScreen> {
+class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
 
@@ -21,21 +21,10 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: CustomAppbar(
-          title: "Sales",
-          trailingWidget: InkWell(
-            onTap: () {
-              // Navigator.pushNamed(context, RoutePath.notificationScreen);
-            },
-            child: SvgPicture.asset(
-              AppSvgs.circleMenu,
-              height: Sizer.height(32),
-            ),
-          ),
-          leadingWidget: CustomCircleAvatar(onTap: () {}),
+          title: "Returns and Refund",
         ),
         body: ListView(
           padding: EdgeInsets.only(
@@ -55,11 +44,12 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   FilterHeader(
-                    title: "Sales Overview",
-                    subTitle: "View and manage offline and online sales",
+                    title: "Returns & Refund Overview",
+                    subTitle: "View and manage logged returns ",
                     trailingWidget: NewButtonWidget(
                       onTap: () {
-                        // Navigator.pushNamed(context, RoutePath.newSalesScreen);
+                        Navigator.pushNamed(
+                            context, RoutePath.logNewReturnScreen);
                       },
                     ),
                     onFilter: () {},
@@ -78,7 +68,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ProductColText(
-                          title: "TOTAL SALES VALUE",
+                          title: "TOTAL REFUND VALUE",
                           value: "2",
                         ),
                         Row(
@@ -86,13 +76,13 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                           children: [
                             ProductColText(
                               textColor: colorScheme.black85,
-                              title: "Total Sales",
+                              title: "Total Returns",
                               value: "2",
                               valueTextSize: 12,
                             ),
                             ProductColText(
                               textColor: colorScheme.black85,
-                              title: "Online Sales",
+                              title: "Approved Returns",
                               value: "2",
                               valueTextSize: 12,
                               valueColor: AppColors.purple6,
@@ -104,7 +94,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                           children: [
                             ProductColText(
                               textColor: colorScheme.black85,
-                              title: "Walk-in Sales",
+                              title: "Rejected Returns",
                               value: "2",
                               valueTextSize: 12,
                               valueColor: AppColors.red2D,
@@ -116,8 +106,8 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                   ),
                   YBox(24),
                   FilterHeader(
-                    title: "Sales List",
-                    subTitle: "See all sales made in your business",
+                    title: "Logged Returns",
+                    subTitle: "See all logged returns your business",
                     onFilter: () {},
                   ),
                   YBox(16),
@@ -133,23 +123,17 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (searchC.text.isNotEmpty)
-                          InkWell(
-                            onTap: () {},
-                            child: Padding(
-                              padding: EdgeInsets.all(Sizer.width(10)),
-                              child: Icon(
-                                Icons.close,
-                                size: Sizer.width(20),
-                                color: AppColors.gray500,
-                              ),
-                            ),
-                          ),
                         InkWell(
                           onTap: () {},
                           child: Container(
-                            padding: EdgeInsets.all(Sizer.width(10)),
-                            decoration: BoxDecoration(),
+                            padding: EdgeInsets.all(Sizer.width(14)),
+                            decoration: BoxDecoration(
+                                border: Border(
+                              left: BorderSide(
+                                color: AppColors.neutral5,
+                                width: 1,
+                              ),
+                            )),
                             child: SvgPicture.asset(AppSvgs.search),
                           ),
                         ),

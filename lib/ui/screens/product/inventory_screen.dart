@@ -1,16 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class ProductScreen extends ConsumerStatefulWidget {
-  const ProductScreen({super.key});
+class InventoryScreen extends ConsumerStatefulWidget {
+  const InventoryScreen({super.key});
 
   @override
-  ConsumerState<ProductScreen> createState() => _ProductScreenState();
+  ConsumerState<InventoryScreen> createState() => _InventoryScreenState();
 }
 
-class _ProductScreenState extends ConsumerState<ProductScreen> {
+class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
 
@@ -27,52 +25,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: CustomAppbar(
-          title: "Products and Inventory",
-          trailingWidget: InkWell(
-            onTap: () {
-              showMenu(
-                context: context,
-                position: RelativeRect.fromLTRB(100, 100, 0, 0),
-                items: [
-                  PopupMenuItem(
-                    value: 'add_product',
-                    child: Text('Add Product', style: textTheme.text14),
-                  ),
-                  PopupMenuItem(
-                    value: 'view_inventory',
-                    child: Text('View Inventory', style: textTheme.text14),
-                  ),
-                  PopupMenuItem(
-                    value: 'product_transfer',
-                    child: Text('Product Transfer', style: textTheme.text14),
-                  ),
-                ],
-              ).then((value) {
-                if (value != null) {
-                  printty('Selected: $value');
-                  switch (value) {
-                    case 'add_product':
-                      Navigator.pushNamed(context, RoutePath.addProductScreen);
-                      break;
-                    case 'view_inventory':
-                      Navigator.pushNamed(context, RoutePath.inventoryScreen);
-                      break;
-                    case 'product_transfer':
-                      // Navigator.pushNamed(
-                      //     context, RoutePath.productTransferScreen);
-                      break;
-                    default:
-                      break;
-                  }
-                }
-              });
-            },
-            child: SvgPicture.asset(
-              AppSvgs.circleMenu,
-              height: Sizer.height(32),
-            ),
-          ),
-          leadingWidget: CustomCircleAvatar(onTap: () {}),
+          title: "Inventory",
         ),
         body: ListView(
           padding: EdgeInsets.only(
@@ -92,19 +45,13 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   FilterHeader(
-                    title: "Products and Inventory",
-                    subTitle: "View and manage products in your business",
-                    trailingWidget: NewButtonWidget(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, RoutePath.searchAddProductScreen);
-                      },
-                    ),
+                    title: "Inventory Overview",
+                    subTitle: "View and manage products inventory.",
                   ),
                   YBox(16),
                   Container(
                     width: double.infinity,
-                    height: Sizer.height(140),
+                    height: Sizer.height(200),
                     padding: EdgeInsets.all(Sizer.radius(16)),
                     decoration: BoxDecoration(
                       border: Border.all(color: AppColors.blueDD9),
@@ -115,7 +62,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ProductColText(
-                          title: "TOTAL PRODUCT VALUE",
+                          title: "TOTAL PRODUCTS VALUE",
                           value: "2",
                         ),
                         Row(
@@ -130,7 +77,26 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                             ),
                             ProductColText(
                               textColor: colorScheme.black85,
-                              title: "Total Sales",
+                              title: "Available",
+                              value: "2",
+                              valueTextSize: 12,
+                              valueColor: AppColors.red2D,
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ProductColText(
+                              textColor: colorScheme.black85,
+                              title: "Sold-out Products",
+                              value: "2",
+                              valueTextSize: 12,
+                              valueColor: AppColors.green1A,
+                            ),
+                            ProductColText(
+                              textColor: colorScheme.black85,
+                              title: "Low Stocks",
                               value: "2",
                               valueTextSize: 12,
                               valueColor: AppColors.red2D,
@@ -142,8 +108,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                   ),
                   YBox(40),
                   FilterHeader(
-                    title: "All Products",
-                    subTitle: "See all products added to your business.",
+                    title: "Inventory List",
+                    subTitle: "See all products in inventory",
                     onFilter: () {},
                   ),
                   YBox(16),

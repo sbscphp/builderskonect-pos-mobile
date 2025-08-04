@@ -1,16 +1,16 @@
 import 'dart:convert';
 
-ProfileModel profileModelFromJson(String str) =>
-    ProfileModel.fromJson(json.decode(str));
+VendorProfileModel profileModelFromJson(String str) =>
+    VendorProfileModel.fromJson(json.decode(str));
 
-class ProfileModel {
+class VendorProfileModel {
   final String? id;
   final dynamic logo;
   final Business? business;
   final Finance? finance;
   final Documents? documents;
 
-  ProfileModel({
+  VendorProfileModel({
     this.id,
     this.logo,
     this.business,
@@ -18,7 +18,8 @@ class ProfileModel {
     this.documents,
   });
 
-  factory ProfileModel.fromJson(Map<String, dynamic> json) => ProfileModel(
+  factory VendorProfileModel.fromJson(Map<String, dynamic> json) =>
+      VendorProfileModel(
         id: json["id"],
         logo: json["logo"],
         business: json["business"] == null
