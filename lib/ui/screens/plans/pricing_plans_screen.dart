@@ -3,7 +3,9 @@ import 'package:builders_konnect/ui/components/components.dart';
 import 'package:collection/collection.dart';
 
 class PricingPlansScreen extends ConsumerStatefulWidget {
-  const PricingPlansScreen({super.key});
+  const PricingPlansScreen({super.key, this.isUpgrade = false});
+
+  final bool isUpgrade;
 
   @override
   ConsumerState<PricingPlansScreen> createState() => _PricingPlansScreenState();
@@ -98,28 +100,47 @@ class _PricingPlansScreenState extends ConsumerState<PricingPlansScreen> {
                                 "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(priceItem?.amount ?? '0') ?? 0)}",
                             period: isYearly ? '/ per year' : '/ per month',
                             onSubscribe: () {
-                              if (monthlyPriceItem != null) {
-                                Navigator.pushNamed(
-                                  context,
-                                  RoutePath.getStartedScreen,
-                                  arguments: PlanFeatureArg(
-                                    planFeature: plan.features ?? [],
-                                    name: plan.name ?? '',
-                                    duration: isYearly ? '/ year' : '/ month',
-                                    priceItem: priceItem ?? PriceItem(),
-                                  ),
-                                );
+                              // Early return if no price item available
+                              if (!widget.isUpgrade && priceItem == null) {
+                                return;
                               }
+
+                              final route = widget.isUpgrade
+                                  ? RoutePath.renewSubscriptionScreen
+                                  : RoutePath.getStartedScreen;
+
+                              final arguments = widget.isUpgrade
+                                  ? SubcriptionArg(
+                                      isUpgrade: true,
+                                      priceItemId: priceItem?.id ?? '',
+                                      planName: plan.name ?? '',
+                                    )
+                                  : PlanFeatureArg(
+                                      planFeature: plan.features ?? [],
+                                      name: plan.name ?? '',
+                                      duration: isYearly ? '/ year' : '/ month',
+                                      priceItem: priceItem!,
+                                    );
+
+                              Navigator.pushNamed(
+                                context,
+                                route,
+                                arguments: arguments,
+                              );
                             },
                             onLearnMore: () {
+                              if (widget.isUpgrade) {}
                               Navigator.pushNamed(
-                                  context, RoutePath.planLearnMoreScreen,
-                                  arguments: PlanFeatureArg(
-                                    planFeature: plan.features ?? [],
-                                    name: plan.name ?? '',
-                                    duration: isYearly ? '/ year' : '/ month',
-                                    priceItem: priceItem ?? PriceItem(),
-                                  ));
+                                context,
+                                RoutePath.planLearnMoreScreen,
+                                arguments: PlanFeatureArg(
+                                  planFeature: plan.features ?? [],
+                                  name: plan.name ?? '',
+                                  duration: isYearly ? '/ year' : '/ month',
+                                  priceItem: priceItem ?? PriceItem(),
+                                  isUpgrade: widget.isUpgrade,
+                                ),
+                              );
                             },
                           );
                         },

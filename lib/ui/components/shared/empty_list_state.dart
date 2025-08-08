@@ -4,26 +4,33 @@ class EmptyListState extends StatelessWidget {
   const EmptyListState({
     super.key,
     required this.text,
-    this.height,
+    this.imageHeight,
   });
 
   final String text;
-  final double? height;
+  final double? imageHeight;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return SizedBox(
-      height: Sizer.height(height ?? 500),
-      width: Sizer.screenWidth,
-      child: Center(
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: textTheme.text16?.copyWith(
-            color: AppColors.black,
+    final colorScheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Image.asset(
+            AppImages.empty,
+            height: Sizer.height(imageHeight ?? 130),
           ),
-        ),
+          YBox(10),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: textTheme.text16?.copyWith(
+              color: colorScheme.black85,
+            ),
+          ),
+        ],
       ),
     );
   }

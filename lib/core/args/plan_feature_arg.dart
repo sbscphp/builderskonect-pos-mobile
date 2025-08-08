@@ -5,12 +5,14 @@ class PlanFeatureArg {
   final String name;
   final PriceItem priceItem;
   final String duration;
+  final bool isUpgrade; // if user is coming from change subscription
 
   PlanFeatureArg({
     required this.planFeature,
     required this.name,
     required this.duration,
     required this.priceItem,
+    this.isUpgrade = false,
   });
 
   // Function that calculates the total cost

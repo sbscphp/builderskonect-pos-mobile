@@ -96,7 +96,38 @@ class _PlanLearnMoreScreenState extends ConsumerState<PlanLearnMoreScreen> {
                       // value: feature.value,
                     );
                   },
-                )
+                ),
+                YBox(30),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                  child: CustomBtn.solid(
+                    text: "Subscribe",
+                    onTap: () {
+                      final route = widget.arg.isUpgrade
+                          ? RoutePath.renewSubscriptionScreen
+                          : RoutePath.getStartedScreen;
+
+                      final arguments = widget.arg.isUpgrade
+                          ? SubcriptionArg(
+                              isUpgrade: true,
+                              priceItemId: widget.arg.priceItem.id ?? '',
+                              planName: widget.arg.name,
+                            )
+                          : PlanFeatureArg(
+                              planFeature: widget.arg.planFeature,
+                              name: widget.arg.name,
+                              duration: widget.arg.duration,
+                              priceItem: widget.arg.priceItem,
+                            );
+
+                      Navigator.pushNamed(
+                        context,
+                        route,
+                        arguments: arguments,
+                      );
+                    },
+                  ),
+                ),
               ],
             ))
           ],

@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 class AppUtils {
   static String nairaSymbol = "₦";
   static String dollarSymbol = "\$";
+  static String dummyImage = "https://picsum.photos/200/300";
   static String maskEmail(String email, {int consoreLevel = 2}) {
     final parts = email.split("@");
 
@@ -30,6 +31,11 @@ class AppUtils {
     return DateFormat("d'$suffix' MMM, y").format(date);
   }
 
+  // 25 Jan, 2025
+  static String dateFirstYear(DateTime date) {
+    return DateFormat('dd MMM, y').format(date);
+  }
+
   //e.g 23rd March, 2021 4:40PM
   static String d(DateTime date) {
     var suffix = "th";
@@ -51,15 +57,11 @@ class AppUtils {
     return tt;
   }
 
-  // returns String of dayWithSuffixMonthAndYear formated value in YYYY-MM-DD format
-  static String convertDateString(String dateString) {
-    final temp = dateString
-        .replaceAll('th', '')
-        .replaceAll('st', '')
-        .replaceAll('nd', '')
-        .replaceAll('rd', '');
-    DateTime date = DateFormat('d MMM, yyyy').parse(temp);
-    return DateFormat('yyyy-MM-dd').format(date);
+  //  25 Jan, 2025 | 09:00 AM
+  static String formatDateTime(DateTime dateTime) {
+    // final dateTime = DateTime.parse(inputDate);
+    final formattedDate = DateFormat('dd MMM, yyyy | hh:mm a').format(dateTime);
+    return formattedDate;
   }
 
   /// A utility function to format numbers in different ways

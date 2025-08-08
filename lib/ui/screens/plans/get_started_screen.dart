@@ -19,12 +19,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
   final companyNameC = TextEditingController();
   final discountCodeC = TextEditingController();
 
-  final fullNameFocus = FocusNode();
-  final emailFocus = FocusNode();
-  final phoneFocus = FocusNode();
-  final companyNameFocus = FocusNode();
-  final discountCodeFocus = FocusNode();
-
   PlanBreakDownModel? _planBreakDownModel;
 
   @override
@@ -57,12 +51,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
     phoneC.dispose();
     companyNameC.dispose();
     discountCodeC.dispose();
-
-    fullNameFocus.dispose();
-    emailFocus.dispose();
-    phoneFocus.dispose();
-    companyNameFocus.dispose();
-    discountCodeFocus.dispose();
 
     super.dispose();
   }
@@ -118,7 +106,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                         flex: 9,
                         child: CustomTextField(
                           controller: discountCodeC,
-                          focusNode: discountCodeFocus,
                           labelText: 'Apply Discount Code ',
                           optionalText: '(if any)',
                           hintText: 'GT27365ER',
@@ -216,7 +203,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                     YBox(16),
                     CustomTextField(
                       controller: fullNameC,
-                      focusNode: fullNameFocus,
                       isRequired: true,
                       labelText: 'Full Name',
                       hintText: 'example',
@@ -227,7 +213,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                     YBox(16),
                     CustomTextField(
                       controller: companyNameC,
-                      focusNode: companyNameFocus,
                       isRequired: true,
                       labelText: 'Company Name',
                       hintText: 'example',
@@ -238,7 +223,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                     YBox(16),
                     CustomTextField(
                       controller: emailC,
-                      focusNode: emailFocus,
                       isRequired: true,
                       labelText: 'Email address',
                       hintText: 'example',
@@ -249,7 +233,6 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                     YBox(16),
                     CustomTextField(
                       controller: phoneC,
-                      focusNode: phoneFocus,
                       isRequired: true,
                       labelText: 'Phone Number',
                       hintText: 'example',
@@ -270,6 +253,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
             CustomBtn.solid(
               text: "Continue",
               onTap: () async {
+                FocusScope.of(context).unfocus();
                 if (_formKey.currentState?.validate() ?? false) {
                   final res = await subVm.subscribePlan(
                     SubcribePlanParams(

@@ -123,8 +123,9 @@ class AppRouter {
 
       // Plans
       case RoutePath.pricingPlansScreen:
+        final isUpgrade = args is bool;
         return TransitionUtils.buildTransition(
-          const PricingPlansScreen(),
+          PricingPlansScreen(isUpgrade: isUpgrade),
           settings,
         );
 
@@ -156,16 +157,22 @@ class AppRouter {
         return errorScreen(settings);
 
       case RoutePath.subscriptionDetailsScreen:
-        return TransitionUtils.buildTransition(
-          SubscriptionDetailsScreen(),
-          settings,
-        );
+        if (args is UserSubcription) {
+          return TransitionUtils.buildTransition(
+            SubscriptionDetailsScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.renewSubscriptionScreen:
-        return TransitionUtils.buildTransition(
-          RenewSubscriptionScreen(),
-          settings,
-        );
+        if (args is SubcriptionArg) {
+          return TransitionUtils.buildTransition(
+            RenewSubscriptionScreen(subcriptionArg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Product
       case RoutePath.searchAddProductScreen:
@@ -192,6 +199,18 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.viewUploadScreen:
+        return TransitionUtils.buildTransition(
+          const ViewUploadScreen(),
+          settings,
+        );
+
+      case RoutePath.viewProductScreen:
+        return TransitionUtils.buildTransition(
+          const ViewProductScreen(),
+          settings,
+        );
+
       // Store
       case RoutePath.newStoreScreen:
         return TransitionUtils.buildTransition(
@@ -200,10 +219,31 @@ class AppRouter {
         );
 
       case RoutePath.viewStoreScreen:
-        return TransitionUtils.buildTransition(
-          const ViewStoreScreen(),
-          settings,
-        );
+        if (args is StoreModel) {
+          return TransitionUtils.buildTransition(
+            ViewStoreScreen(store: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.storeSalesOverviewScreen:
+        if (args is StoreModel) {
+          return TransitionUtils.buildTransition(
+            StoreSalesOverviewScreen(store: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.storeInventoryOverviewScreen:
+        if (args is StoreModel) {
+          return TransitionUtils.buildTransition(
+            StoreInventoryOverviewScreen(store: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Returns
       case RoutePath.returnRefundScreen:

@@ -54,6 +54,33 @@ class ProfileVm extends BaseVm {
       },
     );
   }
+
+  Future<ApiResponse> contactSupport({
+    String? name,
+    String? email,
+    String? phone,
+    String? message,
+    String application = "vendor",
+    String? media,
+  }) async {
+    final body = {
+      "name": name,
+      "email": email,
+      "phone": phone,
+      "message": message,
+      "application": application,
+      "media": media,
+    };
+    body.removeWhere((k, v) => v == null || v == "");
+    return await performApiCall(
+      url: "/api/v1/shared/supports",
+      method: apiService.postWithAuth,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
 }
 
 final profileVmodel = ChangeNotifierProvider((ref) => ProfileVm());

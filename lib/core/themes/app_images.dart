@@ -12,4 +12,7 @@ class AppImages {
   static const signupBg = "$images/signupBg.png";
   static const banner = "$images/banner.png";
   static const planCard = "$images/planCard.png";
+
+  static const empty = "$images/empty.png";
+  static const cement = "$images/cement.png";
 }

@@ -71,7 +71,7 @@ class CustomTextField extends StatefulWidget {
     this.bgColor,
     this.fillColor,
     this.showLabelHeader = true,
-    this.borderRadius = 0,
+    this.borderRadius = 4,
     this.height,
   });
 

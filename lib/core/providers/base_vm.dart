@@ -63,9 +63,10 @@ class BaseVm extends ChangeNotifier {
     required ApiResponse<T> Function(dynamic data) onSuccess,
     ApiResponse<T> Function(String errorMessage)? onError,
     String? busyObjectName,
+    String? errorObjectName,
   }) async {
     try {
-      setError(false);
+      setErrorForObject(errorObjectName ?? this, false);
       setBusyForObject(busyObjectName ?? this, true);
 
       apiResponse = await method(
@@ -76,8 +77,7 @@ class BaseVm extends ChangeNotifier {
       );
 
       if (!apiResponse.success) {
-        // setBusy(false);
-        setBusyForObject(busyObjectName ?? this, false);
+        setErrorForObject(errorObjectName ?? this, true);
         // Convert to generic type for failure case
         return ApiResponse<T>(
           success: apiResponse.success,
@@ -88,7 +88,7 @@ class BaseVm extends ChangeNotifier {
       }
       return onSuccess(apiResponse.data);
     } catch (e) {
-      setError(true);
+      setErrorForObject(errorObjectName ?? this, true);
       if (onError != null) {
         return onError(e.toString());
       } else {

@@ -24,7 +24,7 @@ class MyCachedNetworkImage extends StatefulWidget {
 class _MyCachedNetworkImageState extends State<MyCachedNetworkImage> {
   @override
   Widget build(BuildContext context) {
-    return (widget.imageUrl?.isEmpty ?? false)
+    return (widget.imageUrl == null || (widget.imageUrl?.isEmpty ?? false))
         ? Image.asset(
             AppImages.noimage,
             fit: BoxFit.cover,

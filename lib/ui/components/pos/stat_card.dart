@@ -81,7 +81,7 @@ class StatCard extends StatelessWidget {
               value,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: textTheme.text20?.medium.copyWith(
+              style: textTheme.text18?.medium.copyWith(
                 color: amountColor,
               ),
             ),

@@ -1,6 +1,8 @@
 export 'business_category_type_modal.dart';
 export 'city_modal.dart';
 export 'confirmation_modal.dart';
+export 'filter_data_modal.dart';
+export 'google_address_modal.dart';
 export 'select_bank_modal.dart';
 export 'state_modal.dart';
 export 'store_list_options.dart';

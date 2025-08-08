@@ -51,12 +51,16 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   CustomTextField(
                     labelText: 'Store Keeping Unit (SKU)',
                     hintText: 'Enter SKU',
+                    readOnly: true,
+                    fillColor: AppColors.neutral3,
                     showLabelHeader: true,
                   ),
                   YBox(16),
                   CustomTextField(
                     labelText: 'EAN',
                     hintText: 'Enter reason for return',
+                    readOnly: true,
+                    fillColor: AppColors.neutral3,
                     showLabelHeader: true,
                   ),
                   YBox(16),
@@ -65,12 +69,17 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     style: textTheme.text14,
                   ),
                   YBox(8),
-                  SizedBox(
-                    height: Sizer.height(104),
-                    width: Sizer.screenWidth,
-                    child: SvgPicture.asset(
-                      AppSvgs.uploadImg,
-                      fit: BoxFit.cover,
+                  InkWell(
+                    onTap: () {
+                      Navigator.pushNamed(context, RoutePath.viewUploadScreen);
+                    },
+                    child: SizedBox(
+                      height: Sizer.height(104),
+                      width: Sizer.screenWidth,
+                      child: SvgPicture.asset(
+                        AppSvgs.uploadImg,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
                   YBox(4),
@@ -131,8 +140,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                   ),
                   YBox(32),
                   CustomBtn.solid(
-                    text: "Log return(s)",
-                    onTap: () {},
+                    text: "Finish",
+                    onTap: () {
+                      Navigator.pushNamed(
+                          context, RoutePath.addProductRequestScreen);
+                    },
                   ),
                 ],
               ),

@@ -65,13 +65,13 @@ class SelectModuleScreen extends StatelessWidget {
               iconPath: AppSvgs.procurement,
             ),
             YBox(24),
-            ModuleCard(
-              title: "Reports",
-              subTitle:
-                  "Dashboard, sales, products, inventory, customer management, discounts, returns and refund etc",
-              iconPath: AppSvgs.pos,
-            ),
-            YBox(24),
+            // ModuleCard(
+            //   title: "Reports",
+            //   subTitle:
+            //       "Dashboard, sales, products, inventory, customer management, discounts, returns and refund etc",
+            //   iconPath: AppSvgs.pos,
+            // ),
+            // YBox(24),
           ],
         ));
   }

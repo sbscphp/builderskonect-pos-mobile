@@ -1,24 +1,28 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomColWidget extends StatelessWidget {
   const CustomColWidget({
     super.key,
     required this.firstColText,
-    required this.secondColText,
+    required this.subTitle,
     required this.status,
-    required this.date,
+    this.subTitle2,
+    this.date,
     this.onTap,
   });
 
   final String firstColText;
-  final String secondColText;
+  final String subTitle;
+  final String? subTitle2;
   final String status;
-  final DateTime date;
+  final DateTime? date;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return InkWell(
       onTap: onTap,
       child: Row(
@@ -33,10 +37,25 @@ class CustomColWidget extends StatelessWidget {
                       .copyWith(color: AppColors.primaryBlue),
                 ),
                 YBox(4),
-                Text(
-                  secondColText,
-                  style: textTheme.text14?.medium.copyWith(
-                    color: AppColors.gray500,
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: subTitle,
+                        style: textTheme.text12?.medium.copyWith(
+                          color: AppColors.gray500,
+                          fontFamily: "Roboto",
+                        ),
+                      ),
+                      if (subTitle2 != null)
+                        TextSpan(
+                          text: subTitle2,
+                          style: textTheme.text12?.medium.copyWith(
+                            color: colorScheme.black85,
+                            fontFamily: "Roboto",
+                          ),
+                        ),
+                    ],
                   ),
                 ),
               ],
@@ -48,7 +67,9 @@ class CustomColWidget extends StatelessWidget {
               OrderStatus(status: status),
               YBox(8),
               Text(
-                AppUtils.dayWithSuffixMonthAndYear(date),
+                date != null
+                    ? AppUtils.dateFirstYear(date ?? DateTime.now())
+                    : 'N/A',
                 style: textTheme.text12?.medium.copyWith(
                   color: AppColors.gray500,
                 ),
@@ -58,72 +79,5 @@ class CustomColWidget extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class OrderStatus extends StatefulWidget {
-  const OrderStatus({
-    super.key,
-    required this.status,
-  });
-
-  final String status;
-
-  @override
-  State<OrderStatus> createState() => _OrderStatusState();
-}
-
-class _OrderStatusState extends State<OrderStatus> {
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: Sizer.width(8),
-        vertical: Sizer.height(2),
-      ),
-      decoration: BoxDecoration(
-          color: getColor(widget.status)["bgColor"],
-          borderRadius: BorderRadius.circular(Sizer.radius(2)),
-          border: Border.all(
-            color: getColor(widget.status)["borderColor"] ?? AppColors.yellow3,
-          )),
-      child: Text(
-        widget.status.capitalizeFirst,
-        style: textTheme.text12?.medium.copyWith(
-          color: getColor(widget.status)["textColor"] ?? AppColors.yellow6,
-        ),
-      ),
-    );
-  }
-
-  Map<String, Color> getColor(String status) {
-    final status = widget.status.toLowerCase();
-    switch (status) {
-      case "processing":
-        return {
-          "bgColor": AppColors.yellowE6,
-          "textColor": AppColors.yellow6,
-          "borderColor": AppColors.yellow3
-        };
-      case "pending":
-        return {
-          "bgColor": AppColors.red1,
-          "textColor": AppColors.red2D,
-          "borderColor": AppColors.red3,
-        };
-      case "delivered":
-        return {
-          "bgColor": AppColors.greenED,
-          "textColor": AppColors.green1A,
-          "borderColor": AppColors.green4,
-        };
-      default:
-        return {
-          "bgColor": AppColors.yellowE6,
-          "textColor": AppColors.yellow6,
-          "borderColor": AppColors.yellow3,
-        };
-    }
   }
 }

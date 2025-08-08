@@ -17,8 +17,8 @@ class ModalWrapper<T> {
       enableDrag: false,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(topRadius ?? 8),
-          topRight: Radius.circular(topRadius ?? 8),
+          topLeft: Radius.circular(topRadius ?? 16),
+          topRight: Radius.circular(topRadius ?? 16),
         ),
       ),
       context: context,

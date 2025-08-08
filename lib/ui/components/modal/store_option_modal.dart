@@ -3,7 +3,10 @@ import 'package:builders_konnect/core/core.dart';
 class StoreOptionModal extends ConsumerStatefulWidget {
   const StoreOptionModal({
     super.key,
+    required this.store,
   });
+
+  final StoreModel store;
 
   @override
   ConsumerState<StoreOptionModal> createState() => _StoreOptionModalState();
@@ -51,7 +54,8 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
             textTheme,
             title: "View store details",
             onTap: () {
-              Navigator.pushNamed(context, RoutePath.viewStoreScreen);
+              Navigator.pushNamed(context, RoutePath.viewStoreScreen,
+                  arguments: widget.store);
             },
           ),
           YBox(16),
@@ -59,14 +63,21 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
             colorScheme,
             textTheme,
             title: "Store sales overview",
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(context, RoutePath.storeSalesOverviewScreen,
+                  arguments: widget.store);
+            },
           ),
           YBox(16),
           _buildOptions(
             colorScheme,
             textTheme,
             title: "Store products/inventory list",
-            onTap: () {},
+            onTap: () {
+              Navigator.pushNamed(
+                  context, RoutePath.storeInventoryOverviewScreen,
+                  arguments: widget.store);
+            },
           ),
           YBox(50),
         ],

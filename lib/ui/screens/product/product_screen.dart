@@ -144,7 +144,12 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                   FilterHeader(
                     title: "All Products",
                     subTitle: "See all products added to your business.",
-                    onFilter: () {},
+                    onFilter: () {
+                      ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: FilterDataModal(),
+                      );
+                    },
                   ),
                   YBox(16),
                   CustomTextField(
@@ -197,95 +202,13 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     itemCount: 10,
                     separatorBuilder: (_, __) => HDivider(),
                     itemBuilder: (ctx, i) {
-                      return InkWell(
+                      return ProductListTile(
+                        productImage: AppUtils.dummyImage,
+                        productTitle: "Premium Cement",
+                        subTitle: "10kg Smooth",
+                        status: "Active",
+                        date: "2023-01-01",
                         onTap: () {},
-                        child: Column(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Expanded(
-                                  child: Row(
-                                    children: [
-                                      SizedBox(
-                                        width: Sizer.width(26),
-                                        height: Sizer.height(26),
-                                        child: MyCachedNetworkImage(),
-                                      ),
-                                      XBox(16),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "Premium Cement",
-                                              style: textTheme.text14?.medium,
-                                            ),
-                                            YBox(4),
-                                            Text(
-                                              "10kg Smooth",
-                                              style: textTheme.text12?.copyWith(
-                                                color: colorScheme.black45,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                OrderStatus(status: "Active"),
-                              ],
-                            ),
-                            YBox(10),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Amount: ",
-                                        style:
-                                            textTheme.text12?.medium.copyWith(
-                                          color: AppColors.gray500,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "N 2000",
-                                        style:
-                                            textTheme.text12?.medium.copyWith(
-                                          color: colorScheme.primaryColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text: "Stock level: ",
-                                        style:
-                                            textTheme.text12?.medium.copyWith(
-                                          color: AppColors.gray500,
-                                        ),
-                                      ),
-                                      TextSpan(
-                                        text: "280 left",
-                                        style:
-                                            textTheme.text12?.medium.copyWith(
-                                          color: AppColors.neutral11,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
                       );
                     },
                   ),

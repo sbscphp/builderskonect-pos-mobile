@@ -67,13 +67,29 @@ class _AddProductRequestScreenState
                     style: textTheme.text14,
                   ),
                   YBox(8),
-                  SizedBox(
-                    height: Sizer.height(104),
-                    width: Sizer.screenWidth,
-                    child: SvgPicture.asset(
-                      AppSvgs.uploadImg,
-                      fit: BoxFit.cover,
-                    ),
+                  Row(
+                    children: [
+                      Container(
+                        height: Sizer.height(104),
+                        width: Sizer.width(104),
+                        padding: EdgeInsets.all(Sizer.radius(9)),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.neutral5,
+                          ),
+                          borderRadius: BorderRadius.circular(Sizer.radius(2)),
+                        ),
+                        child: Image.asset(AppImages.cement),
+                      ),
+                      XBox(8),
+                      SizedBox(
+                        height: Sizer.height(104),
+                        child: SvgPicture.asset(
+                          AppSvgs.uploadImgSquare,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
                   ),
                   YBox(4),
                   Text(
@@ -133,7 +149,7 @@ class _AddProductRequestScreenState
                   ),
                   YBox(32),
                   CustomBtn.solid(
-                    text: "Log return(s)",
+                    text: "Finish",
                     onTap: () {},
                   ),
                 ],

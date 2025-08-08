@@ -64,6 +64,7 @@ class AppColors {
   static const yellow1C = Color(0xFFFA541C);
   static const yellowE8 = Color(0xFFFFF2E8);
   static const yellowBF = Color(0xFFFFD8BF);
+  static const yellow06 = Color(0xFFD48806);
 
   static const magenta6 = Color(0xFFEB2F96);
   static const magenta4 = Color(0xFFFF85C0);

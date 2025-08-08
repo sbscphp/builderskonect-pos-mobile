@@ -48,7 +48,7 @@ class _CustomWebviewScreenState extends State<CustomWebviewScreen> {
             },
             onNavigationRequest: (NavigationRequest request) async {
               printty("urlpadhere ${request.url}");
-              if (request.url.contains('register-vendor')) {
+              if (request.url.contains('merchant.builderskonnect')) {
                 // Add this line - prevents future callbacks from updating state
                 _controller = null;
 

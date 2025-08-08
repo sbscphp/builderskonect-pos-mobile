@@ -50,4 +50,7 @@ class AppSvgs {
   static const String support = "$svgIcon/support.svg";
   static const String plusCircle2 = "$svgIcon/plusCircle2.svg";
   static const String uploadImg = "$svgIcon/uploadImg.svg";
+  static const String uploadImgSquare = "$svgIcon/uploadImgSquare.svg";
+
+  static const String inputSuffix = "$svgIcon/inputSuffix.svg";
 }

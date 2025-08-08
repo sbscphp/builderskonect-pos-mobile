@@ -152,7 +152,7 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                     itemBuilder: (ctx, i) {
                       return CustomColWidget(
                         firstColText: "#162826",
-                        secondColText: "Mainland Store",
+                        subTitle: "Mainland Store",
                         status: "Expired",
                         date: DateTime.now(),
                       );

@@ -198,7 +198,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             XBox(16),
                             Expanded(
                               child: StatCard(
-                                title: "Revenue Generated",
+                                title: "Revenue",
                                 value:
                                     dashVm.statModel?.revenueGenerated ?? "0",
                                 bgColor: AppColors.magentaF8,
