@@ -1,12 +1,58 @@
 import 'package:builders_konnect/core/core.dart';
 
+/// A reusable modal widget that displays a list of options.
+///
+/// Usage example:
+/// ```dart
+/// showModalBottomSheet(
+///   context: context,
+///   builder: (context) => StoreOptionModal(
+///     title: "Store Options", // Optional, defaults to "Choose an option"
+///     options: [
+///       ModalOption(
+///         title: "View store details",
+///         onTap: () {
+///           Navigator.pushNamed(context, RoutePath.viewStoreScreen, arguments: store);
+///         },
+///       ),
+///       ModalOption(
+///         title: "Store sales overview",
+///         onTap: () {
+///           Navigator.pushNamed(context, RoutePath.storeSalesOverviewScreen, arguments: store);
+///         },
+///       ),
+///       ModalOption(
+///         title: "Store products/inventory list",
+///         onTap: () {
+///           Navigator.pushNamed(context, RoutePath.storeInventoryOverviewScreen, arguments: store);
+///         },
+///       ),
+///     ],
+///   ),
+/// );
+/// ```
+
+class ModalOption {
+  final String title;
+  final VoidCallback onTap;
+  final Color? textColor;
+
+  const ModalOption({
+    required this.title,
+    required this.onTap,
+    this.textColor,
+  });
+}
+
 class StoreOptionModal extends ConsumerStatefulWidget {
   const StoreOptionModal({
     super.key,
-    required this.store,
+    required this.options,
+    this.title = "Choose an option",
   });
 
-  final StoreModel store;
+  final List<ModalOption> options;
+  final String title;
 
   @override
   ConsumerState<StoreOptionModal> createState() => _StoreOptionModalState();
@@ -33,7 +79,7 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
           Row(
             children: [
               Text(
-                "Choose an option",
+                widget.title,
                 style: textTheme.text16?.medium,
               ),
               Spacer(),
@@ -49,36 +95,18 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
             ],
           ),
           YBox(24),
-          _buildOptions(
-            colorScheme,
-            textTheme,
-            title: "View store details",
-            onTap: () {
-              Navigator.pushNamed(context, RoutePath.viewStoreScreen,
-                  arguments: widget.store);
-            },
-          ),
-          YBox(16),
-          _buildOptions(
-            colorScheme,
-            textTheme,
-            title: "Store sales overview",
-            onTap: () {
-              Navigator.pushNamed(context, RoutePath.storeSalesOverviewScreen,
-                  arguments: widget.store);
-            },
-          ),
-          YBox(16),
-          _buildOptions(
-            colorScheme,
-            textTheme,
-            title: "Store products/inventory list",
-            onTap: () {
-              Navigator.pushNamed(
-                  context, RoutePath.storeInventoryOverviewScreen,
-                  arguments: widget.store);
-            },
-          ),
+          ...widget.options.map((option) => Column(
+                children: [
+                  _buildOptions(
+                    colorScheme,
+                    textTheme,
+                    title: option.title,
+                    onTap: option.onTap,
+                    textColor: option.textColor,
+                  ),
+                  if (option != widget.options.last) YBox(16),
+                ],
+              )),
           YBox(50),
         ],
       ),
@@ -89,6 +117,7 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
     ColorScheme colorScheme,
     TextTheme textTheme, {
     required String title,
+    Color? textColor,
     Function()? onTap,
   }) {
     return InkWell(
@@ -108,7 +137,9 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
           children: [
             Text(
               title,
-              style: textTheme.text14,
+              style: textTheme.text14?.copyWith(
+                color: textColor ?? colorScheme.black85,
+              ),
             ),
             Spacer(),
             Icon(

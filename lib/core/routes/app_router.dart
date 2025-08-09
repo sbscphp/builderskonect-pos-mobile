@@ -205,9 +205,9 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.viewProductScreen:
+      case RoutePath.viewProductDetailsScreen:
         return TransitionUtils.buildTransition(
-          const ViewProductScreen(),
+          const ViewProductDetailsScreen(),
           settings,
         );
 

@@ -1,5 +1,4 @@
 import 'package:builders_konnect/core/core.dart';
-import 'package:builders_konnect/core/utils/picker_dialog.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class StoresTab extends ConsumerStatefulWidget {
@@ -121,14 +120,7 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                     title: "Store List",
                     subTitle:
                         "This shows the stores created under this vendor ",
-                    onFilter: () async {
-                      await CustomDatePickerDialog.showSingleDatePicker(
-                        context: context,
-                        initialDate: DateTime.now(),
-                        minDate: DateTime.now().subtract(Duration(days: 30)),
-                        maxDate: DateTime.now().add(Duration(days: 30)),
-                      );
-                    },
+                    onFilter: () async {},
                   ),
                   YBox(16),
                   Builder(builder: (context) {
@@ -201,7 +193,34 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                               onTap: () {
                                 ModalWrapper.bottomSheet(
                                   context: context,
-                                  widget: StoreOptionModal(store: store),
+                                  widget: StoreOptionModal(options: [
+                                    ModalOption(
+                                      title: "View store details",
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context, RoutePath.viewStoreScreen,
+                                            arguments: store);
+                                      },
+                                    ),
+                                    ModalOption(
+                                      title: "Store sales overview",
+                                      onTap: () {
+                                        Navigator.pushNamed(context,
+                                            RoutePath.storeSalesOverviewScreen,
+                                            arguments: store);
+                                      },
+                                    ),
+                                    ModalOption(
+                                      title: "Store products/inventory list",
+                                      onTap: () {
+                                        Navigator.pushNamed(
+                                            context,
+                                            RoutePath
+                                                .storeInventoryOverviewScreen,
+                                            arguments: store);
+                                      },
+                                    ),
+                                  ]),
                                 );
                               },
                             );

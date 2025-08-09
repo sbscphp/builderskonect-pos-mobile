@@ -208,7 +208,31 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                         subTitle: "10kg Smooth",
                         status: "Active",
                         date: "2023-01-01",
-                        onTap: () {},
+                        onTap: () {
+                          ModalWrapper.bottomSheet(
+                            context: context,
+                            widget: StoreOptionModal(options: [
+                              ModalOption(
+                                title: "View product details",
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.viewProductDetailsScreen,
+                                  );
+                                },
+                              ),
+                              ModalOption(
+                                title: "Edit product details",
+                                onTap: () {},
+                              ),
+                              ModalOption(
+                                title: "Delete product",
+                                textColor: AppColors.red2D,
+                                onTap: () {},
+                              ),
+                            ]),
+                          );
+                        },
                       );
                     },
                   ),
