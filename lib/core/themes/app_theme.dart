@@ -5,6 +5,10 @@ class AppTheme {
     return baseStyle.copyWith(fontWeight: FontWeight.bold);
   }
 
+  static TextStyle withSemiBold(TextStyle baseStyle) {
+    return baseStyle.copyWith(fontWeight: FontWeight.w600);
+  }
+
   static TextStyle withMedium(TextStyle baseStyle) {
     return baseStyle.copyWith(fontWeight: FontWeight.w500);
   }

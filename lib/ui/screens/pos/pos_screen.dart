@@ -136,6 +136,58 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text("Quick Actions", style: textTheme.text16?.medium),
+                    YBox(16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        QuickActionCol(
+                          title: "Customers",
+                          svgPath: AppSvgs.profile,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.customersManagementScreen);
+                          },
+                        ),
+                        QuickActionCol(
+                          title: "Returns",
+                          svgPath: AppSvgs.product,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.returnRefundScreen);
+                          },
+                        ),
+                        QuickActionCol(
+                          title: "Discounts",
+                          svgPath: AppSvgs.shopping,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.discountManagementScreen);
+                          },
+                        ),
+                        QuickActionCol(
+                          title: "Staff",
+                          svgPath: AppSvgs.menu,
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.staffManagementScreen);
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              YBox(16),
+              Container(
+                padding: EdgeInsets.all(Sizer.radius(16)),
+                decoration: BoxDecoration(
+                  color: colorScheme.white,
+                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text("My To-dos", style: textTheme.text16?.medium),
                     YBox(16),
                     Row(

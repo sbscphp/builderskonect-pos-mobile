@@ -4,11 +4,13 @@ class CustomCircleAvatar extends StatelessWidget {
   const CustomCircleAvatar({
     super.key,
     this.avatarUrl,
+    this.showBorder = true,
     this.size = 40,
     this.onTap,
   });
 
   final String? avatarUrl;
+  final bool? showBorder;
   final double size;
   final VoidCallback? onTap;
 
@@ -21,10 +23,12 @@ class CustomCircleAvatar extends StatelessWidget {
         width: Sizer.width(size),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Sizer.radius(40)),
-            border: Border.all(
-              color: AppColors.primaryBlue,
-              width: 2,
-            )),
+            border: showBorder == true
+                ? Border.all(
+                    color: AppColors.primaryBlue,
+                    width: 2,
+                  )
+                : null),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(Sizer.radius(40)),
           child: (avatarUrl != null && avatarUrl != "")

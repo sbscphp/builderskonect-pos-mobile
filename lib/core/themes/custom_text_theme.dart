@@ -20,5 +20,6 @@ extension AppTextTheme on TextTheme {
 
 extension TextStyleExtensions on TextStyle {
   TextStyle get bold => AppTheme.withBold(this);
+  TextStyle get semiBold => AppTheme.withSemiBold(this);
   TextStyle get medium => AppTheme.withMedium(this);
 }

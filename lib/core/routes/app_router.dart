@@ -258,6 +258,39 @@ class AppRouter {
           settings,
         );
 
+      // Staff
+      case RoutePath.staffManagementScreen:
+        return TransitionUtils.buildTransition(
+          const StaffManagementScreen(),
+          settings,
+        );
+
+      case RoutePath.newStaffScreen:
+        return TransitionUtils.buildTransition(
+          const NewStaffScreen(),
+          settings,
+        );
+
+      case RoutePath.newRolesPermissionScreen:
+        return TransitionUtils.buildTransition(
+          const NewRolesPermissionScreen(),
+          settings,
+        );
+
+      // Customers
+      case RoutePath.customersManagementScreen:
+        return TransitionUtils.buildTransition(
+          const CustomersManagementScreen(),
+          settings,
+        );
+
+      // Discount
+      case RoutePath.discountManagementScreen:
+        return TransitionUtils.buildTransition(
+          const DiscountManagementScreen(),
+          settings,
+        );
+
       // POS
       case RoutePath.moreScreen:
         return TransitionUtils.buildTransition(

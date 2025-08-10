@@ -99,7 +99,7 @@ class _ProfileTabState extends State<ProfileTab>
             child: Container(
               padding: EdgeInsets.symmetric(
                 vertical: Sizer.height(16),
-                horizontal: Sizer.width(8),
+                // horizontal: Sizer.width(8),
               ),
               decoration: BoxDecoration(
                 border: Border(
@@ -115,9 +115,8 @@ class _ProfileTabState extends State<ProfileTab>
                 duration: const Duration(milliseconds: 300),
                 style: textTheme.text14?.copyWith(
                       color: _colorAnimation.value,
-                      fontWeight: widget.isSelected
-                          ? FontWeight.w600
-                          : FontWeight.w400,
+                      fontWeight:
+                          widget.isSelected ? FontWeight.w500 : FontWeight.w400,
                     ) ??
                     const TextStyle(),
                 child: Text(widget.title),

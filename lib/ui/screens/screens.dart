@@ -1,6 +1,8 @@
 export 'accounting/accounting.dart';
 export 'auth/auth.dart';
 export 'bottom_nav_screen.dart';
+export 'customers/customers.dart';
+export 'discount/discount.dart';
 export 'module/module.dart';
 export 'more/more.dart';
 export 'notifications/notifications.dart';
@@ -14,5 +16,6 @@ export 'sales/sales.dart';
 export 'screen_not_found.dart';
 export 'settings/settings.dart';
 export 'splash/splash.dart';
+export 'staff/staff.dart';
 export 'store/store.dart';
 export 'webview/webview.dart';

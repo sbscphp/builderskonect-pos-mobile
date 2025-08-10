@@ -4,6 +4,7 @@ export 'business_category_type_model.dart';
 export 'city_model.dart';
 export 'google_address_model.dart';
 export 'merchant_check_list_model.dart';
+export 'notification_model.dart';
 export 'plan_break_down_model.dart';
 export 'product_overview_model.dart';
 export 'revenue_and_traffic_model.dart';

@@ -57,6 +57,31 @@ class AppUtils {
     return tt;
   }
 
+  // Get relative time string
+  static String getRelativeTime(DateTime dateTime) {
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+
+    if (difference.inMinutes < 1) {
+      return "Just now";
+    } else if (difference.inMinutes < 60) {
+      final minutes = difference.inMinutes;
+      return "$minutes min${minutes == 1 ? '' : 's'} ago";
+    } else if (difference.inHours < 24) {
+      final hours = difference.inHours;
+      return "$hours hour${hours == 1 ? '' : 's'} ago";
+    } else if (difference.inDays < 7) {
+      final days = difference.inDays;
+      return "$days day${days == 1 ? '' : 's'} ago";
+    } else if (difference.inDays < 30) {
+      final weeks = (difference.inDays / 7).floor();
+      return "$weeks week${weeks == 1 ? '' : 's'} ago";
+    } else {
+      final months = (difference.inDays / 30).floor();
+      return "$months month${months == 1 ? '' : 's'} ago";
+    }
+  }
+
   //  25 Jan, 2025 | 09:00 AM
   static String formatDateTime(DateTime dateTime) {
     // final dateTime = DateTime.parse(inputDate);

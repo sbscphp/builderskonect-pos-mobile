@@ -22,11 +22,11 @@ class _CustomSwitchState extends State<CustomSwitch> {
         widget.onChanged(!widget.value);
       },
       child: Container(
-        width: Sizer.width(36),
-        height: Sizer.height(20),
+        width: Sizer.width(44),
+        height: Sizer.height(22),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(15),
-          color: widget.value ? AppColors.black : AppColors.black,
+          color: widget.value ? AppColors.primaryBlue : AppColors.neutral5,
         ),
         child: Stack(
           children: [
@@ -35,11 +35,11 @@ class _CustomSwitchState extends State<CustomSwitch> {
               bottom: 0,
               duration: const Duration(milliseconds: 200),
               curve: Curves.ease,
-              left: widget.value ? 17 : 1,
+              left: widget.value ? 27 : 1,
               child: Container(
                 padding: EdgeInsets.all(Sizer.radius(2)),
-                width: Sizer.width(16),
-                height: Sizer.height(16),
+                width: Sizer.width(18),
+                height: Sizer.height(18),
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.white,
