@@ -16,10 +16,14 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(dashboardVmodel)
-        ..getDashboardStats()
-        ..getProductOverview();
+      _callDashboardData();
     });
+  }
+
+  _callDashboardData() async {
+    await ref.read(dashboardVmodel).getDashboardStats();
+    await ref.read(dashboardVmodel).getRevenueAndTraffic();
+    await ref.read(dashboardVmodel).getProductOverview();
   }
 
   @override
@@ -27,12 +31,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final dashVm = ref.watch(dashboardVmodel);
-    final authVm = ref.watch(authVmodel);
+
     return SizedBox(
       height: Sizer.screenHeight,
       width: Sizer.screenWidth,
       child: BusyOverlay(
-        show: authVm.isBusy,
+        show: dashVm.isBusy,
         child: Scaffold(
           key: _scaffoldKey,
           drawer: const CustomDrawer(),
@@ -54,486 +58,377 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               },
             ),
           ),
-          body: ListView(
-            padding: EdgeInsets.only(
-              left: Sizer.width(16),
-              right: Sizer.width(16),
-              bottom: Sizer.height(50),
-            ),
-            children: [
-              YBox(16),
-              InfoContainer(
-                show: _isExpanded,
-                title: "Account Under Review",
-                content:
-                    "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
-                onTap: () {
-                  _isExpanded = !_isExpanded;
-                  setState(() {});
-                },
+          body: RefreshIndicator(
+            onRefresh: () async {
+              await _callDashboardData();
+            },
+            child: ListView(
+              padding: EdgeInsets.only(
+                left: Sizer.width(16),
+                right: Sizer.width(16),
+                bottom: Sizer.height(50),
               ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Sizer.width(16),
-                  vertical: Sizer.height(14),
+              children: [
+                YBox(16),
+                InfoContainer(
+                  show: _isExpanded,
+                  title: "Account Under Review",
+                  content:
+                      "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
+                  onTap: () {
+                    _isExpanded = !_isExpanded;
+                    setState(() {});
+                  },
                 ),
-                width: Sizer.screenWidth,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(AppImages.banner),
-                    fit: BoxFit.cover,
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Sizer.width(16),
+                    vertical: Sizer.height(14),
                   ),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Welcome Onboard!",
-                      style: textTheme.text16?.medium.copyWith(
-                        color: colorScheme.white,
-                      ),
+                  width: Sizer.screenWidth,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(AppImages.banner),
+                      fit: BoxFit.cover,
                     ),
-                    YBox(4),
-                    Text(
-                      "Complete your business profile by uploading your business logo",
-                      style: textTheme.text12?.copyWith(
-                        color: colorScheme.white,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome Onboard!",
+                        style: textTheme.text16?.medium.copyWith(
+                          color: colorScheme.white,
+                        ),
                       ),
-                    ),
-                    YBox(10),
-                    Row(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: Sizer.width(8),
-                            vertical: Sizer.height(4),
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.white,
-                            borderRadius:
-                                BorderRadius.circular(Sizer.radius(4)),
-                          ),
-                          child: Text(
-                            "Upload Logo",
-                            style: textTheme.text12?.copyWith(
-                              color: colorScheme.primaryColor,
+                      YBox(4),
+                      Text(
+                        "Complete your business profile by uploading your business logo",
+                        style: textTheme.text12?.copyWith(
+                          color: colorScheme.white,
+                        ),
+                      ),
+                      YBox(10),
+                      Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Sizer.width(8),
+                              vertical: Sizer.height(4),
+                            ),
+                            decoration: BoxDecoration(
+                              color: colorScheme.white,
+                              borderRadius:
+                                  BorderRadius.circular(Sizer.radius(4)),
+                            ),
+                            child: Text(
+                              "Upload Logo",
+                              style: textTheme.text12?.copyWith(
+                                color: colorScheme.primaryColor,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  ],
+                        ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(16)),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Quick Actions", style: textTheme.text16?.medium),
-                    YBox(16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        QuickActionCol(
-                          title: "Customers",
-                          svgPath: AppSvgs.profile,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.customersManagementScreen);
-                          },
-                        ),
-                        QuickActionCol(
-                          title: "Returns",
-                          svgPath: AppSvgs.product,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.returnRefundScreen);
-                          },
-                        ),
-                        QuickActionCol(
-                          title: "Discounts",
-                          svgPath: AppSvgs.shopping,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.discountManagementScreen);
-                          },
-                        ),
-                        QuickActionCol(
-                          title: "Staff",
-                          svgPath: AppSvgs.menu,
-                          onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.staffManagementScreen);
-                          },
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(16)),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("My To-dos", style: textTheme.text16?.medium),
-                    YBox(16),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: MyTodoRol(
-                            leadiconPath: AppSvgs.shop,
-                            trailIconPath: AppSvgs.checkCircle,
-                            title: "Create a store",
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Quick Actions", style: textTheme.text16?.medium),
+                      YBox(16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          QuickActionCol(
+                            title: "Customers",
+                            svgPath: AppSvgs.profile,
                             onTap: () {
-                              // Navigator.pushNamed(context, RoutePath.profileScreen);
+                              Navigator.pushNamed(
+                                  context, RoutePath.customersManagementScreen);
                             },
                           ),
-                        ),
-                        XBox(8),
-                        Expanded(
-                          child: MyTodoRol(
-                            leadiconPath: AppSvgs.plusCircle,
-                            trailIconPath: AppSvgs.chevronRight,
-                            title: "Add products",
+                          QuickActionCol(
+                            title: "Returns",
+                            svgPath: AppSvgs.product,
                             onTap: () {
-                              // Navigator.pushNamed(context, RoutePath.profileScreen);
+                              Navigator.pushNamed(
+                                  context, RoutePath.returnRefundScreen);
                             },
                           ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(16)),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Overview", style: textTheme.text16?.medium),
-                    Text("Track and measure store performance and analytics ",
-                        style: textTheme.text12
-                            ?.copyWith(color: colorScheme.black45)),
-                    YBox(16),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: StatCard(
-                                title: "Total Products",
-                                value: dashVm.statModel?.totalProducts ?? "0",
-                                bgColor: AppColors.blueFF,
-                                borderColor: AppColors.blue5,
-                                amountColor: AppColors.primaryBlue,
-                                onTap: () {},
-                              ),
-                            ),
-                            XBox(16),
-                            Expanded(
-                              child: StatCard(
-                                title: "Revenue",
-                                value:
-                                    dashVm.statModel?.revenueGenerated ?? "0",
-                                bgColor: AppColors.magentaF8,
-                                borderColor: AppColors.magenta4,
-                                borderButtomColor: AppColors.magenta2,
-                                amountColor: AppColors.magenta6,
-                                onTap: () {},
-                              ),
-                            ),
-                          ],
-                        ),
-                        YBox(16),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: StatCard(
-                                title: "Total Sales Order",
-                                value:
-                                    dashVm.statModel?.totalSalesOrders ?? "0",
-                                borderButtomColor: AppColors.purple2,
-                                bgColor: AppColors.yellowE6,
-                                borderColor: AppColors.yellow4,
-                                amountColor: AppColors.yellow6,
-                                onTap: () {},
-                              ),
-                            ),
-                            XBox(16),
-                            Expanded(
-                              child: StatCard(
-                                title: "Total Customers",
-                                value: dashVm.statModel?.totalCustomers
-                                        ?.toString() ??
-                                    "0",
-                                bgColor: AppColors.greenED,
-                                borderColor: AppColors.green4,
-                                borderButtomColor: AppColors.purple2,
-                                amountColor: AppColors.green7,
-                                iconPath: AppSvgs.chart,
-                                onTap: () {},
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(16)),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    FilterHeader(
-                      title: "Revenue Analytics",
-                      subTitle:
-                          "Get insights into revenue analytics right here.",
-                      onFilter: () {},
-                    ),
-                    YBox(16),
-                    StatCard(
-                      title: "Total Revenue",
-                      value: dashVm.revenueAndTrafficModel?.revenue ?? "0",
-                      bgColor: AppColors.yellowE8,
-                      borderColor: AppColors.yellow1C,
-                      borderButtomColor: AppColors.yellowBF,
-                      amountColor: AppColors.yellow1C,
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-              ),
-              YBox(16),
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(16)),
-                decoration: BoxDecoration(
-                  color: colorScheme.white,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text("Customer Traffic",
-                              style: textTheme.text16?.medium),
-                        ),
-                        InkWell(
-                          onTap: () {},
-                          child: SvgPicture.asset(
-                            AppSvgs.filter,
-                            height: Sizer.height(32),
+                          QuickActionCol(
+                            title: "Discounts",
+                            svgPath: AppSvgs.shopping,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RoutePath.discountManagementScreen);
+                            },
                           ),
-                        )
-                      ],
-                    ),
-                    YBox(16),
-                    Column(
-                      children: [
-                        Row(
+                          QuickActionCol(
+                            title: "Staff",
+                            svgPath: AppSvgs.menu,
+                            onTap: () {
+                              Navigator.pushNamed(
+                                  context, RoutePath.staffManagementScreen);
+                            },
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                        child:
+                            Text("My To-dos", style: textTheme.text16?.medium),
+                      ),
+                      YBox(16),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
                           children: [
-                            Expanded(
-                              child: StatCard(
-                                title: "Walk-in",
-                                value: dashVm.revenueAndTrafficModel?.traffic
-                                        ?.pos?.value ??
-                                    "0",
-                                bgColor: AppColors.blueFF,
-                                borderColor: AppColors.blue5,
-                                amountColor: AppColors.primaryBlue,
-                                onTap: () {},
-                              ),
-                            ),
                             XBox(16),
-                            Expanded(
-                              child: StatCard(
-                                title: "Online",
-                                value: dashVm.revenueAndTrafficModel?.traffic
-                                        ?.omp?.value ??
-                                    "0",
-                                bgColor: AppColors.magentaF8,
-                                borderColor: AppColors.magenta4,
-                                borderButtomColor: AppColors.magenta2,
-                                amountColor: AppColors.magenta6,
-                                onTap: () {},
-                              ),
+                            MyTodoRol(
+                              leadiconPath: AppSvgs.shop,
+                              isDone: dashVm.merchantCheckListModel?.hasStore ??
+                                  false,
+                              title: "Create a store",
                             ),
+                            XBox(8),
+                            MyTodoRol(
+                              leadiconPath: AppSvgs.plusCircle,
+                              isDone:
+                                  dashVm.merchantCheckListModel?.hasProducts ??
+                                      false,
+                              title: "Add products",
+                            ),
+                            XBox(8),
+                            MyTodoRol(
+                              leadiconPath: AppSvgs.plusCircle,
+                              isDone: dashVm.merchantCheckListModel?.hasRole ??
+                                  false,
+                              title: "Create role",
+                            ),
+                            XBox(8),
+                            MyTodoRol(
+                              leadiconPath: AppSvgs.plusCircle,
+                              isDone: dashVm.merchantCheckListModel?.hasStaff ??
+                                  false,
+                              title: "Add user",
+                            ),
+                            XBox(8),
+                            MyTodoRol(
+                              leadiconPath: AppSvgs.plusCircle,
+                              isDone: dashVm.merchantCheckListModel?.hasSales ??
+                                  false,
+                              title: "Create sales order",
+                            ),
+                            XBox(30),
                           ],
                         ),
-                      ],
-                    ),
-                  ],
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              YBox(16),
-              OverviewWidget(
-                title: 'Products Overview',
-                subtitle: 'View top selling products and total amount sold',
-                data: [
-                  OverviewData(
-                    name: 'Cement',
-                    amount: 4544,
-                    color: const Color(0xFF4F8EF7),
-                    percentage: 25,
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
                   ),
-                  OverviewData(
-                    name: 'Paint',
-                    amount: 4544,
-                    color: const Color(0xFF00BCD4),
-                    percentage: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Overview", style: textTheme.text16?.medium),
+                      Text("Track and measure store performance and analytics ",
+                          style: textTheme.text12
+                              ?.copyWith(color: colorScheme.black45)),
+                      YBox(16),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: StatCard(
+                                  title: "Total Products",
+                                  value: dashVm.statModel?.totalProducts ?? "0",
+                                  bgColor: AppColors.blueFF,
+                                  borderColor: AppColors.blue5,
+                                  amountColor: AppColors.primaryBlue,
+                                  onTap: () {},
+                                ),
+                              ),
+                              XBox(16),
+                              Expanded(
+                                child: StatCard(
+                                  title: "Revenue",
+                                  value:
+                                      dashVm.statModel?.revenueGenerated ?? "0",
+                                  bgColor: AppColors.magentaF8,
+                                  borderColor: AppColors.magenta4,
+                                  borderButtomColor: AppColors.magenta2,
+                                  amountColor: AppColors.magenta6,
+                                  onTap: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                          YBox(16),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: StatCard(
+                                  title: "Total Sales Order",
+                                  value:
+                                      dashVm.statModel?.totalSalesOrders ?? "0",
+                                  borderButtomColor: AppColors.purple2,
+                                  bgColor: AppColors.yellowE6,
+                                  borderColor: AppColors.yellow4,
+                                  amountColor: AppColors.yellow6,
+                                  onTap: () {},
+                                ),
+                              ),
+                              XBox(16),
+                              Expanded(
+                                child: StatCard(
+                                  title: "Total Customers",
+                                  value: dashVm.statModel?.totalCustomers
+                                          ?.toString() ??
+                                      "0",
+                                  bgColor: AppColors.greenED,
+                                  borderColor: AppColors.green4,
+                                  borderButtomColor: AppColors.purple2,
+                                  amountColor: AppColors.green7,
+                                  iconPath: AppSvgs.chart,
+                                  onTap: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                  OverviewData(
-                    name: 'Tiles',
-                    amount: 4544,
-                    color: const Color(0xFF4CAF50),
-                    percentage: 15,
+                ),
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
                   ),
-                  OverviewData(
-                    name: 'Cement Mixer',
-                    amount: 4544,
-                    color: const Color(0xFFFFA726),
-                    percentage: 20,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FilterHeader(
+                        title: "Revenue Analytics",
+                        subTitle:
+                            "Get insights into revenue analytics right here.",
+                        onFilter: () {},
+                      ),
+                      YBox(16),
+                      StatCard(
+                        title: "Total Revenue",
+                        value: dashVm.revenueAndTrafficModel?.revenue ?? "0",
+                        bgColor: AppColors.yellowE8,
+                        borderColor: AppColors.yellow1C,
+                        borderButtomColor: AppColors.yellowBF,
+                        amountColor: AppColors.yellow1C,
+                        onTap: () {},
+                      ),
+                    ],
                   ),
-                  OverviewData(
-                    name: 'Paint brush',
-                    amount: 4544,
-                    color: const Color(0xFFEF5350),
-                    percentage: 10,
+                ),
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
                   ),
-                  OverviewData(
-                    name: 'Others',
-                    amount: 4544,
-                    color: const Color(0xFF9C27B0),
-                    percentage: 10,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text("Customer Traffic",
+                                style: textTheme.text16?.medium),
+                          ),
+                          InkWell(
+                            onTap: () {},
+                            child: SvgPicture.asset(
+                              AppSvgs.filter,
+                              height: Sizer.height(32),
+                            ),
+                          )
+                        ],
+                      ),
+                      YBox(16),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: StatCard(
+                                  title: "Walk-in",
+                                  value: dashVm.revenueAndTrafficModel?.traffic
+                                          ?.pos?.value ??
+                                      "0",
+                                  bgColor: AppColors.blueFF,
+                                  borderColor: AppColors.blue5,
+                                  amountColor: AppColors.primaryBlue,
+                                  onTap: () {},
+                                ),
+                              ),
+                              XBox(16),
+                              Expanded(
+                                child: StatCard(
+                                  title: "Online",
+                                  value: dashVm.revenueAndTrafficModel?.traffic
+                                          ?.omp?.value ??
+                                      "0",
+                                  bgColor: AppColors.magentaF8,
+                                  borderColor: AppColors.magenta4,
+                                  borderButtomColor: AppColors.magenta2,
+                                  amountColor: AppColors.magenta6,
+                                  onTap: () {},
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-                totalValue: 0,
-                totalLabel: 'Products sold',
-                valuePrefix: '₦',
-              ),
-            ],
+                ),
+                YBox(16),
+                ProductOverviewWidget(),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class MyTodoRol extends StatelessWidget {
-  const MyTodoRol({
-    super.key,
-    required this.leadiconPath,
-    required this.trailIconPath,
-    required this.title,
-    this.onTap,
-  });
-
-  final String leadiconPath;
-  final String trailIconPath;
-  final String title;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: Sizer.width(12),
-          vertical: Sizer.height(12),
-        ),
-        decoration: BoxDecoration(
-          border: Border.all(color: colorScheme.text6),
-          borderRadius: BorderRadius.circular(Sizer.radius(4)),
-        ),
-        child: Row(
-          children: [
-            SvgPicture.asset(leadiconPath),
-            XBox(8),
-            Expanded(
-              child: Text(
-                title,
-                style: textTheme.text14?.copyWith(
-                  color: AppColors.neutral9,
-                ),
-              ),
-            ),
-            SvgPicture.asset(trailIconPath),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class QuickActionCol extends StatelessWidget {
-  const QuickActionCol({
-    super.key,
-    required this.title,
-    required this.svgPath,
-    this.onTap,
-  });
-
-  final String title;
-  final String svgPath;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: EdgeInsets.symmetric(
-              horizontal: Sizer.width(12),
-              vertical: Sizer.height(10),
-            ),
-            decoration: BoxDecoration(
-              color: AppColors.dayBreakBlue,
-              borderRadius: BorderRadius.circular(Sizer.radius(4)),
-            ),
-            child: SvgPicture.asset(
-              svgPath,
-              height: Sizer.height(24),
-            ),
-          ),
-          YBox(4),
-          Text(
-            title,
-            style: textTheme.text14,
-          )
-        ],
       ),
     );
   }

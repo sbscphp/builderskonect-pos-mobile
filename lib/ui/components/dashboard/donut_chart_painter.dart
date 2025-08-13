@@ -48,7 +48,7 @@ class DonutChartPainter extends CustomPainter {
 
 class OverviewData {
   final String name;
-  final int amount;
+  final double amount;
   final Color color;
   final double percentage;
 

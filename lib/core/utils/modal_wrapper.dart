@@ -31,12 +31,12 @@ class ModalWrapper<T> {
     );
   }
 
-  static void showCustomDialog(
+  static Future<T?> showCustomDialog<T>(
     BuildContext context, {
     required Widget child,
     bool? canDismiss,
   }) {
-    showGeneralDialog(
+    return showGeneralDialog<T>(
       context: context,
       barrierLabel: "Barrier",
       barrierDismissible: canDismiss ?? true,
@@ -44,9 +44,7 @@ class ModalWrapper<T> {
       transitionDuration: const Duration(milliseconds: 700),
       pageBuilder: (_, __, ___) {
         return Center(
-          child: Container(
-              margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-              child: child),
+          child: child,
         );
       },
       transitionBuilder: (_, anim, __, child) {

@@ -21,8 +21,8 @@ class RevenueAndTrafficModel {
 }
 
 class Traffic {
-  final Omp? omp;
-  final Omp? pos;
+  final Omp? omp; // Online
+  final Omp? pos; //Walk-in
 
   Traffic({
     this.omp,
