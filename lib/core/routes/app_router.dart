@@ -245,6 +245,13 @@ class AppRouter {
         }
         return errorScreen(settings);
 
+      // sales
+      case RoutePath.newSalesScreen:
+        return TransitionUtils.buildTransition(
+          const NewSalesScreen(),
+          settings,
+        );
+
       // Returns
       case RoutePath.returnRefundScreen:
         return TransitionUtils.buildTransition(

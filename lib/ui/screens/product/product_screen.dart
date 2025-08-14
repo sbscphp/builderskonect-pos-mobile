@@ -202,7 +202,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     itemCount: 10,
                     separatorBuilder: (_, __) => HDivider(),
                     itemBuilder: (ctx, i) {
-                      return ProductListTile(
+                      return ProductWithStatusListTile(
                         productImage: AppUtils.dummyImage,
                         productTitle: "Premium Cement",
                         subTitle: "10kg Smooth",

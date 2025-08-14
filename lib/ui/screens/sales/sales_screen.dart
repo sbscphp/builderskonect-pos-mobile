@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -8,9 +10,54 @@ class SalesScreen extends ConsumerStatefulWidget {
   ConsumerState<SalesScreen> createState() => _SalesScreenState();
 }
 
-class _SalesScreenState extends ConsumerState<SalesScreen> {
+class _SalesScreenState extends ConsumerState<SalesScreen>
+    with TickerProviderStateMixin {
+  int currentIndex = 0;
+  late AnimationController _tabController;
+  late Animation<double> _fadeAnimation;
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(
+      parent: _tabController,
+      curve: Curves.easeInOut,
+    ));
+    _tabController.forward();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // ref.read(storeVmodel).getStoreOverview();
+    });
+  }
+
+  void _onTabChanged(int index) {
+    if (currentIndex != index) {
+      setState(() {
+        currentIndex = index;
+      });
+    }
+  }
+
+  Widget _buildTabContent() {
+    switch (currentIndex) {
+      case 0:
+        return const AllSalesOverview();
+      case 1:
+        return const OnlineSalesOverview();
+      case 2:
+        return const WalkInSalesOverview();
+      default:
+        return const AllSalesOverview();
+    }
+  }
 
   @override
   void dispose() {
@@ -28,7 +75,48 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
           title: "Sales",
           trailingWidget: InkWell(
             onTap: () {
-              // Navigator.pushNamed(context, RoutePath.notificationScreen);
+              showMenu(
+                context: context,
+                position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                items: [
+                  PopupMenuItem(
+                    value: 'paused_sales',
+                    child: Text('Paused Sales', style: textTheme.text14),
+                  ),
+                  PopupMenuItem(
+                    value: 'new_sales',
+                    child: Text('New Sales', style: textTheme.text14),
+                  ),
+                  PopupMenuItem(
+                    value: 'offline_sales',
+                    child: Text('Offline Sales', style: textTheme.text14),
+                  ),
+                  PopupMenuItem(
+                    value: 'order_analytics',
+                    child: Text('Order Analytics', style: textTheme.text14),
+                  ),
+                ],
+              ).then((value) {
+                if (value != null) {
+                  printty('Selected: $value');
+                  switch (value) {
+                    case 'paused_sales':
+                      // Navigator.pushNamed(context, RoutePath.pausedSalesScreen);
+                      break;
+                    case 'new_sales':
+                      Navigator.pushNamed(context, RoutePath.newSalesScreen);
+                      break;
+                    case 'offline_sales':
+                      // Navigator.pushNamed(context, RoutePath.offlineSalesScreen);
+                      break;
+                    case 'order_analytics':
+                      // Navigator.pushNamed(context, RoutePath.orderAnalyticsScreen);
+                      break;
+                    default:
+                      break;
+                  }
+                }
+              });
             },
             child: SvgPicture.asset(
               AppSvgs.circleMenu,
@@ -37,144 +125,63 @@ class _SalesScreenState extends ConsumerState<SalesScreen> {
           ),
           leadingWidget: CustomCircleAvatar(onTap: () {}),
         ),
-        body: ListView(
-          padding: EdgeInsets.only(
-            left: Sizer.width(16),
-            right: Sizer.width(16),
-            bottom: Sizer.height(50),
-          ),
+        body: Column(
           children: [
-            YBox(16),
-            Container(
-              padding: EdgeInsets.all(Sizer.radius(16)),
-              decoration: BoxDecoration(
-                color: colorScheme.white,
-                borderRadius: BorderRadius.circular(Sizer.radius(4)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FilterHeader(
-                    title: "Sales Overview",
-                    subTitle: "View and manage offline and online sales",
-                    trailingWidget: NewButtonWidget(
-                      onTap: () {
-                        // Navigator.pushNamed(context, RoutePath.newSalesScreen);
-                      },
-                    ),
-                    onFilter: () {},
-                  ),
-                  YBox(16),
-                  Container(
-                    width: double.infinity,
-                    height: Sizer.height(200),
-                    padding: EdgeInsets.all(Sizer.radius(16)),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.blueDD9),
-                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            AnimatedBuilder(
+              animation: _fadeAnimation,
+              builder: (context, child) {
+                return FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                    color: colorScheme.white,
+                    child: Row(
                       children: [
-                        ProductColText(
-                          title: "TOTAL SALES VALUE",
-                          value: "2",
+                        ProfileTab(
+                          title: "All Sales",
+                          isSelected: currentIndex == 0,
+                          onTap: () => _onTabChanged(0),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            ProductColText(
-                              textColor: colorScheme.black85,
-                              title: "Total Sales",
-                              value: "2",
-                              valueTextSize: 12,
-                            ),
-                            ProductColText(
-                              textColor: colorScheme.black85,
-                              title: "Online Sales",
-                              value: "2",
-                              valueTextSize: 12,
-                              valueColor: AppColors.purple6,
-                            ),
-                          ],
+                        XBox(30),
+                        ProfileTab(
+                          title: "Online Sales",
+                          isSelected: currentIndex == 1,
+                          onTap: () => _onTabChanged(1),
                         ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            ProductColText(
-                              textColor: colorScheme.black85,
-                              title: "Walk-in Sales",
-                              value: "2",
-                              valueTextSize: 12,
-                              valueColor: AppColors.red2D,
-                            ),
-                          ],
+                        XBox(30),
+                        ProfileTab(
+                          title: "Walk-in Sales",
+                          isSelected: currentIndex == 2,
+                          onTap: () => _onTabChanged(2),
                         ),
                       ],
                     ),
                   ),
-                  YBox(24),
-                  FilterHeader(
-                    title: "Sales List",
-                    subTitle: "See all sales made in your business",
-                    onFilter: () {},
-                  ),
-                  YBox(16),
-                  CustomTextField(
-                    controller: searchC,
-                    focusNode: searchFocus,
-                    isRequired: false,
-                    showLabelHeader: false,
-                    hintText: "Search by product id, name etc.",
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    suffixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (searchC.text.isNotEmpty)
-                          InkWell(
-                            onTap: () {},
-                            child: Padding(
-                              padding: EdgeInsets.all(Sizer.width(10)),
-                              child: Icon(
-                                Icons.close,
-                                size: Sizer.width(20),
-                                color: AppColors.gray500,
-                              ),
-                            ),
-                          ),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            padding: EdgeInsets.all(Sizer.width(10)),
-                            decoration: BoxDecoration(),
-                            child: SvgPicture.asset(AppSvgs.search),
-                          ),
-                        ),
-                      ],
+                );
+              },
+            ),
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                transitionBuilder: (Widget child, Animation<double> animation) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0.1, 0.0),
+                        end: Offset.zero,
+                      ).animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeInOut,
+                      )),
+                      child: child,
                     ),
-                  ),
-                  YBox(10),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      top: Sizer.height(14),
-                    ),
-                    itemCount: 10,
-                    separatorBuilder: (_, __) => HDivider(),
-                    itemBuilder: (ctx, i) {
-                      return CustomColWidget(
-                        firstColText: "#162826",
-                        subTitle: "Mainland Store",
-                        status: "Expired",
-                        date: DateTime.now(),
-                      );
-                    },
-                  ),
-                ],
+                  );
+                },
+                child: Container(
+                  key: ValueKey<int>(currentIndex),
+                  child: _buildTabContent(),
+                ),
               ),
             ),
           ],

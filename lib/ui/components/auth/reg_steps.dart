@@ -144,9 +144,7 @@ class _RegStepsState extends State<RegSteps>
                     curve: Curves.easeInOut,
                     style: textTheme.text12?.copyWith(
                           color: _numberColorAnimation.value,
-                          fontWeight: widget.isActive
-                              ? FontWeight.w500
-                              : FontWeight.normal,
+                          fontSize: Sizer.text(11),
                         ) ??
                         const TextStyle(),
                     child: Text(widget.number),
@@ -159,8 +157,7 @@ class _RegStepsState extends State<RegSteps>
                 curve: Curves.easeInOut,
                 style: textTheme.text12?.copyWith(
                       color: _textColorAnimation.value,
-                      fontWeight:
-                          widget.isActive ? FontWeight.w500 : FontWeight.normal,
+                      fontSize: Sizer.text(11),
                     ) ??
                     const TextStyle(),
                 child: Text(widget.text),

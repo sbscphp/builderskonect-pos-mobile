@@ -53,4 +53,9 @@ class AppSvgs {
   static const String uploadImgSquare = "$svgIcon/uploadImgSquare.svg";
 
   static const String inputSuffix = "$svgIcon/inputSuffix.svg";
+  static const String scan = "$svgIcon/scan.svg";
+  static const String minus = "$svgIcon/minus.svg";
+  static const String plus = "$svgIcon/plus.svg";
+  static const String trash = "$svgIcon/trash.svg";
+  static const String trashOutline = "$svgIcon/trashOutline.svg";
 }

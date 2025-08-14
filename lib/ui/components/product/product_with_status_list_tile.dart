@@ -1,8 +1,8 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class ProductListTile extends StatelessWidget {
-  const ProductListTile({
+class ProductWithStatusListTile extends StatelessWidget {
+  const ProductWithStatusListTile({
     super.key,
     required this.productTitle,
     required this.productImage,

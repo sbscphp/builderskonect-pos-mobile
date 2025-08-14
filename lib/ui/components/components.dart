@@ -8,5 +8,6 @@ export 'plans/plans.dart';
 export 'pos/pos.dart';
 export 'product/product.dart';
 export 'profile/profile.dart';
+export 'sales/sales.dart';
 export 'shared/shared.dart';
 export 'staffs/staffs.dart';

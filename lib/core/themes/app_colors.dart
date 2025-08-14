@@ -31,6 +31,7 @@ class AppColors {
   static const neutral7 = Color(0xFF8C8C8C);
   static const neutral8 = Color(0xFF595959);
   static const neutral9 = Color(0xFF434343);
+  static const neutral10 = Color(0xFF262626);
   static const neutral11 = Color(0xFF1F1F1F);
 
   static const gray50 = Color(0xFFF9FAFB);
@@ -38,7 +39,6 @@ class AppColors {
   static const gray500 = Color(0xFF667085);
   static const gray600 = Color(0xFF475367);
   static const gray700 = Color(0xFF344054);
-  static const gray26 = Color(0xFF262626);
   static const grayF8 = Color(0xFFF6F7F8);
   static const grayF2 = Color(0xFFEDEFF2);
   static const grayA4 = Color(0xFFA4A4A4);
