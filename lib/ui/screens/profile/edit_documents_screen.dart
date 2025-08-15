@@ -18,7 +18,7 @@ class _EditDocumentsScreenState extends ConsumerState<EditDocumentsScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: CustomAppbar(
-          title: "Edit",
+          title: "Edit Request",
         ),
         body: ListView(
           padding: EdgeInsets.only(

@@ -47,7 +47,7 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final profileVm = ref.watch(profileVmodel);
+    final profileVm = ref.watch(vendorProfileVmodel);
     return BusyOverlay(
       show: profileVm.isBusy,
       child: Scaffold(
@@ -143,14 +143,15 @@ class _ContactSupportScreenState extends ConsumerState<ContactSupportScreen> {
                         text: "Submit",
                         onTap: () async {
                           if (formKey.currentState?.validate() ?? false) {
-                            final r =
-                                await ref.read(profileVmodel).contactSupport(
-                                      name: subjectC.text,
-                                      email: emailC.text,
-                                      phone: phoneC.text,
-                                      message: messageC.text,
-                                      media: _docUrl,
-                                    );
+                            final r = await ref
+                                .read(vendorProfileVmodel)
+                                .contactSupport(
+                                  name: subjectC.text,
+                                  email: emailC.text,
+                                  phone: phoneC.text,
+                                  message: messageC.text,
+                                  media: _docUrl,
+                                );
                             handleApiResponse(
                               response: r,
                               onSuccess: () {

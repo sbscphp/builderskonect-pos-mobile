@@ -5,7 +5,9 @@ VendorProfileModel profileModelFromJson(String str) =>
 
 class VendorProfileModel {
   final String? id;
-  final dynamic logo;
+  final String? logo;
+  final String? status;
+  final String? onboardingStatus;
   final Business? business;
   final Finance? finance;
   final Documents? documents;
@@ -13,6 +15,8 @@ class VendorProfileModel {
   VendorProfileModel({
     this.id,
     this.logo,
+    this.status,
+    this.onboardingStatus,
     this.business,
     this.finance,
     this.documents,
@@ -22,6 +26,8 @@ class VendorProfileModel {
       VendorProfileModel(
         id: json["id"],
         logo: json["logo"],
+        status: json["status"],
+        onboardingStatus: json["onboarding_status"],
         business: json["business"] == null
             ? null
             : Business.fromJson(json["business"]),

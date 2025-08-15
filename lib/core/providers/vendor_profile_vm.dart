@@ -15,39 +15,13 @@ class ProfileVm extends BaseVm {
     );
   }
 
-  UserProfileModel? _userProfile;
-  UserProfileModel? get userProfile => _userProfile;
-  Future<ApiResponse> getUserProfile() async {
-    return await performApiCall(
-      url: "/api/v1/merchants/staff/get/profile",
-      method: apiService.getWithAuth,
-      onSuccess: (data) {
-        _userProfile = userProfileModelFromJson(json.encode(data["data"]));
-        return apiResponse;
-      },
-    );
-  }
-
-  Future<ApiResponse> updateProfile({
-    String? name,
-    String? avatar,
-    String? password,
-    String? passwordConfirm,
-    String? currentPassword,
-    String? busyObjectName,
-  }) async {
-    final body = {
-      "name": name,
-      "avatar": avatar,
-      "password": password,
-      "password_confirmation": passwordConfirm,
-      "current_password": currentPassword,
-    };
+  Future<ApiResponse> updateVendorProfile(VendorProfileParams params) async {
+    final body = params.toMap();
     body.removeWhere((k, v) => v == null || v == "");
     return await performApiCall(
-      url: "/api/v1/merchants/staff/update/profile",
+      url: "/api/v1/merchants/profile",
       method: apiService.putWithAuth,
-      busyObjectName: busyObjectName,
+      busyObjectName: updateState,
       body: body,
       onSuccess: (data) {
         return apiResponse;
@@ -83,4 +57,4 @@ class ProfileVm extends BaseVm {
   }
 }
 
-final profileVmodel = ChangeNotifierProvider((ref) => ProfileVm());
+final vendorProfileVmodel = ChangeNotifierProvider((ref) => ProfileVm());

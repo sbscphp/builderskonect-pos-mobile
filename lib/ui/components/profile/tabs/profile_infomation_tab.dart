@@ -19,9 +19,7 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileVmodel)
-        ..getVendorProfile()
-        ..getUserProfile();
+      ref.read(vendorProfileVmodel).getVendorProfile();
     });
   }
 
@@ -29,7 +27,7 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final profileVm = ref.watch(profileVmodel);
+    final profileVm = ref.watch(vendorProfileVmodel);
     return LoadableContentBuilder(
         isBusy: profileVm.isBusy,
         loadingBuilder: (p0) {
@@ -49,81 +47,36 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
         },
         contentBuilder: (context) {
           return ListView(
+            padding: EdgeInsets.only(bottom: Sizer.height(30)),
             children: [
-              YBox(16),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                child: InfoContainer(
-                  show: _isExpanded,
-                  title: "Account Under Review",
-                  content:
-                      "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
-                  onTap: () {
-                    _isExpanded = !_isExpanded;
-                    setState(() {});
-                  },
+              if (profileVm.vendorProfile?.onboardingStatus != "approved")
+                Padding(
+                  padding: EdgeInsets.only(
+                    top: Sizer.height(16),
+                    left: Sizer.width(16),
+                    right: Sizer.width(16),
+                  ),
+                  child: InfoContainer(
+                    show: _isExpanded,
+                    title: "Account Under Review",
+                    content:
+                        "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
+                    onTap: () {
+                      _isExpanded = !_isExpanded;
+                      setState(() {});
+                    },
+                  ),
                 ),
-              ),
-              YBox(16),
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                padding: EdgeInsets.symmetric(
-                  horizontal: Sizer.width(16),
-                  vertical: Sizer.height(16),
-                ),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  color: colorScheme.white,
-                ),
-                child: Row(
-                  children: [
-                    CustomCircleAvatar(
-                      size: 60,
-                      avatarUrl: "",
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.pushNamed(context, RoutePath.profileScreen);
-                      },
-                    ),
-                    XBox(16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Welcome Onboard!',
-                              style: textTheme.text16?.medium.copyWith(
-                                color: AppColors.primaryBlue,
-                              )),
-                          YBox(2),
-                          Text(
-                            "Complete your business profile by uploading your business logo",
-                            style: textTheme.text12?.copyWith(
-                              color: AppColors.neutral8,
-                            ),
-                          ),
-                          YBox(8),
-                          CustomBtn(
-                            height: Sizer.height(38),
-                            width: Sizer.width(90),
-                            text: "Upload Logo",
-                            isOutline: true,
-                            textStyle: textTheme.text12?.copyWith(
-                              color: AppColors.primaryBlue,
-                            ),
-                            onTap: () {},
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
+              WelcomeOnboardWidget(
+                  colorScheme: colorScheme,
+                  profileVm: profileVm,
+                  textTheme: textTheme),
               YBox(16),
               ProfileTopWidget(
-                avatarUrl: profileVm.userProfile?.avatar ?? "",
-                storeName: profileVm.userProfile?.name ?? "",
-                email: profileVm.userProfile?.email ?? "",
-                phone: profileVm.userProfile?.phone ?? "",
+                avatarUrl: profileVm.vendorProfile?.logo ?? "",
+                storeName: profileVm.vendorProfile?.business?.name ?? "",
+                email: profileVm.vendorProfile?.business?.email ?? "",
+                phone: profileVm.vendorProfile?.business?.phone ?? "",
               ),
               YBox(16),
               Container(
@@ -148,8 +101,13 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                         XBox(8),
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.editProfileScreen);
+                            if (profileVm.vendorProfile?.business != null) {
+                              Navigator.pushNamed(
+                                context,
+                                RoutePath.editBusinessProfileScreen,
+                                arguments: profileVm.vendorProfile!.business,
+                              );
+                            }
                           },
                           child: SvgPicture.asset(AppSvgs.profileEdit),
                         ),
@@ -244,8 +202,13 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                         XBox(8),
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(
-                                context, RoutePath.editFinanceScreen);
+                            if (profileVm.vendorProfile?.finance != null) {
+                              Navigator.pushNamed(
+                                context,
+                                RoutePath.editFinanceScreen,
+                                arguments: profileVm.vendorProfile?.finance,
+                              );
+                            }
                           },
                           child: SvgPicture.asset(AppSvgs.profileEdit),
                         ),

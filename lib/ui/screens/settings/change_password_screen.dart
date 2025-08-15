@@ -30,7 +30,7 @@ class _ChangePasswordScreenState extends ConsumerState<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final profileVm = ref.watch(profileVmodel);
+    final profileVm = ref.watch(userProfileVmodel);
     return BusyOverlay(
       show: profileVm.isBusy,
       child: Scaffold(

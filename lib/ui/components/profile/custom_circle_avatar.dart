@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomCircleAvatar extends StatelessWidget {
   const CustomCircleAvatar({
@@ -6,12 +7,14 @@ class CustomCircleAvatar extends StatelessWidget {
     this.avatarUrl,
     this.showBorder = true,
     this.size = 40,
+    this.isLoading = false,
     this.onTap,
   });
 
   final String? avatarUrl;
   final bool? showBorder;
   final double size;
+  final bool isLoading;
   final VoidCallback? onTap;
 
   @override
@@ -23,7 +26,7 @@ class CustomCircleAvatar extends StatelessWidget {
         width: Sizer.width(size),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(Sizer.radius(40)),
-            border: showBorder == true
+            border: (showBorder == true || isLoading)
                 ? Border.all(
                     color: AppColors.primaryBlue,
                     width: 2,
@@ -31,15 +34,20 @@ class CustomCircleAvatar extends StatelessWidget {
                 : null),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(Sizer.radius(40)),
-          child: (avatarUrl != null && avatarUrl != "")
-              ? MyCachedNetworkImage(
-                  imageUrl: avatarUrl,
-                  fit: BoxFit.cover,
+          child: isLoading
+              ? const SpinKitLoader(
+                  color: AppColors.neutral5,
+                  size: 30,
                 )
-              : Icon(
-                  Iconsax.user,
-                  size: Sizer.width(size / 2),
-                ),
+              : (avatarUrl != null && avatarUrl != "")
+                  ? MyCachedNetworkImage(
+                      imageUrl: avatarUrl,
+                      fit: BoxFit.cover,
+                    )
+                  : Icon(
+                      Iconsax.user,
+                      size: Sizer.width(size / 2),
+                    ),
         ),
       ),
     );

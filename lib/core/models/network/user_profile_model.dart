@@ -14,10 +14,10 @@ class UserProfileModel {
   final dynamic role;
   final dynamic roleId;
   final String? status;
-  final dynamic store;
+  final List<MerchantAccount>? store;
   final dynamic storeId;
   final String? staffId;
-  final dynamic lastActive;
+  final DateTime? lastActive;
   final List<MerchantAccount>? merchantAccount;
   final List<dynamic>? permissions;
 
@@ -48,10 +48,15 @@ class UserProfileModel {
         role: json["role"],
         roleId: json["role_id"],
         status: json["status"],
-        store: json["store"],
+        store: json["store"] == null
+            ? []
+            : List<MerchantAccount>.from(
+                json["store"]!.map((x) => MerchantAccount.fromJson(x))),
         storeId: json["store_id"],
         staffId: json["staffID"],
-        lastActive: json["last_active"],
+        lastActive: json["last_active"] == null
+            ? null
+            : DateTime.parse(json["last_active"]),
         merchantAccount: json["merchant_account"] == null
             ? []
             : List<MerchantAccount>.from(json["merchant_account"]!
@@ -61,19 +66,3 @@ class UserProfileModel {
             : List<dynamic>.from(json["permissions"]!.map((x) => x)),
       );
 }
-
-// class MerchantAccount {
-//   final String? id;
-//   final String? name;
-
-//   MerchantAccount({
-//     this.id,
-//     this.name,
-//   });
-
-//   factory MerchantAccount.fromJson(Map<String, dynamic> json) =>
-//       MerchantAccount(
-//         id: json["id"],
-//         name: json["name"],
-//       );
-// }

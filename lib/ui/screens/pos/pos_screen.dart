@@ -24,6 +24,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     await ref.read(dashboardVmodel).getDashboardStats();
     await ref.read(dashboardVmodel).getRevenueAndTraffic();
     await ref.read(dashboardVmodel).getProductOverview();
+    await ref.read(vendorProfileVmodel).getVendorProfile();
+    await ref.read(userProfileVmodel).getUserProfile();
   }
 
   @override
@@ -31,6 +33,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final dashVm = ref.watch(dashboardVmodel);
+    final vendorProfileVm = ref.watch(vendorProfileVmodel);
 
     return SizedBox(
       height: Sizer.screenHeight,
@@ -70,16 +73,18 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               ),
               children: [
                 YBox(16),
-                InfoContainer(
-                  show: _isExpanded,
-                  title: "Account Under Review",
-                  content:
-                      "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
-                  onTap: () {
-                    _isExpanded = !_isExpanded;
-                    setState(() {});
-                  },
-                ),
+                if (vendorProfileVm.vendorProfile?.onboardingStatus !=
+                    "approved")
+                  InfoContainer(
+                    show: _isExpanded,
+                    title: "Account Under Review",
+                    content:
+                        "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
+                    onTap: () {
+                      _isExpanded = !_isExpanded;
+                      setState(() {});
+                    },
+                  ),
                 YBox(16),
                 Container(
                   padding: EdgeInsets.symmetric(

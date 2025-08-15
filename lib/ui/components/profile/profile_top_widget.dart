@@ -34,10 +34,6 @@ class ProfileTopWidget extends StatelessWidget {
           CustomCircleAvatar(
             size: 60,
             avatarUrl: avatarUrl,
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.pushNamed(context, RoutePath.profileScreen);
-            },
           ),
           XBox(16),
           Column(

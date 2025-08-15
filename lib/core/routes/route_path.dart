@@ -17,7 +17,7 @@ class RoutePath {
 
   static const profileScreen = '/profileScreen';
   static const contactSupportScreen = '/contactSupportScreen';
-  static const editProfileScreen = '/editProfileScreen';
+  static const editBusinessProfileScreen = '/editBusinessProfileScreen';
   static const editFinanceScreen = '/editFinanceScreen';
   static const editDocumentsScreen = '/editDocumentScreen';
 

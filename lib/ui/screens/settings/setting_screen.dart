@@ -2,6 +2,7 @@
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class SettingScreen extends ConsumerStatefulWidget {
   const SettingScreen({super.key});
@@ -15,9 +16,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileVmodel)
-        ..getVendorProfile()
-        ..getUserProfile();
+      ref.read(userProfileVmodel).getUserProfile();
     });
   }
 
@@ -25,7 +24,7 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final profileVm = ref.watch(profileVmodel);
+    final profileVm = ref.watch(userProfileVmodel);
     return Scaffold(
         appBar: CustomAppbar(
           title: "Settings",
@@ -168,39 +167,72 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               ProfileColText(
-                                title: "Business name",
-                                subTitle: "Builder’s Hub Construction",
+                                title: "Full name",
+                                subTitle: profileVm.userProfile?.name ?? "",
                               ),
                               YBox(16),
                               ProfileColText(
-                                title: "Business email",
-                                subTitle: "buildershub@gmail.com",
+                                title: "Email",
+                                subTitle: profileVm.userProfile?.email ?? "",
                               ),
                               YBox(16),
                               ProfileColText(
-                                title: "Business category",
-                                subTitle: "Construction",
+                                title: "Phone number",
+                                subTitle: profileVm.userProfile?.phone ?? "",
                               ),
                               YBox(16),
                               ProfileColText(
-                                title: "Business type",
-                                subTitle: "Full time",
+                                title: "Role",
+                                subTitle: profileVm.userProfile?.role ?? "N/A",
+                              ),
+                              YBox(16),
+                              Text(
+                                "Store",
+                                style: textTheme.text12?.copyWith(
+                                  color: AppColors.grey175,
+                                ),
+                              ),
+                              YBox(4),
+                              ...List.generate(
+                                profileVm.userProfile?.store?.length ?? 0,
+                                (i) => Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: Sizer.height(8),
+                                  ),
+                                  child: Text(
+                                    profileVm.userProfile?.store?[i].name ??
+                                        "N/A",
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: textTheme.text14?.medium.copyWith(
+                                      color: AppColors.black23,
+                                    ),
+                                  ),
+                                ),
                               ),
                               YBox(16),
                               ProfileColText(
-                                title: "Business phone number",
-                                subTitle: "+234 80 2424 24212",
+                                title: "User ID",
+                                subTitle:
+                                    profileVm.userProfile?.staffId ?? "N/A",
+                                onCopy: () async {
+                                  await Clipboard.setData(ClipboardData(
+                                    text: profileVm.userProfile?.staffId ?? "",
+                                  ));
+                                  showSuccessToastMessage(
+                                      "Copied to clipboard");
+                                },
                               ),
                               YBox(16),
                               ProfileColText(
-                                title: "Vendor ID",
-                                subTitle: "123456",
-                                onCopy: () {},
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "Business address",
-                                subTitle: "123 Main St, Anytown, USA",
+                                title: "Last Active",
+                                subTitle:
+                                    profileVm.userProfile?.lastActive == null
+                                        ? "N/A"
+                                        : AppUtils.formatDateTime(
+                                            profileVm.userProfile?.lastActive ??
+                                                DateTime.now(),
+                                          ),
                               ),
                               YBox(16),
                             ],

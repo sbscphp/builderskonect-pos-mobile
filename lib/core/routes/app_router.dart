@@ -80,7 +80,7 @@ class AppRouter {
       // Profile
       case RoutePath.profileScreen:
         return TransitionUtils.buildTransition(
-          const ProfileScreen(),
+          const VendorProfileScreen(),
           settings,
         );
 
@@ -90,17 +90,23 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.editProfileScreen:
-        return TransitionUtils.buildTransition(
-          const EditProfileScreen(),
-          settings,
-        );
+      case RoutePath.editBusinessProfileScreen:
+        if (args is Business) {
+          return TransitionUtils.buildTransition(
+            EditBusinessProfileScreen(business: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.editFinanceScreen:
-        return TransitionUtils.buildTransition(
-          const EditFinanceScreen(),
-          settings,
-        );
+        if (args is Finance) {
+          return TransitionUtils.buildTransition(
+            EditFinanceScreen(finance: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.editDocumentsScreen:
         return TransitionUtils.buildTransition(

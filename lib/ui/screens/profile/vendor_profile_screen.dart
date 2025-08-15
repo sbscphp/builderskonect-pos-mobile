@@ -3,14 +3,14 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class ProfileScreen extends ConsumerStatefulWidget {
-  const ProfileScreen({super.key});
+class VendorProfileScreen extends ConsumerStatefulWidget {
+  const VendorProfileScreen({super.key});
 
   @override
-  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
+  ConsumerState<VendorProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends ConsumerState<ProfileScreen>
+class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
     with TickerProviderStateMixin {
   int currentIndex = 0;
   late AnimationController _tabController;
@@ -66,6 +66,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: CustomAppbar(
+        leadingWidget: SizedBox.shrink(),
         bgColor: AppColors.transparent,
         title: "Vendor Profile",
         trailingWidget: InkWell(

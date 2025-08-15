@@ -33,7 +33,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer> {
                 avatarUrl: user?.avatar,
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.pushNamed(context, RoutePath.profileScreen);
+                  Navigator.pushNamed(context, RoutePath.settingScreen);
                 },
               ),
               YBox(16),
