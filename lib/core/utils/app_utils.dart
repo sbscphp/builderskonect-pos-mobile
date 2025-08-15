@@ -170,6 +170,27 @@ class AppUtils {
     return firstInitial + lastInitial;
   }
 
+  static String getDisplayFileName(String? fileUrl) {
+    if (fileUrl == null || fileUrl == "N/A") {
+      return "N/A";
+    }
+
+    final extension = fileUrl.split('.').last.toLowerCase();
+
+    // Check if it's an image
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].contains(extension)) {
+      return "image.$extension";
+    }
+
+    // Check if it's a PDF or document
+    if (['pdf', 'doc', 'docx'].contains(extension)) {
+      return "document.$extension";
+    }
+
+    // Default case - return original filename
+    return fileUrl.split('/').last;
+  }
+
   launchPhone(String phoneNumber) async {
     final Uri phoneUri = Uri(
       scheme: 'tel',

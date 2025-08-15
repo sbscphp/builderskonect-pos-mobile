@@ -3,6 +3,7 @@ export 'auth/auth.dart';
 export 'bottom_nav_screen.dart';
 export 'customers/customers.dart';
 export 'discount/discount.dart';
+export 'documents/documents.dart';
 export 'module/module.dart';
 export 'more/more.dart';
 export 'notifications/notifications.dart';

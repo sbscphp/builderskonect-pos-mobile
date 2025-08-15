@@ -70,4 +70,7 @@ class RoutePath {
 
   // Webview
   static const customWebviewScreen = '/customWebviewScreen';
+
+  // Documents
+  static const documentViewerScreen = '/documentViewerScreen';
 }

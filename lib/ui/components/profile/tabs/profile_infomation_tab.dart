@@ -293,18 +293,88 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ProfileColText(
-                            title: "CAC No",
-                            subTitle: "1234567890",
+                            title: "CAC No.",
+                            subTitle: profileVm.vendorProfile?.documents?.cac
+                                    ?.identifier ??
+                                "N/A",
                           ),
                           YBox(16),
                           ProfileColText(
                             title: "CAC Document",
-                            subTitle: "1234567890",
+                            subTitleWidget: _BuildDocRowText(
+                              fileUrl:
+                                  profileVm.vendorProfile?.documents?.cac?.file,
+                              onTap: () {
+                                final fileUrl = profileVm
+                                    .vendorProfile?.documents?.cac?.file;
+                                if (fileUrl != null && fileUrl != "N/A") {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.documentViewerScreen,
+                                    arguments: DocumentViewerArg(
+                                      appBarText: "CAC Document",
+                                      fileUrl: fileUrl,
+                                      fileName: "CAC Document",
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                           YBox(16),
                           ProfileColText(
-                            title: "Account name",
-                            subTitle: "Construction",
+                            title: "TIN No.",
+                            subTitle: profileVm.vendorProfile?.documents?.cac
+                                    ?.identifier ??
+                                "N/A",
+                          ),
+                          YBox(16),
+                          ProfileColText(
+                            title: "TIN Document",
+                            subTitleWidget: _BuildDocRowText(
+                              fileUrl:
+                                  profileVm.vendorProfile?.documents?.tin?.file,
+                              onTap: () {
+                                final fileUrl = profileVm
+                                    .vendorProfile?.documents?.tin?.file;
+                                if (fileUrl != null && fileUrl != "N/A") {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.documentViewerScreen,
+                                    arguments: DocumentViewerArg(
+                                      appBarText: "TIN Document",
+                                      fileUrl: fileUrl,
+                                      fileName: "TIN Document",
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                          ),
+                          YBox(16),
+                          ProfileColText(
+                            title: "Proof of address",
+                            subTitleWidget: _BuildDocRowText(
+                              fileUrl: profileVm
+                                  .vendorProfile?.documents?.proofOfAddress
+                                  ?.toString(),
+                              onTap: () {
+                                final fileUrl = profileVm
+                                    .vendorProfile?.documents?.proofOfAddress
+                                    ?.toString();
+                                if (fileUrl != null && fileUrl != "N/A") {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.documentViewerScreen,
+                                    arguments: DocumentViewerArg(
+                                      appBarText: "Proof of Address",
+                                      fileUrl: fileUrl,
+                                      fileName: "Proof of Address",
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           ),
                         ],
                       ),
@@ -315,5 +385,41 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
             ],
           );
         });
+  }
+}
+
+class _BuildDocRowText extends StatelessWidget {
+  const _BuildDocRowText({
+    this.fileUrl,
+    this.onTap,
+  });
+
+  final String? fileUrl;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Text(
+            AppUtils.getDisplayFileName(fileUrl),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.text14?.copyWith(
+              color: colorScheme.primaryColor,
+            ),
+          ),
+          XBox(4),
+          SvgPicture.asset(
+            AppSvgs.arrowUpRight,
+            height: Sizer.height(20),
+          ),
+        ],
+      ),
+    );
   }
 }

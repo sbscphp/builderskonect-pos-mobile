@@ -4,12 +4,14 @@ class ProfileColText extends StatelessWidget {
   const ProfileColText({
     super.key,
     required this.title,
-    required this.subTitle,
+    this.subTitle,
+    this.subTitleWidget,
     this.onCopy,
   });
 
   final String title;
-  final String subTitle;
+  final String? subTitle;
+  final Widget? subTitleWidget;
   final Function()? onCopy;
 
   @override
@@ -38,14 +40,15 @@ class ProfileColText extends StatelessWidget {
                 ),
               ),
             Expanded(
-              child: Text(
-                subTitle,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: textTheme.text14?.medium.copyWith(
-                  color: AppColors.black23,
-                ),
-              ),
+              child: subTitleWidget ??
+                  Text(
+                    subTitle ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: textTheme.text14?.medium.copyWith(
+                      color: AppColors.black23,
+                    ),
+                  ),
             ),
           ],
         ),

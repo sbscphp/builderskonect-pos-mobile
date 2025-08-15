@@ -321,6 +321,16 @@ class AppRouter {
         }
         return errorScreen(settings);
 
+      // Documents
+      case RoutePath.documentViewerScreen:
+        if (args is DocumentViewerArg) {
+          return TransitionUtils.buildTransition(
+            DocumentViewerScreen(arg: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
       default:
         return errorScreen(settings);
     }
