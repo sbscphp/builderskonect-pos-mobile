@@ -101,7 +101,7 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                   printty('Selected: $value');
                   switch (value) {
                     case 'paused_sales':
-                      // Navigator.pushNamed(context, RoutePath.pausedSalesScreen);
+                      Navigator.pushNamed(context, RoutePath.pausedSalesScreen);
                       break;
                     case 'new_sales':
                       Navigator.pushNamed(context, RoutePath.newSalesScreen);

@@ -17,6 +17,7 @@ class CustomBtn extends StatelessWidget {
   final Color? onlineColor;
   final Color? outlineColor;
   final Color? textColor;
+  final double? textSize;
   final TextStyle? textStyle;
   final Widget? child;
 
@@ -36,6 +37,7 @@ class CustomBtn extends StatelessWidget {
     this.onlineColor,
     this.outlineColor,
     this.textColor,
+    this.textSize,
     this.textStyle,
     this.child,
   }) : assert(text != null || child != null,
@@ -156,6 +158,7 @@ class CustomBtn extends StatelessWidget {
         text!,
         style: textStyle ??
             textTheme.text16?.copyWith(
+              fontSize: textSize,
               color: textColor ?? AppColors.white,
             ),
       );

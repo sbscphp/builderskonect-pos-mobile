@@ -258,6 +258,12 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.pausedSalesScreen:
+        return TransitionUtils.buildTransition(
+          const PausedSalesScreen(),
+          settings,
+        );
+
       // Returns
       case RoutePath.returnRefundScreen:
         return TransitionUtils.buildTransition(
