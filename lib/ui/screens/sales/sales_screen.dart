@@ -110,7 +110,8 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                       // Navigator.pushNamed(context, RoutePath.offlineSalesScreen);
                       break;
                     case 'order_analytics':
-                      // Navigator.pushNamed(context, RoutePath.orderAnalyticsScreen);
+                      Navigator.pushNamed(
+                          context, RoutePath.orderAnalyticsScreen);
                       break;
                     default:
                       break;

@@ -4,14 +4,14 @@ class FilterHeader extends StatelessWidget {
   const FilterHeader({
     super.key,
     required this.title,
-    required this.subTitle,
+    this.subTitle,
     this.svgIcon,
     this.trailingWidget,
     this.onFilter,
   });
 
   final String title;
-  final String subTitle;
+  final String? subTitle;
   final String? svgIcon;
   final Widget? trailingWidget;
   final Function()? onFilter;
@@ -27,12 +27,13 @@ class FilterHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(title, style: textTheme.text16?.medium),
-              Text(
-                subTitle,
-                style: textTheme.text12?.copyWith(
-                  color: colorScheme.black45,
+              if (subTitle != null)
+                Text(
+                  subTitle!,
+                  style: textTheme.text12?.copyWith(
+                    color: colorScheme.black45,
+                  ),
                 ),
-              ),
             ],
           ),
         ),

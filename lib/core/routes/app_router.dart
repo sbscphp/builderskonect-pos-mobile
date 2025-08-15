@@ -264,6 +264,12 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.orderAnalyticsScreen:
+        return TransitionUtils.buildTransition(
+          const OrderAnalyticsScreen(),
+          settings,
+        );
+
       // Returns
       case RoutePath.returnRefundScreen:
         return TransitionUtils.buildTransition(

@@ -71,6 +71,13 @@ class AppColors {
   static const magenta2 = Color(0xFFFFD6E7);
   static const magentaF8 = Color(0xFFFBF6F8);
 
+  static const dust1 = Color(0xFFFFF1F0);
+  static const dust4 = Color(0xFFFF7875);
+
+  static const cyan1 = Color(0xFFE6FFFB);
+  static const cyan4 = Color(0xFF5CDBD3);
+  static const cyan7 = Color(0xFF08979C);
+
   static const green7 = Color(0xFF389E0D);
   static const green4 = Color(0xFF95DE64);
   static const greenED = Color(0xFFF6FFED);
