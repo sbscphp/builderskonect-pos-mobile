@@ -6,6 +6,8 @@ export 'file_upload_vm.dart';
 export 'geography_vm.dart';
 export 'notification_vm.dart';
 export 'onboard_vm.dart';
+export 'refund_returns_vm.dart';
+export 'sales_vm.dart';
 export 'store_vm.dart';
 export 'subscription_vm.dart';
 export 'theme_view_model.dart';

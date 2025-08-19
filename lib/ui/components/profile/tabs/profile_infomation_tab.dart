@@ -67,17 +67,15 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                     },
                   ),
                 ),
-              WelcomeOnboardWidget(
-                  colorScheme: colorScheme,
-                  profileVm: profileVm,
-                  textTheme: textTheme),
               YBox(16),
-              ProfileTopWidget(
-                avatarUrl: profileVm.vendorProfile?.logo ?? "",
-                storeName: profileVm.vendorProfile?.business?.name ?? "",
-                email: profileVm.vendorProfile?.business?.email ?? "",
-                phone: profileVm.vendorProfile?.business?.phone ?? "",
-              ),
+              (profileVm.vendorProfile?.logo ?? "").isEmpty
+                  ? WelcomeOnboardWidget()
+                  : ProfileTopWidget(
+                      avatarUrl: profileVm.vendorProfile?.logo ?? "",
+                      storeName: profileVm.vendorProfile?.business?.name ?? "",
+                      email: profileVm.vendorProfile?.business?.email ?? "",
+                      phone: profileVm.vendorProfile?.business?.phone ?? "",
+                    ),
               YBox(16),
               Container(
                 margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),

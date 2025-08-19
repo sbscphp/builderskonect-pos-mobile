@@ -52,6 +52,7 @@ class _OrderStatusState extends State<OrderStatus> {
           "borderColor": AppColors.red3,
         };
       case "delivered":
+      case "completed":
       case "active":
         return {
           "bgColor": AppColors.greenED,
