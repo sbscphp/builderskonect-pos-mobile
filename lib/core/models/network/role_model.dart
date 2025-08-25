@@ -7,7 +7,7 @@ class RoleModel {
   final int? id;
   final String? name;
   final String? description;
-  final bool? isActive;
+  bool? isActive;
   final bool? isEditable;
 
   RoleModel(
@@ -16,7 +16,7 @@ class RoleModel {
   factory RoleModel.fromJson(Map<String, dynamic> json) => RoleModel(
     id: json["id"],
     name: json["name"],
-    description: json["descriprion"],
+    description: json["description"],
     isActive: json["is_active"],
     isEditable: json["is_editable"],
   );

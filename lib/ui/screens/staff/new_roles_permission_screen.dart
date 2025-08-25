@@ -28,8 +28,9 @@ class _NewRolesPermissionScreenState
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(roleVm);
     return BusyOverlay(
-      show: ref.watch(storeVmodel).busy(createState),
+      show: vm.isBusy,
       child: Scaffold(
           appBar: CustomAppbar(
             title: "New Role",
@@ -89,7 +90,17 @@ class _NewRolesPermissionScreenState
                   CustomBtn.solid(
                     text: "Save",
                     onTap: () async {
-                      if (_formKey.currentState?.validate() == true) {}
+                      if (_formKey.currentState?.validate() == true) {
+                        final response = await vm.createRole(
+                            name: roleNameC.text,
+                            description: descriptionC.text);
+
+                        handleApiResponse(
+                            response: response,
+                            onSuccess: () {
+                              Navigator.pop(context);
+                            });
+                      }
                     },
                   ),
                 ],

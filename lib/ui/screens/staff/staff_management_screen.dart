@@ -30,6 +30,7 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
 
   _fetchStaffDashboardData() async {
     await ref.read(staffVm).getDashboardStats();
+    await ref.read(roleVm).getAvailableRoles();
   }
 
   @override
@@ -62,7 +63,7 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
             height: Sizer.screenHeight,
             width: Sizer.screenWidth,
             child: BusyOverlay(
-              show: staffViewModel.isBusy,
+              show: staffViewModel.busy(firstState),
               child: RefreshIndicator(
                 onRefresh: () async {
                   _fetchStaffDashboardData();

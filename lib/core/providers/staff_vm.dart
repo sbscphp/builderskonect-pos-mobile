@@ -7,14 +7,16 @@ class StaffVm extends BaseVm {
   List<StaffModel> _staffs = [];
   List<StaffModel> get staffs => _staffs;
 
-  Future<ApiResponse> getDashboardStats() async {
+  Future<ApiResponse> getDashboardStats({String q = '',bool isFirst = true}) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/staff")
       ..addQueryParameterIfNotEmpty("paginate", "1")
-      ..addQueryParameterIfNotEmpty("limit", "10");
+      ..addQueryParameterIfNotEmpty("limit", "10")
+      ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
+      busyObjectName:isFirst ? firstState : paginateState,
       onSuccess: (data) {
         _staffOverviewModel =
             staffOverviewModelFromJson(json.encode(data["data"]));
