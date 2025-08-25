@@ -60,6 +60,8 @@ class RoutePath {
   static const staffManagementScreen = '/staffManagementScreen';
   static const newStaffScreen = '/newStaffScreen';
   static const newRolesPermissionScreen = '/newRolesPermissionScreen';
+  static const staffProfileScreen = '/staffProfileScreen';
+  static const editStaffScreen = '/editStaffScreen';
 
   // Customers
   static const customersManagementScreen = '/customersManagementScreen';

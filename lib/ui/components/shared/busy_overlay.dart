@@ -21,6 +21,7 @@ class _BusyOverlayState extends State<BusyOverlay> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Colors.transparent,
       child: SizedBox(
         width: Sizer.screenWidth,
         height: Sizer.screenWidth,

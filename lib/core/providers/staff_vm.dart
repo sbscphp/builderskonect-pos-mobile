@@ -7,7 +7,7 @@ class StaffVm extends BaseVm {
   List<StaffModel> _staffs = [];
   List<StaffModel> get staffs => _staffs;
 
-  Future<ApiResponse> getDashboardStats() async { 
+  Future<ApiResponse> getDashboardStats() async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/staff")
       ..addQueryParameterIfNotEmpty("paginate", "1")
       ..addQueryParameterIfNotEmpty("limit", "10");
@@ -20,7 +20,7 @@ class StaffVm extends BaseVm {
             staffOverviewModelFromJson(json.encode(data["data"]));
         _staffs = staffModelListFromJson(
             json.encode(_staffOverviewModel?.data?.data));
-        
+
         return apiResponse;
       },
       onError: (errorMessage) {
@@ -29,13 +29,11 @@ class StaffVm extends BaseVm {
     );
   }
 
-  
-    Future<ApiResponse> addNewStaff({
-      required String fullName,
+  Future<ApiResponse> addNewStaff(
+      {required String fullName,
       required String email,
       required String phone,
-      dynamic roleId
-    }) async { 
+      dynamic roleId}) async {
     final body = {
       "name": fullName,
       "email": email,
@@ -48,7 +46,42 @@ class StaffVm extends BaseVm {
       method: apiService.postWithAuth,
       body: body,
       onSuccess: (data) {
-        
+        return apiResponse;
+      },
+      onError: (errorMessage) {
+        return apiResponse;
+      },
+    );
+  }
+
+  StaffModel? _viewedStaff;
+  StaffModel? get viewedStaff => _viewedStaff;
+
+  Future<ApiResponse> viewStaff({required String staffID}) async {
+    return await performApiCall(
+      url: "/api/v1/merchants/staff/$staffID",
+      method: apiService.getWithAuth,
+      onSuccess: (data) {
+        _viewedStaff = staffModelFromJson(json.encode(data["data"]));
+        return apiResponse;
+      },
+      onError: (errorMessage) {
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> updateStaff(
+      {String? phone, int? isActive, dynamic roleId}) async {
+    final body = {"phone": phone, "role_id": roleId, "is_active": isActive}
+      ..removeWhere((key, value) => value == null);
+
+    return await performApiCall(
+      url: "/api/v1/merchants/staff/${_viewedStaff?.id}",
+      body: body,
+      method: apiService.putWithAuth,
+      onSuccess: (data) {
+        _viewedStaff = staffModelFromJson(json.encode(data["data"]));
         return apiResponse;
       },
       onError: (errorMessage) {

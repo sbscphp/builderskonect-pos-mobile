@@ -153,13 +153,16 @@ class _StaffTabState extends ConsumerState<StaffTab> {
                     final staffId = staffViewModel.staffs[i].staffId ?? 'N/A';
                     final role = staffViewModel.staffs[i].assignedRoles ?? 'N/A';
                     final status = staffViewModel.staffs[i].status ?? 'N/A';
+                    final id =  staffViewModel.staffs[i].id ?? 'N/A';
 
                     return StaffListTile(
                       title: title,
                       staffId: staffId,
                       status: status,
                       role: role,
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pushNamed(context, RoutePath.staffProfileScreen,arguments: id);
+                      },
                     );
                   },
                 ),
