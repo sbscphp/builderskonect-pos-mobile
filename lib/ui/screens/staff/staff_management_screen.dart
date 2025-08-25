@@ -18,7 +18,7 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // ref.read(storeVmodel).getStoreOverview();
+      _fetchStaffDashboardData();
     });
   }
 
@@ -28,16 +28,20 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
     super.dispose();
   }
 
+  _fetchStaffDashboardData() async {
+    await ref.read(staffVm).getDashboardStats();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
-    final storeVm = ref.watch(storeVmodel);
+    final staffViewModel = ref.watch(staffVm);
     return Scaffold(
       appBar: CustomAppbar(title: "Staff Management"),
       body: LoadableContentBuilder(
-        isBusy: storeVm.busy(getState),
-        isError: storeVm.error(getState),
+        isBusy: staffViewModel.busy(getState),
+        isError: staffViewModel.error(getState),
         loadingBuilder: (p0) {
           return SizerLoader(
             height: double.infinity,
@@ -54,46 +58,58 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
           );
         },
         contentBuilder: (context) {
-          return ListView(
-            padding: EdgeInsets.only(
-              left: Sizer.width(16),
-              right: Sizer.width(16),
-              bottom: Sizer.height(50),
-            ),
-            children: [
-              YBox(16),
-              Row(
-                children: [
-                  NotificationTab(
-                    text: "Staff",
-                    isSelected: indexStack == 0,
-                    onTap: () {
-                      indexStack = 0;
-                      setState(() {});
-                      // notyVm.getNotifications();
-                    },
+          return SizedBox(
+            height: Sizer.screenHeight,
+            width: Sizer.screenWidth,
+            child: BusyOverlay(
+              show: staffViewModel.isBusy,
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  _fetchStaffDashboardData();
+                },
+                child: ListView(
+                  padding: EdgeInsets.only(
+                    left: Sizer.width(16),
+                    right: Sizer.width(16),
+                    bottom: Sizer.height(50),
                   ),
-                  XBox(6),
-                  NotificationTab(
-                    text: "Roles and Permissions",
-                    isSelected: indexStack == 1,
-                    onTap: () {
-                      indexStack = 1;
-                      setState(() {});
-                      // notyVm.getNotifications(unread: true);
-                    },
-                  ),
-                ],
+                  children: [
+                    YBox(16),
+                    Row(
+                      children: [
+                        NotificationTab(
+                          text: "Staff",
+                          isSelected: indexStack == 0,
+                          onTap: () {
+                            indexStack = 0;
+                            setState(() {});
+                            // notyVm.getNotifications();
+                          },
+                        ),
+                        XBox(6),
+                        NotificationTab(
+                          text: "Roles and Permissions",
+                          isSelected: indexStack == 1,
+                          onTap: () {
+                            indexStack = 1;
+                            setState(() {});
+                            // notyVm.getNotifications(unread: true);
+                          },
+                        ),
+                      ],
+                    ),
+                    YBox(16),
+                    IndexedStack(
+                      index: indexStack,
+                      children: [
+                        StaffTab(),
+                        RolePermissionTab(),
+                      ],
+                    )
+                  ],
+                ),
               ),
-              YBox(16),
-              IndexedStack(
-                index: indexStack,
-                children: [
-                  StaffTab(),
-                  RolePermissionTab(),
-                ],
-              )
-            ],
+            ),
           );
         },
       ),

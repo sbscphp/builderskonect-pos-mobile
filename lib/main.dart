@@ -1,7 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
 import 'package:flutter/services.dart';
-
+// {name: Daniel Don, email: danny@mailinator.com, phone: 08011111111, company: Lego Blocks, provider: paystack, free_trial: false, callback_url: https://merchant.builderskonnect.sbscuk.co.uk/auth/register-vendor, price_item_id: spi_R6sdw7DCvY2Wxo31M3T3A}
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitService().init();

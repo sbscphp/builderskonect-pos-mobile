@@ -20,6 +20,7 @@ class _StaffTabState extends ConsumerState<StaffTab> {
   @override
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
+    final staffViewModel = ref.watch(staffVm);
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(Sizer.radius(16)),
@@ -55,7 +56,7 @@ class _StaffTabState extends ConsumerState<StaffTab> {
               children: [
                 ProductColText(
                   title: "TOTAL STAFF",
-                  value: "100",
+                  value: "${staffViewModel.staffOverviewModel?.stats?.total ?? 0}",
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,14 +64,14 @@ class _StaffTabState extends ConsumerState<StaffTab> {
                     ProductColText(
                       textColor: colorScheme.black85,
                       title: "Total Active",
-                      value: "80",
+                      value: "${staffViewModel.staffOverviewModel?.stats?.active ?? 0}",
                       valueTextSize: 12,
                       valueColor: AppColors.green1A,
                     ),
                     ProductColText(
                       textColor: colorScheme.black85,
                       title: "Total Deactivated",
-                      value: "20",
+                      value: "${staffViewModel.staffOverviewModel?.stats?.inactive ?? 0}",
                       valueTextSize: 12,
                       valueColor: AppColors.red2D,
                     ),
@@ -126,7 +127,8 @@ class _StaffTabState extends ConsumerState<StaffTab> {
             ),
           ),
           Builder(builder: (context) {
-            if (1 + 2 == 2) {
+           
+            if (staffViewModel.staffs.isEmpty) {
               return SizedBox(
                 height: Sizer.height(300),
                 child: EmptyListState(
@@ -147,11 +149,16 @@ class _StaffTabState extends ConsumerState<StaffTab> {
                   itemCount: 10,
                   separatorBuilder: (_, __) => HDivider(),
                   itemBuilder: (ctx, i) {
+                    final title = staffViewModel.staffs[i].name ?? 'N/A';
+                    final staffId = staffViewModel.staffs[i].staffId ?? 'N/A';
+                    final role = staffViewModel.staffs[i].assignedRoles ?? 'N/A';
+                    final status = staffViewModel.staffs[i].status ?? 'N/A';
+
                     return StaffListTile(
-                      title: "1234567890",
-                      staffId: "John Doe",
-                      status: "Active",
-                      role: "Admin",
+                      title: title,
+                      staffId: staffId,
+                      status: status,
+                      role: role,
                       onTap: () {},
                     );
                   },
