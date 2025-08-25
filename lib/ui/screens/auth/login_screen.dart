@@ -13,7 +13,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController(text: 'olutan@yopmail.com');
   // final _emailController =
   //     TextEditingController(text: ' bunyanman@yopmail.com');
-  final _passwordController = TextEditingController(text: 'password1');
+  final _passwordController = TextEditingController(text: '');
 
   @override
   void dispose() {
