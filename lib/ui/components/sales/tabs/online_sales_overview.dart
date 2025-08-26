@@ -73,10 +73,9 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                   subTitle: "View and manage offline and online sales",
                   trailingWidget: NewButtonWidget(
                     onTap: () {
-                      // Navigator.pushNamed(context, RoutePath.newSalesScreen);
+                      Navigator.pushNamed(context, RoutePath.newSalesScreen);
                     },
                   ),
-                  onFilter: () {},
                 ),
                 YBox(16),
                 Container(

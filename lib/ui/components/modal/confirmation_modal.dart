@@ -30,7 +30,7 @@ class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
             alignment: Alignment.center,
             child: SvgPicture.asset(AppSvgs.modalHLine),
           ),
-          YBox(30),
+          YBox(40),
           SvgPicture.asset(
             widget.modalConfirmationArg.iconPath,
             height: Sizer.height(80),

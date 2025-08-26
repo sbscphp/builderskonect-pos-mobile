@@ -7,10 +7,10 @@ class GoogleAddressModal extends ConsumerStatefulWidget {
   const GoogleAddressModal({super.key});
 
   @override
-  ConsumerState<GoogleAddressModal> createState() => _CustomListModalState();
+  ConsumerState<GoogleAddressModal> createState() => _GoogleAddressModalState();
 }
 
-class _CustomListModalState extends ConsumerState<GoogleAddressModal> {
+class _GoogleAddressModalState extends ConsumerState<GoogleAddressModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 

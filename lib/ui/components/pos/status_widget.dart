@@ -16,6 +16,7 @@ class _OrderStatusState extends State<OrderStatus> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Sizer.width(8),
@@ -38,6 +39,7 @@ class _OrderStatusState extends State<OrderStatus> {
 
   Map<String, Color> getColor(String status) {
     final status = widget.status.toLowerCase();
+    final colorScheme = Theme.of(context).colorScheme;
     switch (status) {
       case "processing":
         return {
@@ -58,6 +60,18 @@ class _OrderStatusState extends State<OrderStatus> {
           "bgColor": AppColors.greenED,
           "textColor": AppColors.green1A,
           "borderColor": AppColors.green4,
+        };
+      case "draft":
+        return {
+          "bgColor": AppColors.neutral2,
+          "textColor": colorScheme.black85,
+          "borderColor": AppColors.neutral5,
+        };
+      case "paid":
+        return {
+          "bgColor": AppColors.dayBreakBlue,
+          "textColor": colorScheme.primaryColor,
+          "borderColor": AppColors.dayBreakBlue3,
         };
       default:
         return {

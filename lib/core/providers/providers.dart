@@ -1,11 +1,14 @@
 export 'auth_vm.dart';
 export 'bank_vm.dart';
 export 'base_vm.dart';
+export 'customer_vm.dart';
 export 'dashboard_vm.dart';
 export 'file_upload_vm.dart';
 export 'geography_vm.dart';
 export 'notification_vm.dart';
 export 'onboard_vm.dart';
+export 'payment_vm.dart';
+export 'product_inventory_vm.dart';
 export 'refund_returns_vm.dart';
 export 'sales_vm.dart';
 export 'store_vm.dart';

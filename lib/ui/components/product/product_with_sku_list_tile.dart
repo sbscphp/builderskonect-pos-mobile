@@ -4,11 +4,13 @@ class ProductWithSkuListTile extends StatelessWidget {
   const ProductWithSkuListTile({
     super.key,
     required this.productTitle,
+    required this.productImage,
     required this.subTitle,
     required this.sku,
   });
 
   final String productTitle;
+  final String productImage;
   final String subTitle;
   final String sku;
 
@@ -26,7 +28,7 @@ class ProductWithSkuListTile extends StatelessWidget {
                 width: Sizer.width(26),
                 height: Sizer.height(26),
                 child: MyCachedNetworkImage(
-                  imageUrl: AppUtils.dummyImage,
+                  imageUrl: productImage,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -37,11 +39,15 @@ class ProductWithSkuListTile extends StatelessWidget {
                   children: [
                     Text(
                       productTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: textTheme.text14,
                     ),
                     YBox(4),
                     Text(
                       subTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: textTheme.text12?.copyWith(
                         color: colorScheme.black45,
                       ),
@@ -52,6 +58,7 @@ class ProductWithSkuListTile extends StatelessWidget {
             ],
           ),
         ),
+        XBox(10),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [

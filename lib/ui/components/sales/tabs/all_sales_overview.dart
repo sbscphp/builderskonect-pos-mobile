@@ -68,7 +68,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                   subTitle: "View and manage offline and online sales",
                   trailingWidget: NewButtonWidget(
                     onTap: () {
-                      // Navigator.pushNamed(context, RoutePath.newSalesScreen);
+                      Navigator.pushNamed(context, RoutePath.newSalesScreen);
                     },
                   ),
                   onFilter: () {},
@@ -193,6 +193,13 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                         subTitle2: data.itemsCount?.toString() ?? "",
                         status: data.status ?? "",
                         date: data.orderDate?.toLocal(),
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            RoutePath.viewSalesOrderScreen,
+                            arguments: data.id,
+                          );
+                        },
                       );
                     },
                   );

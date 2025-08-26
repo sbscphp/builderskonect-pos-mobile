@@ -8,10 +8,11 @@ class BusinessCategoryTypeModal extends ConsumerStatefulWidget {
 
   @override
   ConsumerState<BusinessCategoryTypeModal> createState() =>
-      _CustomListModalState();
+      _BusinessCategoryTypeModalState();
 }
 
-class _CustomListModalState extends ConsumerState<BusinessCategoryTypeModal> {
+class _BusinessCategoryTypeModalState
+    extends ConsumerState<BusinessCategoryTypeModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 

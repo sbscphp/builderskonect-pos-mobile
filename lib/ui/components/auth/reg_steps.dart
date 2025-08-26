@@ -4,11 +4,13 @@ class RegSteps extends StatefulWidget {
   const RegSteps({
     super.key,
     this.isActive = false,
+    this.passed = false,
     required this.number,
     required this.text,
   });
 
   final bool isActive;
+  final bool passed;
   final String number;
   final String text;
 
@@ -22,7 +24,7 @@ class _RegStepsState extends State<RegSteps>
   late Animation<double> _scaleAnimation;
   late Animation<Color?> _backgroundColorAnimation;
   late Animation<Color?> _borderColorAnimation;
-  late Animation<Color?> _textColorAnimation;
+  // late Animation<Color?> _textColorAnimation;
   late Animation<Color?> _numberColorAnimation;
 
   @override
@@ -71,13 +73,13 @@ class _RegStepsState extends State<RegSteps>
       curve: Curves.easeInOut,
     ));
 
-    _textColorAnimation = ColorTween(
-      begin: colorScheme.black25,
-      end: colorScheme.black85,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    // _textColorAnimation = ColorTween(
+    //   begin: colorScheme.black25,
+    //   end: colorScheme.black85,
+    // ).animate(CurvedAnimation(
+    //   parent: _animationController,
+    //   curve: Curves.easeInOut,
+    // ));
 
     _numberColorAnimation = ColorTween(
       begin: colorScheme.black25,
@@ -109,7 +111,7 @@ class _RegStepsState extends State<RegSteps>
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
+    final colorScheme = Theme.of(context).colorScheme;
     return AnimatedBuilder(
       animation: _animationController,
       builder: (context, child) {
@@ -117,46 +119,55 @@ class _RegStepsState extends State<RegSteps>
           scale: widget.isActive ? _scaleAnimation.value : 1.0,
           child: Row(
             children: [
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                curve: Curves.easeInOut,
-                width: Sizer.width(18),
-                height: Sizer.height(18),
-                decoration: BoxDecoration(
-                  color: _backgroundColorAnimation.value,
-                  borderRadius: BorderRadius.circular(Sizer.radius(20)),
-                  border: Border.all(
-                    color: _borderColorAnimation.value ?? AppColors.transparent,
-                  ),
-                  boxShadow: widget.isActive
-                      ? [
-                          BoxShadow(
-                            color: AppColors.primaryBlue.withValues(alpha: 0.1),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ]
-                      : null,
-                ),
-                child: Center(
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    style: textTheme.text12?.copyWith(
-                          color: _numberColorAnimation.value,
-                          fontSize: Sizer.text(11),
-                        ) ??
-                        const TextStyle(),
-                    child: Text(widget.number),
-                  ),
-                ),
-              ),
+              widget.passed
+                  ? SvgPicture.asset(
+                      AppSvgs.checkCircle,
+                      height: Sizer.height(20),
+                    )
+                  : AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      width: Sizer.width(18),
+                      height: Sizer.height(18),
+                      decoration: BoxDecoration(
+                        color: _backgroundColorAnimation.value,
+                        borderRadius: BorderRadius.circular(Sizer.radius(20)),
+                        border: Border.all(
+                          color: _borderColorAnimation.value ??
+                              AppColors.transparent,
+                        ),
+                        boxShadow: widget.isActive
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.primaryBlue
+                                      .withValues(alpha: 0.1),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
+                      ),
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 300),
+                          curve: Curves.easeInOut,
+                          style: textTheme.text12?.copyWith(
+                                color: _numberColorAnimation.value,
+                                fontSize: Sizer.text(11),
+                              ) ??
+                              const TextStyle(),
+                          child: Text(widget.number),
+                        ),
+                      ),
+                    ),
               XBox(6),
               AnimatedDefaultTextStyle(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 style: textTheme.text12?.copyWith(
-                      color: _textColorAnimation.value,
+                      color: widget.isActive || widget.passed
+                          ? colorScheme.black85
+                          : colorScheme.black25,
                       fontSize: Sizer.text(11),
                     ) ??
                     const TextStyle(),

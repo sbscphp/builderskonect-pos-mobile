@@ -89,6 +89,7 @@ class BaseVm extends ChangeNotifier {
       return onSuccess(apiResponse.data);
     } catch (e) {
       setErrorForObject(errorObjectName ?? this, true);
+      printty("error ${e.toString()}");
       if (onError != null) {
         return onError(e.toString());
       } else {

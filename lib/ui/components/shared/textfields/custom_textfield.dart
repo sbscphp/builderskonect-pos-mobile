@@ -35,6 +35,7 @@ class CustomTextField extends StatefulWidget {
   final Color? fillColor;
   final bool showLabelHeader;
   final double? height;
+  final BoxConstraints? prefixIconConstraints, suffixIconConstraints;
 
   const CustomTextField({
     super.key,
@@ -73,6 +74,8 @@ class CustomTextField extends StatefulWidget {
     this.showLabelHeader = true,
     this.borderRadius = 4,
     this.height,
+    this.prefixIconConstraints,
+    this.suffixIconConstraints,
   });
 
   @override
@@ -174,15 +177,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       fontSize: widget.labelSize,
                       fontWeight: FontWeight.w500),
                   suffixIcon: widget.suffixIcon ?? suffixIcon(),
-                  suffixIconConstraints: BoxConstraints(
-                    minWidth: 30.w,
-                    minHeight: 30.h,
-                  ),
+                  suffixIconConstraints: widget.suffixIconConstraints ??
+                      BoxConstraints(
+                        minWidth: 30.w,
+                        minHeight: 30.h,
+                      ),
                   prefixIcon: widget.prefixIcon,
-                  prefixIconConstraints: BoxConstraints(
-                    minWidth: 40.w,
-                    minHeight: 30.h,
-                  ),
+                  prefixIconConstraints: widget.prefixIconConstraints ??
+                      BoxConstraints(
+                        minWidth: 40.w,
+                        minHeight: 30.h,
+                      ),
                   filled: true,
                   fillColor: widget.fillColor,
                   floatingLabelBehavior: FloatingLabelBehavior.always,

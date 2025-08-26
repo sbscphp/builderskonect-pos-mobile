@@ -270,6 +270,16 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.viewSalesOrderScreen:
+        final args = settings.arguments as String?;
+        if (args != null) {
+          return TransitionUtils.buildTransition(
+            ViewSalesOrderScreen(id: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
       // Returns
       case RoutePath.returnRefundScreen:
         return TransitionUtils.buildTransition(

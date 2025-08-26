@@ -5,3 +5,10 @@ const String getState = 'getState';
 const String createState = 'createState';
 const String updateState = 'updateState';
 const String deleteState = 'deleteState';
+const String searchState = 'searchState';
+const String viewState = 'viewState';
+
+// slaes
+const String draftSalesState = 'draftSalesState';
+const String topSellingProductsState = 'topSellingProductsState';
+const String salesAnalysisStatState = 'salesAnalysisStatState';

@@ -15,11 +15,19 @@ class _NewSalesScreenState extends ConsumerState<NewSalesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final textTheme = Theme.of(context).textTheme;
-    // final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
         appBar: CustomAppbar(
           title: "New Sales",
+          onBack: () {
+            if (regSteps == 1) {
+              Navigator.pop(context);
+              ref.read(salesVmodel).productList = [];
+              ref.read(salesVmodel).selectedCustomerData = null;
+            } else {
+              regSteps--;
+              setState(() {});
+            }
+          },
         ),
         body: Column(
           children: [
@@ -35,16 +43,19 @@ class _NewSalesScreenState extends ConsumerState<NewSalesScreen> {
                     number: "1",
                     text: "Select Products",
                     isActive: regSteps == 1,
+                    passed: regSteps > 1,
                   ),
                   RegSteps(
                     number: "2",
                     text: "Customer Details",
                     isActive: regSteps == 2,
+                    passed: regSteps > 2,
                   ),
                   RegSteps(
                     number: "3",
                     text: "Order Summary",
                     isActive: regSteps == 3,
+                    passed: regSteps > 3,
                   ),
                 ],
               ),
@@ -67,14 +78,14 @@ class _NewSalesScreenState extends ConsumerState<NewSalesScreen> {
                       },
                     ),
                   2 => CustomerDetailsStep(
-                      key: const ValueKey('bank_details'),
+                      key: const ValueKey('customer_details'),
                       onNext: () {
                         regSteps = 3;
                         setState(() {});
                       },
                     ),
                   _ => OrderSummaryStep(
-                      key: const ValueKey('document_upload'),
+                      key: const ValueKey('order_summary'),
                     ),
                 },
               ),

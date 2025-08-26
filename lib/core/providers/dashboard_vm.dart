@@ -24,6 +24,7 @@ class DashboardVm extends BaseVm {
 
   RevenueAndTrafficModel? _revenueAndTrafficModel;
   RevenueAndTrafficModel? get revenueAndTrafficModel => _revenueAndTrafficModel;
+  Traffic? get trafficData => _revenueAndTrafficModel?.traffic;
   Future<ApiResponse> getRevenueAndTraffic({
     String? dateFilter,
     String? locationId,
@@ -35,7 +36,6 @@ class DashboardVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      isFormData: true,
       onSuccess: (data) {
         _revenueAndTrafficModel =
             revenueAndTrafficModelFromJson(json.encode(data["data"]));
@@ -57,7 +57,6 @@ class DashboardVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      isFormData: true,
       onSuccess: (data) {
         _productOverviewModel =
             productOverviewModelFromJson(json.encode(data["data"]));
@@ -72,7 +71,6 @@ class DashboardVm extends BaseVm {
     return await performApiCall(
       url: "/api/v1/merchants/dashboard/checklist",
       method: apiService.getWithAuth,
-      isFormData: true,
       onSuccess: (data) {
         _merchantCheckListModel =
             merchantCheckListModelFromJson(json.encode(data["data"]));
