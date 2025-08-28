@@ -19,3 +19,7 @@ export 'upload_file_model.dart';
 export 'user_profile_model.dart';
 export 'user_subcription.dart';
 export 'vendor_profile_model.dart';
+export 'paginated_data.dart';
+export 'staff_overview_model.dart';
+export 'staff_model.dart';
+export 'role_model.dart';

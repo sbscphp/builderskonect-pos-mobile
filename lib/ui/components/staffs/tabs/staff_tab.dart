@@ -20,6 +20,7 @@ class _StaffTabState extends ConsumerState<StaffTab> {
   @override
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
+    final staffViewModel = ref.watch(staffVm);
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: EdgeInsets.all(Sizer.radius(16)),
@@ -55,7 +56,8 @@ class _StaffTabState extends ConsumerState<StaffTab> {
               children: [
                 ProductColText(
                   title: "TOTAL STAFF",
-                  value: "100",
+                  value:
+                      "${staffViewModel.staffOverviewModel?.stats?.total ?? 0}",
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,14 +65,16 @@ class _StaffTabState extends ConsumerState<StaffTab> {
                     ProductColText(
                       textColor: colorScheme.black85,
                       title: "Total Active",
-                      value: "80",
+                      value:
+                          "${staffViewModel.staffOverviewModel?.stats?.active ?? 0}",
                       valueTextSize: 12,
                       valueColor: AppColors.green1A,
                     ),
                     ProductColText(
                       textColor: colorScheme.black85,
                       title: "Total Deactivated",
-                      value: "20",
+                      value:
+                          "${staffViewModel.staffOverviewModel?.stats?.inactive ?? 0}",
                       valueTextSize: 12,
                       valueColor: AppColors.red2D,
                     ),
@@ -92,14 +96,23 @@ class _StaffTabState extends ConsumerState<StaffTab> {
             showLabelHeader: false,
             hintText: "Search by user. id, name,  etc.",
             onChanged: (value) {
-              setState(() {});
+              Debouncer().performAction(action: () async {
+                await staffViewModel.getDashboardStats(
+                    q: value, isFirst: false);
+              });
+              // setState(() {});
             },
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (searchC.text.isNotEmpty)
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      setState(() {
+                        searchC.clear();
+                        staffViewModel.getDashboardStats(isFirst: false);
+                      });
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(Sizer.width(10)),
                       child: Icon(
@@ -126,7 +139,7 @@ class _StaffTabState extends ConsumerState<StaffTab> {
             ),
           ),
           Builder(builder: (context) {
-            if (1 + 2 == 2) {
+            if (staffViewModel.staffs.isEmpty) {
               return SizedBox(
                 height: Sizer.height(300),
                 child: EmptyListState(
@@ -144,15 +157,26 @@ class _StaffTabState extends ConsumerState<StaffTab> {
                     top: Sizer.height(14),
                     bottom: Sizer.height(50),
                   ),
-                  itemCount: 10,
+                  itemCount: staffViewModel.staffs.length,
                   separatorBuilder: (_, __) => HDivider(),
                   itemBuilder: (ctx, i) {
+                    final title = staffViewModel.staffs[i].name ?? 'N/A';
+                    final staffId = staffViewModel.staffs[i].staffId ?? 'N/A';
+                    final role =
+                        staffViewModel.staffs[i].assignedRoles ?? 'N/A';
+                    final status = staffViewModel.staffs[i].status ?? 'N/A';
+                    final id = staffViewModel.staffs[i].id ?? 'N/A';
+
                     return StaffListTile(
-                      title: "1234567890",
-                      staffId: "John Doe",
-                      status: "Active",
-                      role: "Admin",
-                      onTap: () {},
+                      title: title,
+                      staffId: staffId,
+                      status: status,
+                      role: role,
+                      onTap: () {
+                        Navigator.pushNamed(
+                            context, RoutePath.staffProfileScreen,
+                            arguments: id);
+                      },
                     );
                   },
                 ),

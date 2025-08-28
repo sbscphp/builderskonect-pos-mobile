@@ -10,6 +10,7 @@ class StaffListTile extends StatelessWidget {
     this.subTitle2,
     required this.role,
     this.onTap,
+    this.staffImageUrl,
   });
 
   final String title;
@@ -18,6 +19,7 @@ class StaffListTile extends StatelessWidget {
   final String status;
   final String role;
   final VoidCallback? onTap;
+  final String? staffImageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,7 @@ class StaffListTile extends StatelessWidget {
           CustomCircleAvatar(
             showBorder: false,
             size: 24,
-            avatarUrl: AppUtils.dummyImage,
+            avatarUrl: staffImageUrl ?? AppUtils.dummyImage,
             onTap: () {},
           ),
           XBox(8),

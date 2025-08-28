@@ -1,7 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
 import 'package:flutter/services.dart';
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitService().init();

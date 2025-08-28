@@ -21,6 +21,7 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(roleVm);
     return Container(
       padding: EdgeInsets.all(Sizer.radius(16)),
       decoration: BoxDecoration(
@@ -48,7 +49,10 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
             showLabelHeader: false,
             hintText: "Search roles",
             onChanged: (value) {
-              setState(() {});
+              Debouncer().performAction(action: () async {
+                await vm.getAvailableRoles(q: value);
+              });
+              // setState(() {});
             },
             suffixIcon: Row(
               mainAxisSize: MainAxisSize.min,
@@ -83,7 +87,7 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
           ),
           YBox(16),
           Builder(builder: (context) {
-            if (1 + 2 == 2) {
+            if (vm.roles.isEmpty) {
               return SizedBox(
                 height: Sizer.height(300),
                 child: EmptyListState(
@@ -97,10 +101,13 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: EdgeInsets.zero,
-                  itemCount: 10,
+                  itemCount: vm.roles.length,
                   separatorBuilder: (_, __) => YBox(16),
                   itemBuilder: (ctx, i) {
-                    return PermissionListTile();
+                    final role = vm.roles[i];
+                    return PermissionListTile(
+                      role: role,
+                    );
                   },
                 ),
               ],
@@ -112,11 +119,15 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
   }
 }
 
-class PermissionListTile extends StatelessWidget {
-  const PermissionListTile({
-    super.key,
-  });
+class PermissionListTile extends StatefulWidget {
+  final RoleModel? role;
+  const PermissionListTile({super.key, this.role});
 
+  @override
+  State<PermissionListTile> createState() => _PermissionListTileState();
+}
+
+class _PermissionListTileState extends State<PermissionListTile> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -137,12 +148,12 @@ class PermissionListTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Customer Success Rep",
+                  widget.role?.name ?? "N/A",
                   style: textTheme.text16?.medium,
                 ),
                 YBox(8),
                 Text(
-                  "This role has access to the customer management and sales features.",
+                  widget.role?.description ?? 'N/A',
                   style: textTheme.text12?.copyWith(
                     color: colorScheme.black45,
                   ),
@@ -150,10 +161,15 @@ class PermissionListTile extends StatelessWidget {
               ],
             ),
           ),
-          CustomSwitch(
-            value: false,
-            onChanged: (value) {},
-          )
+          if (widget.role?.isEditable ?? false)
+            CustomSwitch(
+              value: widget.role?.isActive ?? false,
+              onChanged: (value) {
+                //todo::: Get ore clarity on what should happen here.
+                widget.role?.isActive = value;
+                setState(() {});
+              },
+            )
         ],
       ),
     );
