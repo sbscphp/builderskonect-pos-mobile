@@ -167,7 +167,6 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
                       final ctx = NavKey.appNavKey.currentContext!;
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
-                        canDismiss: false,
                         widget: ConfirmationModal(
                           modalConfirmationArg: ModalConfirmationArg(
                             iconPath: AppSvgs.checkIcon,
@@ -264,6 +263,13 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
             final ctx = NavKey.appNavKey.currentContext;
             if (ctx == null) return;
 
+            // Clear product list and selected customer data
+            ref.read(salesVmodel).productList = [];
+            ref.read(salesVmodel).selectedCustomerData = null;
+
+            ref.read(salesVmodel).getSalesOverview(stateObjectName: "empty");
+            Navigator.of(ctx).pop();
+
             ModalWrapper.bottomSheet(
               context: ctx,
               // canDismiss: false,
@@ -291,7 +297,6 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
 
                     final String orderId = responseData['data'][0]['id'];
                     printty("Response data $orderId");
-
                     Navigator.pushReplacementNamed(
                         navCtx, RoutePath.viewSalesOrderScreen,
                         arguments: orderId);

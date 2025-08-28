@@ -267,9 +267,9 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                             decoration: BoxDecoration(
                               borderRadius:
                                   BorderRadius.circular(Sizer.radius(12)),
-                              color: showListOfItems
-                                  ? AppColors.primaryBlue.withOpacity(0.1)
-                                  : Colors.transparent,
+                              // color: showListOfItems
+                              //     ? AppColors.primaryBlue.withOpacity(0.1)
+                              //     : Colors.transparent,
                             ),
                             child: AnimatedBuilder(
                               animation: _arrowAnimationController,

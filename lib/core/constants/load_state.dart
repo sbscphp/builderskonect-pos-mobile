@@ -10,5 +10,6 @@ const String viewState = 'viewState';
 
 // slaes
 const String draftSalesState = 'draftSalesState';
+const String pauseSalesState = 'pauseSalesState';
 const String topSellingProductsState = 'topSellingProductsState';
 const String salesAnalysisStatState = 'salesAnalysisStatState';

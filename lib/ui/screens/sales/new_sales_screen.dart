@@ -21,6 +21,8 @@ class _NewSalesScreenState extends ConsumerState<NewSalesScreen> {
           onBack: () {
             if (regSteps == 1) {
               Navigator.pop(context);
+
+              // Clear product list and selected customer data
               ref.read(salesVmodel).productList = [];
               ref.read(salesVmodel).selectedCustomerData = null;
             } else {

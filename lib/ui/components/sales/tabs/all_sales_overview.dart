@@ -188,7 +188,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                     itemBuilder: (ctx, i) {
                       final data = salesVm.salesData[i];
                       return CustomColWidget(
-                        firstColText: data.orderNumber ?? "",
+                        firstColText: "#${data.orderNumber ?? ""}",
                         subTitle: "Total items: ",
                         subTitle2: data.itemsCount?.toString() ?? "",
                         status: data.status ?? "",

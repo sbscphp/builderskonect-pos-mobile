@@ -20,7 +20,7 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return PreferredSize(
-      preferredSize: Size.fromHeight(Sizer.height(50)),
+      preferredSize: Size.fromHeight(Sizer.height(60)),
       child: Container(
         decoration: BoxDecoration(
           color: bgColor ?? AppColors.gray50,
@@ -70,5 +70,5 @@ class CustomAppbar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(Sizer.height(50));
+  Size get preferredSize => Size.fromHeight(Sizer.height(60));
 }

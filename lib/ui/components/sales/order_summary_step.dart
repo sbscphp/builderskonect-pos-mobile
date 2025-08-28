@@ -33,7 +33,7 @@ class _OrderSummaryStepState extends ConsumerState<OrderSummaryStep> {
     final colorScheme = Theme.of(context).colorScheme;
     final salesVm = ref.watch(salesVmodel);
     return Builder(builder: (context) {
-      if (salesVm.busy(createState)) {
+      if (salesVm.busy(createState) || salesVm.busy(pauseSalesState)) {
         return SizerLoader();
       }
       if (salesVm.error(createState)) {
@@ -149,7 +149,29 @@ class _OrderSummaryStepState extends ConsumerState<OrderSummaryStep> {
                   isOutline: true,
                   outlineColor: AppColors.neutral5,
                   textStyle: textTheme.text16,
-                  onTap: () {},
+                  onTap: () async {
+                    final res = await ModalWrapper.bottomSheet(
+                      context: context,
+                      widget: ConfirmationModal(
+                        modalConfirmationArg: ModalConfirmationArg(
+                          iconPath: AppSvgs.infoCircle,
+                          title: "Pause Sales",
+                          description:
+                              "Are you sure you want to pause this sales? Paused sales can be continued from the sales dashboard.",
+                          solidBtnText: "Yes, pause",
+                          onSolidBtnOnTap: () {
+                            Navigator.pop(context, true);
+                          },
+                          onOutlineBtnOnTap: () {},
+                        ),
+                      ),
+                    );
+                    if (res == true) {
+                      if (context.mounted) {
+                        await _createPauseSales();
+                      }
+                    }
+                  },
                 ),
                 YBox(24),
                 CustomBtn.solid(
@@ -166,5 +188,58 @@ class _OrderSummaryStepState extends ConsumerState<OrderSummaryStep> {
         ],
       );
     });
+  }
+
+  Future<void> _createPauseSales() async {
+    final saleVm = ref.read(salesVmodel);
+    final CustomerCred customerCred = saleVm.selectedCustomerData?.id != null
+        ? CustomerCred(
+            id: saleVm.selectedCustomerData?.id,
+          )
+        : CustomerCred(
+            id: saleVm.selectedCustomerData?.id,
+            name: saleVm.selectedCustomerData?.name,
+            phone: saleVm.selectedCustomerData?.phone,
+            email: saleVm.selectedCustomerData?.email,
+            referralSource: saleVm.selectedCustomerData?.source,
+            openedVia: "merchant",
+          );
+
+    // Convert product list to line items
+    final selectedProducts = saleVm.productList
+        .map((product) => LineItemParams(
+              productId: product.id,
+              quantity: product.quantity,
+            ))
+        .toList();
+
+    final res = await ref.read(salesVmodel).createPauseSales(
+          params: Order(
+            customer: customerCred,
+            status: "draft",
+            salesType: "pos",
+            lineItems: selectedProducts,
+          ),
+        );
+
+    handleApiResponse(
+        // showErrorToast: false,
+        showSuccessToast: false,
+        response: res,
+        onSuccess: () {
+          // Use post-frame callback to ensure the widget tree is stable
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final ctx = NavKey.appNavKey.currentContext;
+            if (ctx == null) return;
+
+            // Clear product list and selected customer data
+            ref.read(salesVmodel).productList = [];
+            ref.read(salesVmodel).selectedCustomerData = null;
+
+            ref.read(salesVmodel).getDraftOverview();
+            Navigator.of(ctx).pop();
+            Navigator.pushReplacementNamed(ctx, RoutePath.pausedSalesScreen);
+          });
+        });
   }
 }

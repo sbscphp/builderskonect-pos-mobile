@@ -8,6 +8,7 @@ class SalesVm extends BaseVm {
   Future<ApiResponse> getSalesOverview({
     String? q,
     String? salesType,
+    String? stateObjectName,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/sales-orders")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
@@ -19,8 +20,8 @@ class SalesVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: getState,
-      busyObjectName: getState,
+      errorObjectName: stateObjectName ?? getState,
+      busyObjectName: stateObjectName ?? getState,
       onSuccess: (data) {
         _salesOverviewModel =
             salesOverviewModelFromJson(json.encode(data['data']));
@@ -81,7 +82,7 @@ class SalesVm extends BaseVm {
   /// Recursively removes null and empty string values from a map and its nested objects
   Map<String, dynamic> _cleanPayload(Map<String, dynamic> payload) {
     final cleanedPayload = <String, dynamic>{};
-    
+
     payload.forEach((key, value) {
       if (value == null || value == "") {
         // Special handling for discount_id: set to empty string if null
@@ -91,7 +92,7 @@ class SalesVm extends BaseVm {
         // Skip other null and empty string values
         return;
       }
-      
+
       if (value is Map<String, dynamic>) {
         // Recursively clean nested maps
         final cleanedNestedMap = _cleanPayload(value);
@@ -100,13 +101,16 @@ class SalesVm extends BaseVm {
         }
       } else if (value is List) {
         // Clean lists and their nested objects
-        final cleanedList = value.map((item) {
-          if (item is Map<String, dynamic>) {
-            return _cleanPayload(item);
-          }
-          return item;
-        }).where((item) => item != null && item != "").toList();
-        
+        final cleanedList = value
+            .map((item) {
+              if (item is Map<String, dynamic>) {
+                return _cleanPayload(item);
+              }
+              return item;
+            })
+            .where((item) => item != null && item != "")
+            .toList();
+
         if (cleanedList.isNotEmpty) {
           cleanedPayload[key] = cleanedList;
         }
@@ -115,7 +119,7 @@ class SalesVm extends BaseVm {
         cleanedPayload[key] = value;
       }
     });
-    
+
     return cleanedPayload;
   }
 
@@ -129,6 +133,23 @@ class SalesVm extends BaseVm {
       method: apiService.postWithAuth,
       errorObjectName: createState,
       busyObjectName: createState,
+      body: cleanedPayload,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> createPauseSales({
+    required Order params,
+  }) async {
+    final payload = params.toJson();
+    final cleanedPayload = _cleanPayload(payload);
+    return await performApiCall(
+      url: "/api/v1/merchants/sales-orders/drafts",
+      method: apiService.postWithAuth,
+      errorObjectName: pauseSalesState,
+      busyObjectName: pauseSalesState,
       body: cleanedPayload,
       onSuccess: (data) {
         return apiResponse;

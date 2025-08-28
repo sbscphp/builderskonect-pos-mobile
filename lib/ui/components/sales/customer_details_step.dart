@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class CustomerDetailsStep extends ConsumerStatefulWidget {
   const CustomerDetailsStep({
@@ -15,6 +16,7 @@ class CustomerDetailsStep extends ConsumerStatefulWidget {
 }
 
 class _CustomerDetailsStepState extends ConsumerState<CustomerDetailsStep> {
+  final formKey = GlobalKey<FormState>();
   final nameC = TextEditingController();
   final phoneC = TextEditingController();
   final emailC = TextEditingController();
@@ -146,134 +148,157 @@ class _CustomerDetailsStepState extends ConsumerState<CustomerDetailsStep> {
                   ),
                 ),
               if (salesVm.selectedCustomerData != null || showTextField)
-                Column(
-                  children: [
-                    HDivider(verticalPadding: 24),
-                    CustomTextField(
-                      controller: nameC,
-                      isRequired: false,
-                      labelText: 'Name',
-                      hintText: 'Name',
-                      showLabelHeader: true,
-                      readOnly: salesVm.selectedCustomerData != null,
-                      fillColor: salesVm.selectedCustomerData != null
-                          ? AppColors.neutral3
-                          : Colors.transparent,
-                      validator: Validators.required(),
-                    ),
-                    YBox(10),
-                    CustomTextField(
-                      controller: phoneC,
-                      isRequired: false,
-                      labelText: 'Phone Number',
-                      hintText: '0902344333',
-                      showLabelHeader: true,
-                      readOnly: salesVm.selectedCustomerData != null,
-                      fillColor: salesVm.selectedCustomerData != null
-                          ? AppColors.neutral3
-                          : Colors.transparent,
-                      validator: Validators.required(),
-                    ),
-                    YBox(10),
-                    CustomTextField(
-                      controller: emailC,
-                      isRequired: false,
-                      labelText: 'Email Address',
-                      hintText: 'email@example.com',
-                      showLabelHeader: true,
-                      readOnly: salesVm.selectedCustomerData != null,
-                      fillColor: salesVm.selectedCustomerData != null
-                          ? AppColors.neutral3
-                          : Colors.transparent,
-                      validator: Validators.required(),
-                    ),
-                    YBox(10),
-                    CustomTextField(
-                      controller: sourceC,
-                      isRequired: false,
-                      labelText: 'Source',
-                      optionalText: "(How did they get to know about you?)",
-                      hintText: 'facebook',
-                      showLabelHeader: true,
-                      readOnly: salesVm.selectedCustomerData != null,
-                      fillColor: salesVm.selectedCustomerData != null
-                          ? AppColors.neutral3
-                          : Colors.transparent,
-                      validator: Validators.required(),
-                      onTsp: salesVm.selectedCustomerData != null
-                          ? null
-                          : () async {
-                              final res = await ModalWrapper.bottomSheet(
-                                  context: context,
-                                  widget: SelectSourceModal());
+                Form(
+                  key: formKey,
+                  child: Column(
+                    children: [
+                      HDivider(verticalPadding: 24),
+                      CustomTextField(
+                        controller: nameC,
+                        isRequired: false,
+                        labelText: 'Name',
+                        hintText: 'Name',
+                        showLabelHeader: true,
+                        readOnly: salesVm.selectedCustomerData != null,
+                        fillColor: salesVm.selectedCustomerData != null
+                            ? AppColors.neutral3
+                            : Colors.transparent,
+                        validator: Validators.required(),
+                      ),
+                      YBox(10),
+                      CustomTextField(
+                        controller: phoneC,
+                        isRequired: false,
+                        labelText: 'Phone Number',
+                        hintText: '0902344333',
+                        showLabelHeader: true,
+                        readOnly: salesVm.selectedCustomerData != null,
+                        fillColor: salesVm.selectedCustomerData != null
+                            ? AppColors.neutral3
+                            : Colors.transparent,
+                        validator: Validators.required(),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(11),
+                        ],
+                      ),
+                      YBox(10),
+                      CustomTextField(
+                        controller: emailC,
+                        isRequired: false,
+                        labelText: 'Email Address',
+                        hintText: 'email@example.com',
+                        showLabelHeader: true,
+                        readOnly: salesVm.selectedCustomerData != null,
+                        fillColor: salesVm.selectedCustomerData != null
+                            ? AppColors.neutral3
+                            : Colors.transparent,
+                        validator: Validators.required(),
+                      ),
+                      YBox(10),
+                      CustomTextField(
+                        controller: sourceC,
+                        isRequired: false,
+                        labelText: 'Source',
+                        optionalText: "(How did they get to know about you?)",
+                        hintText: 'facebook',
+                        showLabelHeader: true,
+                        readOnly: salesVm.selectedCustomerData != null,
+                        fillColor: salesVm.selectedCustomerData != null
+                            ? AppColors.neutral3
+                            : Colors.transparent,
+                        // validator: Validators.required(),
+                        onTsp: salesVm.selectedCustomerData != null
+                            ? null
+                            : () async {
+                                final res = await ModalWrapper.bottomSheet(
+                                    context: context,
+                                    widget: SelectSourceModal());
 
-                              if (res is String) {
-                                sourceC.text = res;
-                              }
-                            },
-                    ),
-                    if (salesVm.selectedCustomerData != null)
-                      InkWell(
-                        onTap: () async {
-                          final res = await ModalWrapper.bottomSheet(
-                            context: context,
-                            widget: ConfirmationModal(
-                              modalConfirmationArg: ModalConfirmationArg(
-                                iconPath: AppSvgs.infoCircleRed,
-                                title: "Remove Customer",
-                                description:
-                                    "Are you sure you want to remove this customer \nfrom the order list? ",
-                                solidBtnText: "Yes, Remove",
-                                onSolidBtnOnTap: () {
-                                  Navigator.pop(context, true);
-                                },
-                                outlineBtnText: "No, don’t",
-                                onOutlineBtnOnTap: () {
-                                  Navigator.pop(context, false);
-                                },
-                              ),
-                            ),
-                          );
-                          if (res == true) {
-                            salesVm.selectedCustomerData = null;
-                            nameC.clear();
-                            phoneC.clear();
-                            emailC.clear();
-                            sourceC.clear();
-                            setState(() {});
-                          }
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            top: Sizer.height(16),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                AppSvgs.trashOutline,
-                                height: Sizer.height(14),
-                              ),
-                              XBox(10),
-                              Text(
-                                "Remove Customer",
-                                style: textTheme.text14?.copyWith(
-                                  color: AppColors.red2D,
+                                if (res is String) {
+                                  sourceC.text = res;
+                                }
+                              },
+                      ),
+                      if (salesVm.selectedCustomerData != null)
+                        InkWell(
+                          onTap: () async {
+                            final res = await ModalWrapper.bottomSheet(
+                              context: context,
+                              widget: ConfirmationModal(
+                                modalConfirmationArg: ModalConfirmationArg(
+                                  iconPath: AppSvgs.infoCircleRed,
+                                  title: "Remove Customer",
+                                  description:
+                                      "Are you sure you want to remove this customer \nfrom the order list? ",
+                                  solidBtnText: "Yes, Remove",
+                                  onSolidBtnOnTap: () {
+                                    Navigator.pop(context, true);
+                                  },
+                                  outlineBtnText: "No, don’t",
+                                  onOutlineBtnOnTap: () {
+                                    Navigator.pop(context, false);
+                                  },
                                 ),
                               ),
-                            ],
+                            );
+                            if (res == true) {
+                              salesVm.selectedCustomerData = null;
+                              nameC.clear();
+                              phoneC.clear();
+                              emailC.clear();
+                              sourceC.clear();
+                              setState(() {});
+                            }
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.only(
+                              top: Sizer.height(16),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset(
+                                  AppSvgs.trashOutline,
+                                  height: Sizer.height(14),
+                                ),
+                                XBox(10),
+                                Text(
+                                  "Remove Customer",
+                                  style: textTheme.text14?.copyWith(
+                                    color: AppColors.red2D,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    YBox(20),
-                  ],
+                      YBox(20),
+                    ],
+                  ),
                 ),
               YBox((salesVm.selectedCustomerData == null && !showTextField)
                   ? 300
                   : 16),
               CustomBtn.solid(
                 text: "Next",
-                onTap: widget.onNext,
+                onTap: () {
+                  if (salesVm.selectedCustomerData == null && !showTextField) {
+                    showWarningToast("Please add customer details");
+                    return;
+                  }
+                  if (formKey.currentState?.validate() == true) {
+                    salesVm.selectedCustomerData ??= CustomerData(
+                      name: nameC.text.trim(),
+                      phone: phoneC.text.trim(),
+                      email: emailC.text.trim(),
+                      source: sourceC.text.trim(),
+                    );
+
+                    widget.onNext?.call();
+                  }
+                },
               ),
               YBox(10),
             ],

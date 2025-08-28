@@ -138,7 +138,7 @@ class _PausedSalesScreenState extends ConsumerState<PausedSalesScreen> {
                         itemBuilder: (ctx, i) {
                           final item = salesVm.pausedSales[i];
                           return PausedSalesListTile(
-                            firstColText: item.orderNumber ?? "",
+                            firstColText: "#${item.orderNumber ?? "N/A"}",
                             subTitle: item.customer?.name ?? "",
                             amount: item.amount ?? "",
                             totalItems: (item.itemsCount ?? 0).toString(),
