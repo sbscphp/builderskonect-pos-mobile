@@ -13,3 +13,5 @@ export 'subscription_vm.dart';
 export 'theme_view_model.dart';
 export 'user_profile_vm.dart';
 export 'vendor_profile_vm.dart';
+export 'staff_vm.dart';
+export 'role_vm.dart';

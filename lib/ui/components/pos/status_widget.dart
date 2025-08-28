@@ -46,6 +46,7 @@ class _OrderStatusState extends State<OrderStatus> {
           "borderColor": AppColors.yellow3
         };
       case "pending":
+      case "deactivated":
         return {
           "bgColor": AppColors.red1,
           "textColor": AppColors.red2D,

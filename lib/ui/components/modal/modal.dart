@@ -7,3 +7,4 @@ export 'select_bank_modal.dart';
 export 'state_modal.dart';
 export 'store_list_options.dart';
 export 'store_option_modal.dart';
+export 'role_modal.dart';

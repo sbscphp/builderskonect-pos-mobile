@@ -302,6 +302,23 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.staffProfileScreen:
+        if (args is String) {
+          return TransitionUtils.buildTransition(
+            StaffProfileScreen(
+              staffId: args,
+            ),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.editStaffScreen:
+        return TransitionUtils.buildTransition(
+          const EditStaffScreen(),
+          settings,
+        );
+
       // Customers
       case RoutePath.customersManagementScreen:
         return TransitionUtils.buildTransition(

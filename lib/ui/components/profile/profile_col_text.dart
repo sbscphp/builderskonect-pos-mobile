@@ -39,7 +39,7 @@ class ProfileColText extends StatelessWidget {
                   child: SvgPicture.asset(AppSvgs.copy),
                 ),
               ),
-            Expanded(
+            Flexible(
               child: subTitleWidget ??
                   Text(
                     subTitle ?? '',

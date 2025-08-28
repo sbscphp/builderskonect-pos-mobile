@@ -1,16 +1,14 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class NewStaffScreen extends ConsumerStatefulWidget {
-  const NewStaffScreen({super.key});
+class EditStaffScreen extends ConsumerStatefulWidget {
+  const EditStaffScreen({super.key});
 
   @override
-  ConsumerState<NewStaffScreen> createState() => _NewStaffScreenState();
+  ConsumerState<EditStaffScreen> createState() => _EditStaffScreenState();
 }
 
-class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
+class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
   final _formKey = GlobalKey<FormState>();
   final fullNameC = TextEditingController();
   final emailC = TextEditingController();
@@ -18,6 +16,27 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
   final roleC = TextEditingController();
   final assignStoreC = TextEditingController();
   dynamic roleId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateControllers();
+    });
+  }
+
+  _updateControllers() {
+    final viewedUser = ref.read(staffVm).viewedStaff;
+    fullNameC.text = viewedUser?.name ?? '';
+    emailC.text = viewedUser?.email ?? '';
+    phoneC.text = viewedUser?.phone ?? '';
+    roleC.text = viewedUser?.assignedRoles ?? '';
+    assignStoreC.text =
+        viewedUser?.store?.firstOrNull ?? ''; //todo ::: handle assigned store
+    roleId = ref.read(roleVm).roles.firstWhere((element) => element.name == viewedUser?.assignedRoles,).id;
+
+    setState(() {});
+  }
 
   @override
   void dispose() {
@@ -38,7 +57,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
       show: vm.isBusy,
       child: Scaffold(
           appBar: CustomAppbar(
-            title: "New Staff",
+            title: "Edit Staff",
           ),
           body: Container(
             padding: EdgeInsets.all(Sizer.radius(16)),
@@ -55,9 +74,9 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
               key: _formKey,
               child: ListView(
                 children: [
-                  Text("Add New Staff", style: textTheme.text16?.medium),
+                  Text("Edit Staff", style: textTheme.text16?.medium),
                   Text(
-                    "Fill the form below to add a new staff",
+                    "Edit staff information below",
                     style: textTheme.text12?.copyWith(
                       color: colorScheme.black45,
                     ),
@@ -68,6 +87,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     isRequired: false,
                     labelText: 'Full Name',
                     hintText: 'Enter full name',
+                    enabled: false,
                     showLabelHeader: true,
                     validator: Validators.required(),
                   ),
@@ -76,7 +96,8 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     controller: emailC,
                     isRequired: false,
                     labelText: 'Email',
-                    // optionalText: "(optional)",
+                    enabled: false,
+
                     hintText: 'Enter email',
                     showLabelHeader: true,
                     validator: Validators.email(),
@@ -139,41 +160,30 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     showSuffixIcon: true,
                     // validator: Validators.required(),//optional
                     onTsp: () async {
-                      //todo:: handle store bit here
+                      final res = await ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: StateModal(),
+                      );
+                      if (res is RoleModel) {
+                        roleId = res.id;
+                        roleC.text = res.name ?? '';
+                        setState(() {});
+                      }
                     },
                   ),
                   YBox(20),
                   CustomBtn.solid(
                     text: "Save",
                     onTap: () async {
-                      if (_formKey.currentState?.validate() == true) {                  
-
-                        final res = await vm.addNewStaff(
-                            fullName: fullNameC.text,
-                            email: emailC.text,
+                      if (_formKey.currentState?.validate() == true) {
+                        final res = await vm.updateStaff(
                             phone: phoneC.text,
                             roleId: roleId);
 
                         handleApiResponse(
                           response: res,
                           onSuccess: () {
-                            ModalWrapper.bottomSheet(
-                              context: context,
-                              canDismiss: false,
-                              widget: ConfirmationModal(
-                                modalConfirmationArg: ModalConfirmationArg(
-                                  iconPath: AppSvgs.checkIcon,
-                                  title: "Staff Invite Sent Successfully",
-                                  description:
-                                      "An invite has been sent to this user to join Builder’sKonnect. The user will be required to create their own password to Login.",
-                                  solidBtnText: "Okay, Good",
-                                  onSolidBtnOnTap: () {
-                                    Navigator.pop(context);
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ),
-                            );
+                            Navigator.pop(context);
                           },
                         );
                       }
