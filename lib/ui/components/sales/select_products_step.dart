@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:builders_konnect/ui/components/barcode/barcode_scanner_screen.dart';
 
 class SelectProductsStep extends ConsumerStatefulWidget {
   const SelectProductsStep({
@@ -38,6 +39,107 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       ref.read(productInventoryVmodel).getInventoryProducts(q: query.trim());
     });
+  }
+
+  // Open barcode scanner
+  void _openBarcodeScanner() async {
+    try {
+      // Check if camera permission is available before opening scanner
+      final result = await Navigator.push<String>(
+        context,
+        MaterialPageRoute(
+          builder: (context) => BarcodeScannerScreen(
+            onBarcodeScanned: (barcode) {
+              // This callback can be used for additional handling if needed
+              printty('Barcode scanned: $barcode');
+            },
+          ),
+        ),
+      );
+
+      if (result != null && result.isNotEmpty) {
+        // Search for product by barcode
+        _searchProductByBarcode(result);
+      } else if (result == null) {
+        // User cancelled scanning
+        printty('Barcode scanning cancelled by user');
+      }
+    } catch (e) {
+      // Handle navigation or scanner errors
+      showWarningToast('Unable to open barcode scanner. Please try again.');
+      printty('Error opening barcode scanner: $e');
+    }
+  }
+
+  // Search product by barcode and add to selection
+  void _searchProductByBarcode(String barcode) async {
+    try {
+      final inventoryProductVm = ref.read(productInventoryVmodel);
+      final salesVm = ref.read(salesVmodel);
+      
+      // Validate barcode input
+      if (barcode.trim().isEmpty) {
+        showWarningToast('Invalid barcode scanned');
+        return;
+      }
+      
+      // Show loading state
+      setState(() {
+        isSearching = true;
+      });
+      
+      // Search for product using barcode as query
+      await inventoryProductVm.getInventoryProducts(q: barcode.trim());
+      
+      if (inventoryProductVm.inventoryProducts.isNotEmpty) {
+        // Find exact match by SKU, EAN, or code
+        final exactMatch = inventoryProductVm.inventoryProducts.where(
+          (p) => p.sku?.toLowerCase() == barcode.toLowerCase() || 
+                 p.ean?.toLowerCase() == barcode.toLowerCase() ||
+                 p.code?.toLowerCase() == barcode.toLowerCase(),
+        ).toList();
+        
+        final product = exactMatch.isNotEmpty 
+            ? exactMatch.first 
+            : inventoryProductVm.inventoryProducts.first;
+        
+        // Check if product is already in the list
+        final existingProductIndex = salesVm.productList
+            .indexWhere((p) => p.id == product.id);
+            
+        if (existingProductIndex != -1) {
+          // Update quantity of existing product
+          final currentQuantity = salesVm.productList[existingProductIndex].quantity ?? 0;
+          salesVm.productList[existingProductIndex] = salesVm.productList[
+              existingProductIndex].copyWith(
+                  quantity: currentQuantity + 1);
+          showSuccessToastMessage('Quantity updated for "${product.name}" (${currentQuantity + 1})');
+        } else {
+          // Add new product to selection
+          salesVm.productList.add(product.copyWith(quantity: 1));
+          showSuccessToastMessage('Product "${product.name}" added to selection');
+        }
+        
+        setState(() {});
+        
+        // If no exact match found, show warning
+        if (exactMatch.isEmpty) {
+          showWarningToast('No exact barcode match found. Added closest result.');
+        }
+      } else {
+        // Show error message if no product found
+        showWarningToast('No product found with barcode: $barcode');
+      }
+    } catch (e) {
+      // Handle any errors during the search process
+      showWarningToast('Error searching for product. Please try again.');
+      printty('Error in _searchProductByBarcode: $e');
+    } finally {
+      // Reset loading state
+      setState(() {
+        isSearching = false;
+      });
+    }
   }
 
   @override
@@ -158,30 +260,33 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
                 }),
               ),
               YBox(24),
-              Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: Sizer.width(16),
-                  vertical: Sizer.height(12),
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.neutral3,
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  border: Border.all(
-                    color: AppColors.neutral5,
+              InkWell(
+                onTap: () => _openBarcodeScanner(),
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Sizer.width(16),
+                    vertical: Sizer.height(12),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(AppSvgs.scan),
-                    XBox(8),
-                    Text(
-                      'Tap here to scan product barcode',
-                      style: textTheme.text14?.copyWith(
-                        color: AppColors.neutral10,
-                      ),
+                  decoration: BoxDecoration(
+                    color: AppColors.neutral3,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                    border: Border.all(
+                      color: AppColors.neutral5,
                     ),
-                  ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SvgPicture.asset(AppSvgs.scan),
+                      XBox(8),
+                      Text(
+                        'Tap here to scan product barcode',
+                        style: textTheme.text14?.copyWith(
+                          color: AppColors.neutral10,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               HDivider(verticalPadding: 24),

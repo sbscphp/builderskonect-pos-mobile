@@ -1,5 +1,6 @@
 export 'auth_vm.dart';
 export 'bank_vm.dart';
+export 'barcode_scanner_vm.dart';
 export 'base_vm.dart';
 export 'customer_vm.dart';
 export 'dashboard_vm.dart';
