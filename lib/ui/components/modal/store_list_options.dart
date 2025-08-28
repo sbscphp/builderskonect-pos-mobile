@@ -1,15 +1,13 @@
 import 'package:builders_konnect/core/core.dart';
 
 class StoreListOptions extends ConsumerStatefulWidget {
-  const StoreListOptions({super.key, required this.stateId});
-
-  final int stateId;
+  const StoreListOptions({super.key});
 
   @override
-  ConsumerState<StoreListOptions> createState() => _CustomListModalState();
+  ConsumerState<StoreListOptions> createState() => _StoreListOptionsState();
 }
 
-class _CustomListModalState extends ConsumerState<StoreListOptions> {
+class _StoreListOptionsState extends ConsumerState<StoreListOptions> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;

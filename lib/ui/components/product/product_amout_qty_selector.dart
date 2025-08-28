@@ -33,6 +33,14 @@ class _ProductAmoutQtySelectorState
   }
 
   @override
+  void didUpdateWidget(ProductAmoutQtySelector oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.quantity != widget.quantity) {
+      qtyC.text = widget.quantity.toString();
+    }
+  }
+
+  @override
   void dispose() {
     qtyC.dispose();
     super.dispose();
@@ -96,15 +104,22 @@ class _ProductAmoutQtySelectorState
             Spacer(),
             Row(
               children: [
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(6)),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: AppColors.neutral5,
+                InkWell(
+                  onTap: () {
+                    if (widget.quantity > 0) {
+                      widget.onQtyChanged?.call(widget.quantity - 1);
+                    }
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(Sizer.radius(6)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: AppColors.neutral5,
+                      ),
                     ),
+                    child: SvgPicture.asset(AppSvgs.minus),
                   ),
-                  child: SvgPicture.asset(AppSvgs.minus),
                 ),
                 XBox(10),
                 Container(
@@ -119,6 +134,7 @@ class _ProductAmoutQtySelectorState
                   child: TextFormField(
                     controller: qtyC,
                     textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
                     style: textTheme.text14?.copyWith(
                       color: AppColors.neutral11,
                     ),
@@ -128,18 +144,29 @@ class _ProductAmoutQtySelectorState
                         bottom: Sizer.height(10),
                       ),
                     ),
+                    onChanged: (value) {
+                      final newQty = int.tryParse(value) ?? 1;
+                      if (newQty >= 0) {
+                        widget.onQtyChanged?.call(newQty);
+                      }
+                    },
                   ),
                 ),
                 XBox(10),
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(6)),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(
-                      color: AppColors.neutral5,
+                InkWell(
+                  onTap: () {
+                    widget.onQtyChanged?.call(widget.quantity + 1);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(Sizer.radius(6)),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: AppColors.neutral5,
+                      ),
                     ),
+                    child: SvgPicture.asset(AppSvgs.plus),
                   ),
-                  child: SvgPicture.asset(AppSvgs.plus),
                 ),
               ],
             ),

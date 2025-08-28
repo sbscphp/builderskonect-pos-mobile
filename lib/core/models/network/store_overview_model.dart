@@ -159,21 +159,33 @@ class Datum {
 }
 
 class Customer {
+  final String? id;
   final String? name;
   final String? email;
+  final String? phone;
+  final dynamic referralSource;
 
   Customer({
+    this.id,
     this.name,
     this.email,
+    this.phone,
+    this.referralSource,
   });
 
   factory Customer.fromJson(Map<String, dynamic> json) => Customer(
+        id: json["id"],
         name: json["name"],
         email: json["email"],
+        phone: json["phone"],
+        referralSource: json["referral_source"],
       );
 
   Map<String, dynamic> toJson() => {
+        "id": id,
         "name": name,
         "email": email,
+        "phone": phone,
+        "referral_source": referralSource,
       };
 }

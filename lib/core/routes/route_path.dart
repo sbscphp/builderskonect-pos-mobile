@@ -51,6 +51,7 @@ class RoutePath {
   static const newSalesScreen = '/newSalesScreen';
   static const pausedSalesScreen = '/pausedSalesScreen';
   static const orderAnalyticsScreen = '/orderAnalyticsScreen';
+  static const viewSalesOrderScreen = '/viewSalesOrderScreen';
 
   // Returns
   static const returnRefundScreen = '/returnRefundScreen';

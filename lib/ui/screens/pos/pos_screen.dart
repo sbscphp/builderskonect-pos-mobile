@@ -277,7 +277,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                               Expanded(
                                 child: StatCard(
                                   title: "Total Products",
-                                  value: dashVm.statModel?.totalProducts ?? "0",
+                                  value: AppUtils.formatNumber(
+                                    number: double.tryParse(
+                                          dashVm.statModel?.totalProducts ??
+                                              "0",
+                                        ) ??
+                                        0,
+                                  ),
                                   bgColor: AppColors.blueFF,
                                   borderColor: AppColors.blue5,
                                   amountColor: AppColors.primaryBlue,

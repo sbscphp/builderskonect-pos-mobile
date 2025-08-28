@@ -10,4 +10,5 @@ export 'product/product.dart';
 export 'profile/profile.dart';
 export 'sales/sales.dart';
 export 'shared/shared.dart';
+export 'shimmer/shimmer.dart';
 export 'staffs/staffs.dart';

@@ -13,6 +13,8 @@ class SalesProductWidget extends StatelessWidget {
     this.quantity,
     this.showPriceQty = false,
     this.onTap,
+    this.onRemove,
+    this.onQtyChanged,
   });
 
   final String productTitle;
@@ -24,6 +26,8 @@ class SalesProductWidget extends StatelessWidget {
   final int? quantity;
   final bool showPriceQty;
   final VoidCallback? onTap;
+  final VoidCallback? onRemove;
+  final ValueChanged<int>? onQtyChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +38,7 @@ class SalesProductWidget extends StatelessWidget {
       child: Column(
         children: [
           ProductWithSkuListTile(
+            productImage: productImage,
             productTitle: productTitle,
             subTitle: subTitle,
             sku: sku,
@@ -43,7 +48,8 @@ class SalesProductWidget extends StatelessWidget {
               unitPrice: unitPrice ?? "",
               totalAmount: totalAmount ?? "",
               quantity: quantity ?? 1,
-              // onQtyChanged: (value) {},
+              onRemove: onRemove,
+              onQtyChanged: onQtyChanged,
             ),
         ],
       ),

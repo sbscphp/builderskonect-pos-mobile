@@ -29,7 +29,7 @@ class CustomCircleAvatar extends StatelessWidget {
             border: (showBorder == true || isLoading)
                 ? Border.all(
                     color: AppColors.primaryBlue,
-                    width: 2,
+                    width: 0.5,
                   )
                 : null),
         child: ClipRRect(

@@ -88,10 +88,6 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                     child: Text('New Sales', style: textTheme.text14),
                   ),
                   PopupMenuItem(
-                    value: 'offline_sales',
-                    child: Text('Offline Sales', style: textTheme.text14),
-                  ),
-                  PopupMenuItem(
                     value: 'order_analytics',
                     child: Text('Order Analytics', style: textTheme.text14),
                   ),
@@ -105,9 +101,6 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                       break;
                     case 'new_sales':
                       Navigator.pushNamed(context, RoutePath.newSalesScreen);
-                      break;
-                    case 'offline_sales':
-                      // Navigator.pushNamed(context, RoutePath.offlineSalesScreen);
                       break;
                     case 'order_analytics':
                       Navigator.pushNamed(
