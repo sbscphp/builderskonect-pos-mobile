@@ -37,7 +37,7 @@ dependencies:
   dio: ^5.8.0+1
   flutter_dotenv: ^5.2.1
   flutter_svg: ^2.2.0
-  skeletonizer: ^2.1.0+1
+  skeletonizer: ^1.4.3
   flutter_screenutil: ^5.9.3
   cached_network_image: ^3.4.1
   iconsax: ^0.0.8
@@ -64,6 +64,9 @@ dependencies:
   path: ^1.9.0
   simple_barcode_scanner: ^0.1.1
   permission_handler: ^11.3.1
+  flutter_rating: ^2.0.2
+  flutter_html: ^3.0.0
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:

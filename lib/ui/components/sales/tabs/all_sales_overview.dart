@@ -89,7 +89,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                       ProductColText(
                         title: "TOTAL SALES VALUE",
                         value:
-                            "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(salesVm.salesStats?.totalSalesValue ?? "0") ?? 0)}",
+                            "${AppUtils.nairaSymbol}${salesVm.salesStats?.totalSalesValue}",
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -105,7 +105,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                             textColor: colorScheme.black85,
                             title: "Online Sales",
                             value:
-                                "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(salesVm.salesStats?.onlineSales ?? "0") ?? 0)}",
+                                "${AppUtils.nairaSymbol}${salesVm.salesStats?.onlineSales}",
                             valueTextSize: 12,
                             valueColor: AppColors.purple6,
                           ),
@@ -118,7 +118,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                             textColor: colorScheme.black85,
                             title: "Walk-in Sales",
                             value:
-                                "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(salesVm.salesStats?.offlineSales ?? "0") ?? 0)}",
+                                "${AppUtils.nairaSymbol}${salesVm.salesStats?.offlineSales}",
                             valueTextSize: 12,
                             valueColor: AppColors.red2D,
                           ),

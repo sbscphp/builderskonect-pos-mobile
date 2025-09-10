@@ -7,16 +7,22 @@ class ProductWithStatusListTile extends StatelessWidget {
     required this.productTitle,
     required this.productImage,
     required this.subTitle,
+    required this.subTitle1,
+    required this.subValue1,
+    required this.subTitle2,
+    required this.subValue2,
     required this.status,
-    required this.date,
     this.onTap,
   });
 
   final String productTitle;
   final String productImage;
   final String subTitle;
+  final String subTitle1;
+  final String subValue1;
+  final String subTitle2;
+  final String subValue2;
   final String status;
-  final String date;
   final VoidCallback? onTap;
 
   @override
@@ -37,7 +43,8 @@ class ProductWithStatusListTile extends StatelessWidget {
                       width: Sizer.width(26),
                       height: Sizer.height(26),
                       child: MyCachedNetworkImage(
-                        imageUrl: AppUtils.dummyImage,
+                        imageUrl: productImage,
+                        fit: BoxFit.cover,
                       ),
                     ),
                     XBox(16),
@@ -47,6 +54,8 @@ class ProductWithStatusListTile extends StatelessWidget {
                         children: [
                           Text(
                             productTitle,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: textTheme.text14?.medium,
                           ),
                           YBox(4),
@@ -62,6 +71,7 @@ class ProductWithStatusListTile extends StatelessWidget {
                   ],
                 ),
               ),
+              XBox(20),
               OrderStatus(status: status),
             ],
           ),
@@ -69,35 +79,40 @@ class ProductWithStatusListTile extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Amount: ",
-                      style: textTheme.text12?.medium.copyWith(
-                        color: AppColors.gray500,
+              Expanded(
+                child: RichText(
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: subTitle1,
+                        style: textTheme.text12?.medium.copyWith(
+                          color: AppColors.gray500,
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: "N 2000",
-                      style: textTheme.text12?.medium.copyWith(
-                        color: colorScheme.primaryColor,
+                      TextSpan(
+                        text: subValue1,
+                        style: textTheme.text12?.medium.copyWith(
+                          color: colorScheme.primaryColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
+              XBox(30),
               RichText(
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: "Stock level: ",
+                      text: subTitle2,
                       style: textTheme.text12?.medium.copyWith(
                         color: AppColors.gray500,
                       ),
                     ),
                     TextSpan(
-                      text: "280 left",
+                      text: subValue2,
                       style: textTheme.text12?.medium.copyWith(
                         color: AppColors.neutral11,
                       ),

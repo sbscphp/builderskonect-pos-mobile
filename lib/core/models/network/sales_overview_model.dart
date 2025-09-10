@@ -99,6 +99,9 @@ class SalesResponseData {
       };
 }
 
+List<SalesData> salesDataFromJson(String str) =>
+    List<SalesData>.from(json.decode(str).map((x) => SalesData.fromJson(x)));
+
 class SalesData {
   final String? id;
   final String? orderNumber;
@@ -158,6 +161,9 @@ class SalesData {
         "sales_type": salesType,
       };
 }
+
+SalesStats salesStatsFromJson(String str) =>
+    SalesStats.fromJson(json.decode(str));
 
 class SalesStats {
   final int? totalSales;

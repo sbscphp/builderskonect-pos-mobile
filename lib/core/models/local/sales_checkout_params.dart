@@ -33,7 +33,7 @@ class Order {
   final String? discountId;
   final String? salesType;
   final List<LineItemParams>? lineItems;
-  final List<PaymentMethod>? paymentMethods;
+  final List<SalesPaymentMethod>? paymentMethods;
   final String? pausedSalesId;
 
   Order({
@@ -59,8 +59,8 @@ class Order {
                 json["line_items"]!.map((x) => LineItemParams.fromJson(x))),
         paymentMethods: json["payment_methods"] == null
             ? []
-            : List<PaymentMethod>.from(
-                json["payment_methods"]!.map((x) => PaymentMethod.fromJson(x))),
+            : List<SalesPaymentMethod>.from(json["payment_methods"]!
+                .map((x) => SalesPaymentMethod.fromJson(x))),
         pausedSalesId: json["paused_sales_id"],
       );
 
@@ -140,16 +140,17 @@ class LineItemParams {
       };
 }
 
-class PaymentMethod {
+class SalesPaymentMethod {
   final String? id;
   final double? amount;
 
-  PaymentMethod({
+  SalesPaymentMethod({
     this.id,
     this.amount,
   });
 
-  factory PaymentMethod.fromJson(Map<String, dynamic> json) => PaymentMethod(
+  factory SalesPaymentMethod.fromJson(Map<String, dynamic> json) =>
+      SalesPaymentMethod(
         id: json["id"],
         amount: json["amount"]?.toDouble(),
       );

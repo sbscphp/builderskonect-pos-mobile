@@ -1,3 +1,4 @@
+export 'custom_type.dart';
 export 'environment_type.dart';
 export 'field_type.dart';
 export 'keyboard_type.dart';

@@ -258,9 +258,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ));
     }
     if (widget.showSuffixIcon && widget.suffixIcon == null) {
-      return const Icon(
+      return Icon(
         Icons.keyboard_arrow_down_rounded,
-        size: 18,
+        size: Sizer.radius(20),
         color: AppColors.black,
       );
     }

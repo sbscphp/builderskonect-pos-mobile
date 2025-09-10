@@ -1,30 +1,38 @@
 import 'package:builders_konnect/core/core.dart';
 
 class SalesVm extends BaseVm {
-  SalesOverviewModel? _salesOverviewModel;
-  SalesStats? get salesStats => _salesOverviewModel?.stats;
-  List<SalesData> get salesData => _salesOverviewModel?.data?.data ?? [];
+  SalesStats? _salesStats;
+  SalesStats? get salesStats => _salesStats;
+  List<SalesData> _salesData = [];
+  List<SalesData> get salesData => _salesData;
 
   Future<ApiResponse> getSalesOverview({
     String? q,
     String? salesType,
     String? stateObjectName,
+    String? customerId,
+    bool paginate = true,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/sales-orders")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
+      ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
       ..addQueryParameterIfNotEmpty("sales_type", salesType ?? '')
       ..addQueryParameterIfNotEmpty("limit", '30')
-      ..addQueryParameterIfNotEmpty("paginate", '1');
+      ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
-    _salesOverviewModel = null;
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
       errorObjectName: stateObjectName ?? getState,
       busyObjectName: stateObjectName ?? getState,
       onSuccess: (data) {
-        _salesOverviewModel =
-            salesOverviewModelFromJson(json.encode(data['data']));
+        if (paginate) {
+          _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
+          _salesData =
+              salesDataFromJson(json.encode(data['data']?['data']?['data']));
+        } else {
+          _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
+        }
         return apiResponse;
       },
     );
@@ -166,7 +174,6 @@ class SalesVm extends BaseVm {
           ..addQueryParameterIfNotEmpty("limit", '30')
           ..addQueryParameterIfNotEmpty("paginate", '1');
 
-    _salesOverviewModel = null;
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,

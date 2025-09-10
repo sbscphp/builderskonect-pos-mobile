@@ -212,10 +212,13 @@ class AppRouter {
         );
 
       case RoutePath.viewProductDetailsScreen:
-        return TransitionUtils.buildTransition(
-          const ViewProductDetailsScreen(),
-          settings,
-        );
+        if (args is ProductModel) {
+          return TransitionUtils.buildTransition(
+            ViewProductDetailsScreen(product: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Store
       case RoutePath.newStoreScreen:
@@ -293,6 +296,15 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.viewReturnsScreen:
+        if (args is RefundData) {
+          return TransitionUtils.buildTransition(
+            ViewReturnsScreen(refund: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
       // Staff
       case RoutePath.staffManagementScreen:
         return TransitionUtils.buildTransition(
@@ -335,6 +347,21 @@ class AppRouter {
           const CustomersManagementScreen(),
           settings,
         );
+
+      case RoutePath.newCustomerScreen:
+        return TransitionUtils.buildTransition(
+          const NewCustomerScreen(),
+          settings,
+        );
+
+      case RoutePath.viewCustomerScreen:
+        if (args is CustomerData) {
+          return TransitionUtils.buildTransition(
+            ViewCustomerScreen(customer: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Discount
       case RoutePath.discountManagementScreen:

@@ -92,7 +92,7 @@ class _WalkInSalesOverviewState extends ConsumerState<WalkInSalesOverview> {
                       ProductColText(
                         title: "TOTAL WALK-IN SALES VALUE",
                         value:
-                            "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(salesVm.salesStats?.offlineSales ?? "0") ?? 0)}",
+                            "${AppUtils.nairaSymbol}${salesVm.salesStats?.offlineSales}",
                       ),
                       ProductColText(
                         textColor: colorScheme.black85,

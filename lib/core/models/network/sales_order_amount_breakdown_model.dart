@@ -62,7 +62,7 @@ class SalesOrderAmountBreakdownModel {
 }
 
 class Fees {
-  final String? tax;
+  final double? tax;
   final double? taxAmount;
   final int? serviceFee;
 
@@ -73,7 +73,9 @@ class Fees {
   });
 
   factory Fees.fromJson(Map<String, dynamic> json) => Fees(
-        tax: json["tax"],
+        tax: json["tax"] is String
+            ? double.tryParse(json["tax"])
+            : json["tax"]?.toDouble(),
         taxAmount: json["tax_amount"]?.toDouble(),
         serviceFee: json["service_fee"],
       );

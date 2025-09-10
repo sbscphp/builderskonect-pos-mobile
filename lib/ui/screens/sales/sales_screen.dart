@@ -12,6 +12,7 @@ class SalesScreen extends ConsumerStatefulWidget {
 
 class _SalesScreenState extends ConsumerState<SalesScreen>
     with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex = 0;
   late AnimationController _tabController;
   late Animation<double> _fadeAnimation;
@@ -71,6 +72,8 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
+        key: _scaffoldKey,
+        drawer: const CustomDrawer(),
         appBar: CustomAppbar(
           title: "Sales",
           trailingWidget: InkWell(
@@ -117,7 +120,13 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
               height: Sizer.height(32),
             ),
           ),
-          leadingWidget: CustomCircleAvatar(onTap: () {}),
+          leadingWidget: CustomCircleAvatar(
+            avatarUrl: ref.read(authVmodel).user?.avatar,
+            onTap: () {
+              printty("avatar tapped");
+              _scaffoldKey.currentState?.openDrawer();
+            },
+          ),
         ),
         body: Column(
           children: [

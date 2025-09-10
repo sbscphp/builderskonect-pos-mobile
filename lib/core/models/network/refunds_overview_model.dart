@@ -1,107 +1,7 @@
 import 'dart:convert';
 
-import 'package:builders_konnect/core/models/network/store_location_model.dart';
-
-RefundsOverviewModel refundsOverviewModelFromJson(String str) =>
-    RefundsOverviewModel.fromJson(json.decode(str));
-
-String refundsOverviewModelToJson(RefundsOverviewModel data) =>
-    json.encode(data.toJson());
-
-class RefundsOverviewModel {
-  final RefundStats? stats;
-  final ResonseData? data;
-
-  RefundsOverviewModel({
-    this.stats,
-    this.data,
-  });
-
-  factory RefundsOverviewModel.fromJson(Map<String, dynamic> json) =>
-      RefundsOverviewModel(
-        stats:
-            json["stats"] == null ? null : RefundStats.fromJson(json["stats"]),
-        data: json["data"] == null ? null : ResonseData.fromJson(json["data"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "stats": stats?.toJson(),
-        "data": data?.toJson(),
-      };
-}
-
-class ResonseData {
-  final int? currentPage;
-  final List<RefundData>? data;
-  final String? firstPageUrl;
-  final int? from;
-  final int? lastPage;
-  final String? lastPageUrl;
-  final List<Link>? links;
-  final String? nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic prevPageUrl;
-  final int? to;
-  final int? total;
-
-  ResonseData({
-    this.currentPage,
-    this.data,
-    this.firstPageUrl,
-    this.from,
-    this.lastPage,
-    this.lastPageUrl,
-    this.links,
-    this.nextPageUrl,
-    this.path,
-    this.perPage,
-    this.prevPageUrl,
-    this.to,
-    this.total,
-  });
-
-  factory ResonseData.fromJson(Map<String, dynamic> json) => ResonseData(
-        currentPage: json["current_page"],
-        data: json["data"] == null
-            ? []
-            : List<RefundData>.from(
-                json["data"]!.map((x) => RefundData.fromJson(x))),
-        firstPageUrl: json["first_page_url"],
-        from: json["from"],
-        lastPage: json["last_page"],
-        lastPageUrl: json["last_page_url"],
-        links: json["links"] == null
-            ? []
-            : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-        nextPageUrl: json["next_page_url"],
-        path: json["path"],
-        perPage: json["per_page"],
-        prevPageUrl: json["prev_page_url"],
-        to: json["to"],
-        total: json["total"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "current_page": currentPage,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-        "first_page_url": firstPageUrl,
-        "from": from,
-        "last_page": lastPage,
-        "last_page_url": lastPageUrl,
-        "links": links == null
-            ? []
-            : List<dynamic>.from(links!.map((x) => x.toJson())),
-        "next_page_url": nextPageUrl,
-        "path": path,
-        "per_page": perPage,
-        "prev_page_url": prevPageUrl,
-        "to": to,
-        "total": total,
-      };
-}
+List<RefundData> refundDataFromJson(String str) =>
+    List<RefundData>.from(json.decode(str).map((x) => RefundData.fromJson(x)));
 
 class RefundData {
   final String? id;
@@ -156,6 +56,9 @@ class RefundData {
         "status": status,
       };
 }
+
+RefundStats? refundStatsFromJson(String str) =>
+    RefundStats.fromJson(json.decode(str));
 
 class RefundStats {
   final int? totalReturns;

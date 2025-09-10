@@ -93,7 +93,7 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                       ProductColText(
                         title: "TOTAL ONLINE SALES VALUE",
                         value:
-                            "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(salesVm.salesStats?.onlineSales ?? "0") ?? 0)}",
+                            "${AppUtils.nairaSymbol}${salesVm.salesStats?.onlineSales}",
                       ),
                       ProductColText(
                         textColor: colorScheme.black85,

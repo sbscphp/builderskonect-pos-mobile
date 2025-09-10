@@ -19,14 +19,17 @@ class _SelectCustomerModalState extends ConsumerState<SelectCustomerModal> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(customerVmodel).setCustomerOverview(null);
+      final customVm = ref.read(customerVmodel);
+      if (customVm.customerData.isEmpty) {
+        ref.read(customerVmodel).getCustomerOverview();
+      }
     });
   }
 
   void _searchProducts(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(customerVmodel).getCustomerOverview(q: query);
+      ref.read(customerVmodel).getCustomerOverview(q: query, paginate: false);
     });
   }
 
@@ -102,7 +105,6 @@ class _SelectCustomerModalState extends ConsumerState<SelectCustomerModal> {
                     InkWell(
                       onTap: () {
                         _searchProducts(searchC.text.trim());
-                        customerVm.setCustomerOverview(null);
                       },
                       child: Container(
                         padding: EdgeInsets.all(Sizer.width(10)),

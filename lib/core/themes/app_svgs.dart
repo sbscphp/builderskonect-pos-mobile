@@ -58,6 +58,9 @@ class AppSvgs {
   static const String plus = "$svgIcon/plus.svg";
   static const String trash = "$svgIcon/trash.svg";
   static const String trashOutline = "$svgIcon/trashOutline.svg";
+  static const String circleAvatar = "$svgIcon/circleAvatar.svg";
 
   static const String arrowUpRight = "$svgIcon/arrowUpRight.svg";
+  static const String checkC = "$svgIcon/checkC.svg";
+  static const String infoC = "$svgIcon/infoC.svg";
 }

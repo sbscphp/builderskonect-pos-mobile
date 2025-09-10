@@ -1,111 +1,11 @@
 import 'dart:convert';
 
-import 'package:builders_konnect/core/models/network/store_location_model.dart';
+List<CustomerData> customerDataListFromJson(String str) =>
+    List<CustomerData>.from(
+        json.decode(str).map((x) => CustomerData.fromJson(x)));
 
-CustomerOverviewModel customerOverviewModelFromJson(String str) =>
-    CustomerOverviewModel.fromJson(json.decode(str));
-
-String customerOverviewModelToJson(CustomerOverviewModel data) =>
-    json.encode(data.toJson());
-
-class CustomerOverviewModel {
-  final CustomerStats? stats;
-  final CustomerResponseData? data;
-
-  CustomerOverviewModel({
-    this.stats,
-    this.data,
-  });
-
-  factory CustomerOverviewModel.fromJson(Map<String, dynamic> json) =>
-      CustomerOverviewModel(
-        stats: json["stats"] == null
-            ? null
-            : CustomerStats.fromJson(json["stats"]),
-        data: json["data"] == null
-            ? null
-            : CustomerResponseData.fromJson(json["data"]),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "stats": stats?.toJson(),
-        "data": data?.toJson(),
-      };
-}
-
-class CustomerResponseData {
-  final int? currentPage;
-  final List<CustomerData>? data;
-  final String? firstPageUrl;
-  final int? from;
-  final int? lastPage;
-  final String? lastPageUrl;
-  final List<Link>? links;
-  final String? nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic prevPageUrl;
-  final int? to;
-  final int? total;
-
-  CustomerResponseData({
-    this.currentPage,
-    this.data,
-    this.firstPageUrl,
-    this.from,
-    this.lastPage,
-    this.lastPageUrl,
-    this.links,
-    this.nextPageUrl,
-    this.path,
-    this.perPage,
-    this.prevPageUrl,
-    this.to,
-    this.total,
-  });
-
-  factory CustomerResponseData.fromJson(Map<String, dynamic> json) =>
-      CustomerResponseData(
-        currentPage: json["current_page"],
-        data: json["data"] == null
-            ? []
-            : List<CustomerData>.from(
-                json["data"]!.map((x) => CustomerData.fromJson(x))),
-        firstPageUrl: json["first_page_url"],
-        from: json["from"],
-        lastPage: json["last_page"],
-        lastPageUrl: json["last_page_url"],
-        links: json["links"] == null
-            ? []
-            : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-        nextPageUrl: json["next_page_url"],
-        path: json["path"],
-        perPage: json["per_page"],
-        prevPageUrl: json["prev_page_url"],
-        to: json["to"],
-        total: json["total"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "current_page": currentPage,
-        "data": data == null
-            ? []
-            : List<dynamic>.from(data!.map((x) => x.toJson())),
-        "first_page_url": firstPageUrl,
-        "from": from,
-        "last_page": lastPage,
-        "last_page_url": lastPageUrl,
-        "links": links == null
-            ? []
-            : List<dynamic>.from(links!.map((x) => x.toJson())),
-        "next_page_url": nextPageUrl,
-        "path": path,
-        "per_page": perPage,
-        "prev_page_url": prevPageUrl,
-        "to": to,
-        "total": total,
-      };
-}
+CustomerData customerDataFromJson(String str) =>
+    CustomerData.fromJson(json.decode(str));
 
 class CustomerData {
   final String? id;
@@ -116,6 +16,8 @@ class CustomerData {
   final String? address;
   final String? channel;
   final String? source;
+  final dynamic shippingInformation;
+  final dynamic billingInformation;
   final DateTime? dateJoined;
 
   CustomerData({
@@ -127,6 +29,8 @@ class CustomerData {
     this.address,
     this.channel,
     this.source,
+    this.shippingInformation,
+    this.billingInformation,
     this.dateJoined,
   });
 
@@ -139,6 +43,8 @@ class CustomerData {
         address: json["address"],
         channel: json["channel"],
         source: json["source"],
+        shippingInformation: json["shipping_information"],
+        billingInformation: json["billing_information"],
         dateJoined: json["date_joined"] == null
             ? null
             : DateTime.parse(json["date_joined"]),
@@ -153,9 +59,14 @@ class CustomerData {
         "address": address,
         "channel": channel,
         "source": source,
+        "shipping_information": shippingInformation,
+        "billing_information": billingInformation,
         "date_joined": dateJoined?.toIso8601String(),
       };
 }
+
+CustomerStats customerStatsFromJson(String str) =>
+    CustomerStats.fromJson(json.decode(str));
 
 class CustomerStats {
   final int? total;

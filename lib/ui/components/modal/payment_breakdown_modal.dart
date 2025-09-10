@@ -222,9 +222,9 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
             openedVia: "merchant",
           );
 
-    List<PaymentMethod> paymentMethods = [];
+    List<SalesPaymentMethod> paymentMethods = [];
     for (int i = 0; i < widget.paymentMethods.length; i++) {
-      PaymentMethod paymentMethod = PaymentMethod(
+      SalesPaymentMethod paymentMethod = SalesPaymentMethod(
         id: widget.paymentMethods[i].id,
         amount: double.tryParse(amountCollectedControllers[i].text) ?? 0,
       );

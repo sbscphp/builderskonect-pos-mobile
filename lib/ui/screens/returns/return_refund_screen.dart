@@ -188,16 +188,24 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                             padding: EdgeInsets.only(
                               top: Sizer.height(14),
                             ),
-                            itemCount: refundsVm.refundData?.length ?? 0,
+                            itemCount: refundsVm.refundData.length ?? 0,
                             separatorBuilder: (_, __) => HDivider(),
                             itemBuilder: (ctx, i) {
-                              final refund = refundsVm.refundData?[i];
+                              final refund = refundsVm.refundData[i];
                               return CustomColWidget(
-                                  firstColText: refund?.orderId ?? "",
-                                  subTitle: "total items: ",
-                                  subTitle2: "2",
-                                  status: refund?.status ?? "",
-                                  date: refund?.dateReturned?.toLocal());
+                                firstColText: refund.orderId ?? "",
+                                subTitle: "total items: ",
+                                subTitle2: "2",
+                                status: refund.status ?? "",
+                                date: refund.dateReturned?.toLocal(),
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.viewReturnsScreen,
+                                    arguments: refund,
+                                  );
+                                },
+                              );
                             },
                           );
                         }),

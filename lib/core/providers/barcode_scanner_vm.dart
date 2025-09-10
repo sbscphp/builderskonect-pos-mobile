@@ -1,7 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter/material.dart';
 
 class BarcodeScannerViewModel extends ChangeNotifier {
   bool _isScanning = false;
@@ -13,7 +11,7 @@ class BarcodeScannerViewModel extends ChangeNotifier {
   bool get isFlashlightOn => _isFlashlightOn;
   String? get scannedCode => _scannedCode;
   String? get errorMessage => _errorMessage;
-  
+
   Future<void> initializeScanner() async {
     try {
       _errorMessage = null;
@@ -23,9 +21,7 @@ class BarcodeScannerViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
 
-  
   Future<void> startScanning(BuildContext context) async {
     if (_isScanning) return;
 
@@ -55,7 +51,7 @@ class BarcodeScannerViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   void onBarcodeDetected(String code) {
     _scannedCode = code;
     notifyListeners();
@@ -63,7 +59,7 @@ class BarcodeScannerViewModel extends ChangeNotifier {
     // - Validating the barcode format
     // - Making API calls with the scanned data
     // - Navigating to another screen
-    print('Barcode detected: $code');
+    printty('Barcode detected: $code');
   }
 
   void toggleFlashlight() {

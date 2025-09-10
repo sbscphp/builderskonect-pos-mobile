@@ -57,7 +57,7 @@ class ProfileColText extends StatelessWidget {
               child: subTitleWidget ??
                   Text(
                     subTitle ?? '',
-                    maxLines: 2,
+                    maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.text14?.medium.copyWith(
                       color: AppColors.black23,
