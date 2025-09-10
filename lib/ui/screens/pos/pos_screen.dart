@@ -156,7 +156,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                         children: [
                           QuickActionCol(
                             title: "Customers",
-                            svgPath: AppSvgs.profile,
+                            svgPath: AppSvgs.customer,
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RoutePath.customersManagementScreen);
@@ -164,7 +164,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                           ),
                           QuickActionCol(
                             title: "Returns",
-                            svgPath: AppSvgs.product,
+                            svgPath: AppSvgs.returns,
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RoutePath.returnRefundScreen);
@@ -172,7 +172,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                           ),
                           QuickActionCol(
                             title: "Discounts",
-                            svgPath: AppSvgs.shopping,
+                            svgPath: AppSvgs.discount,
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RoutePath.discountManagementScreen);
@@ -180,7 +180,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                           ),
                           QuickActionCol(
                             title: "Staff",
-                            svgPath: AppSvgs.menu,
+                            svgPath: AppSvgs.userFilled,
                             onTap: () {
                               Navigator.pushNamed(
                                   context, RoutePath.staffManagementScreen);

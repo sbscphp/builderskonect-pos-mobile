@@ -10,6 +10,7 @@ class ProductWithSkuListTile extends StatelessWidget {
     this.trailingWidget,
     this.showTrailing = true,
     this.onTap,
+    this.crossAxisAlignment,
   });
 
   final String productTitle;
@@ -19,6 +20,7 @@ class ProductWithSkuListTile extends StatelessWidget {
   final Widget? trailingWidget;
   final bool showTrailing;
   final VoidCallback? onTap;
+  final CrossAxisAlignment? crossAxisAlignment;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class ProductWithSkuListTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: crossAxisAlignment ?? CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Row(
@@ -40,7 +42,7 @@ class ProductWithSkuListTile extends StatelessWidget {
                     fit: BoxFit.cover,
                   ),
                 ),
-                XBox(16),
+                XBox(8),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
