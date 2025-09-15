@@ -379,11 +379,11 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.newCouponScreen:
-        return TransitionUtils.buildTransition(
-          const NewCouponScreen(),
-          settings,
-        );
+      // case RoutePath.newCouponScreen:
+      //   return TransitionUtils.buildTransition(
+      //     const NewCouponScreen(),
+      //     settings,
+      //   );
 
       // POS
       case RoutePath.moreScreen:

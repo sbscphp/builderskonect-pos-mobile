@@ -62,9 +62,9 @@ class _DiscountManagementScreenState
               child: BusyOverlay(
                 show: discountViewModel.busy(firstState),
                 child: RefreshIndicator(
-                   onRefresh: () async {
-                  _fetchDiscountDashboardData();
-                },
+                  onRefresh: () async {
+                    _fetchDiscountDashboardData();
+                  },
                   child: ListView(
                     padding: EdgeInsets.only(
                       left: Sizer.width(16),
@@ -87,10 +87,10 @@ class _DiscountManagementScreenState
                               subTitle: "View and manage all discounts created",
                               trailingWidget: NewButtonWidget(
                                 onTap: () {
-                                   Navigator.pushNamed(
-                                            context,
-                                            RoutePath.newDiscountScreen,
-                                          );
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.newDiscountScreen,
+                                  );
                                   // ModalWrapper.bottomSheet(
                                   //   context: context,
                                   //   widget: StoreOptionModal(options: [
@@ -129,7 +129,8 @@ class _DiscountManagementScreenState
                               ),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   ProductColText(
                                     title: "TOTAL DISCOUNTS",
@@ -152,10 +153,10 @@ class _DiscountManagementScreenState
                                           title: "Total Active",
                                           value: AppUtils.formatNumber(
                                             number: discountViewModel
-                                              .discountOverviewModel
-                                              ?.stats
-                                              ?.active ??
-                                          0,
+                                                    .discountOverviewModel
+                                                    ?.stats
+                                                    ?.active ??
+                                                0,
                                           ),
                                           valueTextSize: 12,
                                           valueColor: AppColors.primaryBlue,
@@ -168,10 +169,10 @@ class _DiscountManagementScreenState
                                           title: "Total Expired",
                                           value: AppUtils.formatNumber(
                                             number: discountViewModel
-                                              .discountOverviewModel
-                                              ?.stats
-                                              ?.expired ??
-                                          0,
+                                                    .discountOverviewModel
+                                                    ?.stats
+                                                    ?.expired ??
+                                                0,
                                           ),
                                           valueTextSize: 12,
                                           valueColor: AppColors.green1A,
@@ -188,12 +189,12 @@ class _DiscountManagementScreenState
                                         child: ProductColText(
                                           textColor: colorScheme.black85,
                                           title: "Total Scheduled",
-                                          value:  AppUtils.formatNumber(
+                                          value: AppUtils.formatNumber(
                                             number: discountViewModel
-                                              .discountOverviewModel
-                                              ?.stats
-                                              ?.scheduled ??
-                                          0,
+                                                    .discountOverviewModel
+                                                    ?.stats
+                                                    ?.scheduled ??
+                                                0,
                                           ),
                                           valueTextSize: 12,
                                           valueColor: AppColors.primaryBlue,
@@ -218,7 +219,36 @@ class _DiscountManagementScreenState
                             FilterHeader(
                               title: "Discount List",
                               subTitle: "See all discounts created",
-                              onFilter: () async {},
+                              onFilter: () async {
+                                final res = await ModalWrapper.bottomSheet(
+                                  context: context,
+                                  widget: FilterDataModal(
+                                    selectorGroups: [
+                                      SelectorGroup(
+                                        key: "status",
+                                        title: "Status",
+                                        options: [
+                                          "All",
+                                          "Active",
+                                          "Expired",
+                                          "Scheduled"
+                                        ],
+                                        selectedValue: "All",
+                                      ),
+                                      SelectorGroup(
+                                        key: "type",
+                                        title: "Loyalty Type",
+                                        selectedValue: "All",
+                                        options: [
+                                          "All",
+                                          "Discount",
+                                          "Coupon",
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
                             ),
                             YBox(16),
                             CustomTextField(
@@ -236,7 +266,8 @@ class _DiscountManagementScreenState
                                     InkWell(
                                       onTap: () {},
                                       child: Padding(
-                                        padding: EdgeInsets.all(Sizer.width(10)),
+                                        padding:
+                                            EdgeInsets.all(Sizer.width(10)),
                                         child: Icon(
                                           Icons.close,
                                           size: Sizer.width(20),
@@ -271,15 +302,17 @@ class _DiscountManagementScreenState
                               itemCount: discountViewModel.discounts.length,
                               separatorBuilder: (_, __) => HDivider(),
                               itemBuilder: (ctx, i) {
-                                final discount =
-                                    discountViewModel.discounts[i];
+                                final discount = discountViewModel.discounts[i];
                                 return DiscountListTile(
                                   title: discount.name ?? 'N/A',
                                   code: discount.code ?? 'N/A',
-                                  amount: "N ${ AppUtils.formatNumber(
-                                            number: num.parse(discount.amount?.toString() ?? '0') ??
-                                          0,
-                                          )}",
+                                  amount: discount.type == 'amount'
+                                      ? "N ${AppUtils.formatNumber(
+                                          number: num.parse(
+                                              discount.amount?.toString() ??
+                                                  '0'),
+                                        )}"
+                                      : "${discount.percent ?? '0'}%",
                                   type: discount.type ?? 'N/A',
                                   status: discount.status ?? 'N/A',
                                   date: discount.startDate ?? DateTime.now(),

@@ -50,9 +50,6 @@ class StaffVm extends BaseVm {
       onSuccess: (data) {
         return apiResponse;
       },
-      onError: (errorMessage) {
-        return apiResponse;
-      },
     );
   }
 

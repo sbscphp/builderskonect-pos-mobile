@@ -18,6 +18,6 @@ export 'staff_vm.dart';
 export 'store_vm.dart';
 export 'subscription_vm.dart';
 export 'theme_view_model.dart';
-export 'user_profile_vm.dart';
+export 'user_profile_vm.dart'; 
 export 'vendor_profile_vm.dart';
 export 'discount_vm.dart';

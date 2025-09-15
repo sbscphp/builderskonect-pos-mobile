@@ -107,7 +107,7 @@ class DiscountListTile extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "Amount: ",
+                            text: type == 'amount' ? "Amount: " : "Percentage: ",
                             style: textTheme.text12?.medium.copyWith(
                               color: AppColors.gray500,
                               fontFamily: "Roboto",

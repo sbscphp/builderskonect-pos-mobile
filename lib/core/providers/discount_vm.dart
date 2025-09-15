@@ -41,7 +41,7 @@ class DiscountVm extends BaseVm {
       required String endDate,
       required String type,
       required bool isAllProducts,
-      dynamic value}) async {
+      dynamic value,List? products}) async {
     final body = {
       "name": name,
       "code": code,
@@ -53,15 +53,16 @@ class DiscountVm extends BaseVm {
       "value": value,
     };
 
+    if(isAllProducts == false){
+      body["discounted_products"] = products;
+    }
+
     return await performApiCall(
       url: "/api/v1/merchants/discounts",
       method: apiService.postWithAuth,
       body: body,
       onSuccess: (data) {
         getDashboardStats(isFirst: true);
-        return apiResponse;
-      },
-      onError: (errorMessage) {
         return apiResponse;
       },
     );

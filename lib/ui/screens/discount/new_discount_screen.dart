@@ -18,12 +18,13 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
   final discountType = TextEditingController();
   String? selectedType;
   final discountValue = TextEditingController();
+  final searchCtr = TextEditingController();
   bool? isAllProducts;
   final TextEditingController _startDateController = TextEditingController();
   final TextEditingController _endDateController = TextEditingController();
   DateTime? startDate;
   DateTime? endDate;
-  // bool isCustomdate = false;
+  List<ProductModel> selectedProducts = [];
   // String? selectedLabel;
   dynamic roleId;
 
@@ -33,6 +34,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
     discountName.dispose();
     discountCode.dispose();
     discountType.dispose();
+    searchCtr.dispose();
     _startDateController.dispose();
     _endDateController.dispose();
     discountValue.dispose();
@@ -83,7 +85,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget:
@@ -128,7 +130,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                           isRequired: false,
                           validator: Validators.required(),
                           readOnly: true,
-                          onTsp: () async {
+                          onTap: () async {
                             final res =
                                 await showDialog<Map<String, DateTime?>>(
                               context: context,
@@ -183,7 +185,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                           showLabelHeader: true,
                           isRequired: false,
                           readOnly: true,
-                          onTsp: () async {
+                          onTap: () async {
                             final res =
                                 await showDialog<Map<String, DateTime?>>(
                               context: context,
@@ -197,7 +199,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                                   ),
                                   child: CustomDatePicker(
                                     initialDate: endDate ?? DateTime.now(),
-                                    minDate: DateTime.now(), // 1 year ago
+                                    minDate: startDate ?? DateTime.now(),
                                     maxDate: DateTime.now().add(const Duration(
                                         days: 365)), // 1 year from now
                                     onDateSelected: (endDate, rangeEndDate) {
@@ -241,7 +243,7 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: DiscountOptionsModal.type(context: context),
@@ -303,20 +305,53 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                     ],
                   ),
                   YBox(16),
-                  if (isAllProducts == true)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextField(
-                          controller: discountCode,
-                          labelText: 'Select/Search Products',
-                          isRequired: false,
-                          hintText: 'Search products',
-                          showLabelHeader: true,
-                          // validator: Validators.required(),
+                  if (isAllProducts == false)
+                    CustomTextField(
+                      controller: searchCtr,
+                      labelText: 'Select/Search Products',
+                      isRequired: false,
+                      readOnly: true,
+                      hintText: 'Search products',
+                      showLabelHeader: true,
+                      showSuffixIcon: true,
+                      suffixIcon: Padding(
+                        padding: EdgeInsets.only(
+                          right: Sizer.radius(10),
+                          left: Sizer.radius(4),
                         ),
-                      ],
+                        child: Icon(Icons.search, color: AppColors.gray500),
+                      ),
+                      onTap: () async {
+                        final res = await ModalWrapper.bottomSheet(
+                            context: context,
+                            widget: SearchProductModal(
+                              initialSelectedProducts: selectedProducts,
+                            ));
+                        if (res != null && res is Map<String, dynamic>) {
+                          selectedProducts = res['products'] ?? [];
+
+                          setState(() {});
+                        }
+                      },
+                      // validator: Validators.required(),
                     ),
+                  if (selectedProducts.isNotEmpty)
+                    ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.only(top: 16),
+                        physics: NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final product = selectedProducts[index];
+                          return ProductTile(
+                            product: product,
+                            onTap: () {
+                              selectedProducts.remove(product);
+                              setState(() {});
+                            },
+                          );
+                        },
+                        separatorBuilder: (ctx, _) => YBox(12),
+                        itemCount: selectedProducts.length),
                   YBox(32),
                   CustomBtn.solid(
                     text: "Save",
@@ -356,7 +391,8 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
                                         : "",
                                     type: selectedType ?? "",
                                     isAllProducts: isAllProducts ?? false,
-                                    value: discountValue.text);
+                                    value: discountValue.text,
+                                    products: _reduceProductList());
 
                                 handleApiResponse(
                                     response: res,
@@ -400,6 +436,176 @@ class _NewDiscountScreenState extends ConsumerState<NewDiscountScreen> {
               ),
             ),
           )),
+    );
+  }
+
+  List<String> _reduceProductList(){
+    return selectedProducts.map((item) => item.id ?? '').toList();
+  }
+}
+
+//Widgets
+class ProductTile extends StatelessWidget {
+  final ProductModel? product;
+  final void Function()? onTap;
+  const ProductTile({super.key, this.product, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(Sizer.radius(12)),
+      decoration: BoxDecoration(
+        color: AppColors.gray100,
+        borderRadius: BorderRadius.circular(Sizer.radius(4)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                width: Sizer.width(24),
+                height: Sizer.width(24),
+                decoration: BoxDecoration(
+                  color: AppColors.black23,
+                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                  image: product?.media != null &&
+                          (product?.media?.isNotEmpty ?? false) &&
+                          product?.media?.first != null
+                      ? DecorationImage(
+                          image: NetworkImage(product?.media?.first ?? ""),
+                          fit: BoxFit.cover,
+                        )
+                      : null,
+                ),
+              ),
+              XBox(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(product?.name ?? "",
+                        style: Theme.of(context).textTheme.text14),
+                    YBox(4),
+                    Text(product?.category ?? "",
+                        style: Theme.of(context)
+                            .textTheme
+                            .text12
+                            ?.copyWith(color: AppColors.gray500)),
+                  ],
+                ),
+              ),
+              XBox(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text("SKU",
+                        style: Theme.of(context)
+                            .textTheme
+                            .text14
+                            ?.copyWith(color: AppColors.gray500)),
+                    YBox(4),
+                    Text(product?.sku ?? "",
+                        style: Theme.of(context).textTheme.text12),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          YBox(4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Amount: ",
+                        style:
+                            Theme.of(context).textTheme.text12?.medium.copyWith(
+                                  color: AppColors.gray500,
+                                  fontFamily: "Roboto",
+                                ),
+                      ),
+                      TextSpan(
+                        text: "N ${AppUtils.formatNumber(
+                          number: num.parse(
+                              product?.retailPrice?.toString() ?? '0'),
+                        )}",
+                        style: Theme.of(context)
+                            .textTheme
+                            .text12
+                            ?.medium
+                            .copyWith(
+                              color: Theme.of(context).colorScheme.primaryColor,
+                              fontFamily: "Roboto",
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              XBox(12),
+              Flexible(
+                child: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Stock Level: ",
+                        style:
+                            Theme.of(context).textTheme.text12?.medium.copyWith(
+                                  color: AppColors.gray500,
+                                  fontFamily: "Roboto",
+                                ),
+                      ),
+                      TextSpan(
+                        text: AppUtils.formatNumber(
+                          number:
+                              num.parse(product?.quantity?.toString() ?? '0'),
+                        ),
+                        style: Theme.of(context)
+                            .textTheme
+                            .text12
+                            ?.medium
+                            .copyWith(
+                              color: Theme.of(context).colorScheme.primaryColor,
+                              fontFamily: "Roboto",
+                            ),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          ),
+          YBox(8),
+          InkWell(
+            onTap: onTap,
+            child: Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                vertical: Sizer.radius(8),
+                horizontal: Sizer.radius(12),
+              ),
+              color: AppColors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(AppSvgs.trashOutline),
+                  XBox(8),
+                  Text(
+                    "Remove",
+                    style: Theme.of(context).textTheme.text14?.medium.copyWith(
+                          color: AppColors.red,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
   }
 }
