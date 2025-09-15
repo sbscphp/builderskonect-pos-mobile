@@ -1,10 +1,16 @@
+export 'add_attribute_modal.dart';
 export 'business_category_type_modal.dart';
 export 'city_modal.dart';
 export 'confirmation_modal.dart';
+export 'edit_inventory_modal.dart';
 export 'filter_data_modal.dart';
 export 'google_address_modal.dart';
 export 'payment_breakdown_modal.dart';
 export 'payment_method_modal.dart';
+export 'product_brand_modal.dart';
+export 'product_category_modal.dart';
+export 'product_sub_category_modal.dart';
+export 'product_type_modal.dart';
 export 'role_modal.dart';
 export 'select_bank_modal.dart';
 export 'select_customer_modal.dart';

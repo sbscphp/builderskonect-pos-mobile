@@ -4,7 +4,9 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class AddProductScreen extends ConsumerStatefulWidget {
-  const AddProductScreen({super.key});
+  const AddProductScreen({super.key, required this.product});
+
+  final CatalogueModel product;
 
   @override
   ConsumerState<AddProductScreen> createState() => _AddProductScreenState();

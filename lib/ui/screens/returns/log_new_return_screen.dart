@@ -109,7 +109,7 @@ class _LogNewReturnScreenState extends ConsumerState<LogNewReturnScreen> {
                           padding: EdgeInsets.all(Sizer.width(10)),
                           child: SvgPicture.asset(AppSvgs.search),
                         ),
-                        onTsp: () async {
+                        onTap: () async {
                           final res = await ModalWrapper.bottomSheet(
                               context: context, widget: SelectCustomerModal());
 
@@ -132,7 +132,7 @@ class _LogNewReturnScreenState extends ConsumerState<LogNewReturnScreen> {
                           searchingCustomersOrder = true;
                           _searchOrderId(val, selectedCustomer?.id ?? '');
                         },
-                        onTsp: selectedCustomer != null
+                        onTap: selectedCustomer != null
                             ? null
                             : () {
                                 showWarningToast("Please select a customer");
@@ -294,7 +294,7 @@ class _LogNewReturnScreenState extends ConsumerState<LogNewReturnScreen> {
                         readOnly: true,
                         showSuffixIcon: true,
                         validator: Validators.required(),
-                        onTsp: () async {
+                        onTap: () async {
                           final res = await ModalWrapper.bottomSheet(
                               context: context, widget: SelectReasonModal());
 

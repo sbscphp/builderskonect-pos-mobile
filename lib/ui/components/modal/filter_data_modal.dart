@@ -260,7 +260,7 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
                                 showLabelHeader: true,
                                 isRequired: false,
                                 readOnly: true,
-                                onTsp: () async {
+                                onTap: () async {
                                   await _showCustomDatePicker(context);
                                 },
                                 suffixIcon: Padding(
@@ -281,7 +281,7 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
                                 showLabelHeader: true,
                                 isRequired: false,
                                 readOnly: true,
-                                onTsp: () async {
+                                onTap: () async {
                                   await _showCustomDatePicker(context);
                                 },
                                 suffixIcon: Padding(

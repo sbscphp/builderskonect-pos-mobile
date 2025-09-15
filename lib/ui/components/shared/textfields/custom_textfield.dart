@@ -12,7 +12,7 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final Function(String?)? onSubmit;
   final String? Function(String?)? validator;
-  final Function()? onTsp;
+  final Function()? onTap;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final double textSize;
@@ -48,7 +48,7 @@ class CustomTextField extends StatefulWidget {
     this.onChanged,
     this.onSubmit,
     this.validator,
-    this.onTsp,
+    this.onTap,
     this.inputFormatters,
     this.keyboardType = TextInputType.text,
     this.textSize = 14,
@@ -161,7 +161,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
                 onChanged: widget.onChanged,
                 onFieldSubmitted: widget.onSubmit,
-                onTap: widget.onTsp,
+                onTap: widget.onTap,
                 keyboardType: widget.keyboardType,
                 inputFormatters: widget.inputFormatters,
                 decoration: InputDecoration(

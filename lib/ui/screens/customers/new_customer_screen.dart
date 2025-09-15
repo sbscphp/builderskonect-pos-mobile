@@ -112,7 +112,7 @@ class _NewCustomerScreenState extends ConsumerState<NewCustomerScreen> {
                     showLabelHeader: true,
                     readOnly: true,
                     // validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                           context: context, widget: SelectSourceModal());
 

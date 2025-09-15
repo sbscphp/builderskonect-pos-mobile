@@ -236,7 +236,12 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                   ),
                                   ModalOption(
                                     title: "Edit inventory",
-                                    onTap: () {},
+                                    onTap: () {
+                                      ModalWrapper.bottomSheet(
+                                        context: context,
+                                        widget: EditInventoryModal(),
+                                      );
+                                    },
                                   ),
                                   ModalOption(
                                     title: "Trigger Re-order",

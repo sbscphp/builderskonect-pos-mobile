@@ -137,7 +137,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                     size: Sizer.radius(20),
                     color: AppColors.neutral7,
                   ),
-                  onTsp: () async {
+                  onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: BusinessCategoryTypeModal(),
@@ -164,7 +164,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                     size: Sizer.radius(20),
                     color: AppColors.neutral7,
                   ),
-                  onTsp: () async {
+                  onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: BusinessCategoryTypeModal(isCategory: false),
@@ -243,7 +243,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                     size: Sizer.radius(20),
                     color: AppColors.neutral7,
                   ),
-                  onTsp: () async {
+                  onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: StateModal(),
@@ -272,7 +272,7 @@ class _VendorDetailsState extends ConsumerState<VendorDetails> {
                           size: Sizer.radius(20),
                           color: AppColors.neutral7,
                         ),
-                        onTsp: () async {
+                        onTap: () async {
                           if (selectedState == null) {
                             FlushBarToast.fLSnackBar(
                               snackBarType: SnackBarType.warning,

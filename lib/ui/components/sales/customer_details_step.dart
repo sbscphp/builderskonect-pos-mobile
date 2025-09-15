@@ -86,7 +86,7 @@ class _CustomerDetailsStepState extends ConsumerState<CustomerDetailsStep> {
                 showLabelHeader: false,
                 hintText: "Search customer name, id",
                 readOnly: true,
-                onTsp: () async {
+                onTap: () async {
                   final res = await ModalWrapper.bottomSheet(
                       context: context, widget: SelectCustomerModal());
 
@@ -209,7 +209,7 @@ class _CustomerDetailsStepState extends ConsumerState<CustomerDetailsStep> {
                             ? AppColors.neutral3
                             : Colors.transparent,
                         // validator: Validators.required(),
-                        onTsp: salesVm.selectedCustomerData != null
+                        onTap: salesVm.selectedCustomerData != null
                             ? null
                             : () async {
                                 final res = await ModalWrapper.bottomSheet(

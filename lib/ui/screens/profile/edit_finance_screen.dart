@@ -86,7 +86,7 @@ class _EditFinanceScreenState extends ConsumerState<EditFinanceScreen> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
-                  onTsp: () async {
+                  onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: SelectBankModal(selectedBank: selectedBank));

@@ -188,10 +188,13 @@ class AppRouter {
         );
 
       case RoutePath.addProductScreen:
-        return TransitionUtils.buildTransition(
-          const AddProductScreen(),
-          settings,
-        );
+        if (args is CatalogueModel) {
+          return TransitionUtils.buildTransition(
+            AddProductScreen(product: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.addProductRequestScreen:
         return TransitionUtils.buildTransition(
