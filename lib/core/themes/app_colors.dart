@@ -82,6 +82,8 @@ class AppColors {
   static const green4 = Color(0xFF95DE64);
   static const greenED = Color(0xFFF6FFED);
   static const green1A = Color(0xFF52C41A);
+  static const green8F = Color(0xFFB7EB8F);
+
   static const purple2 = Color(0xFFEFDBFF);
   static const purple6 = Color(0xFF722ED1);
 

@@ -188,10 +188,13 @@ class AppRouter {
         );
 
       case RoutePath.addProductScreen:
-        return TransitionUtils.buildTransition(
-          const AddProductScreen(),
-          settings,
-        );
+        if (args is CatalogueModel) {
+          return TransitionUtils.buildTransition(
+            AddProductScreen(product: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       case RoutePath.addProductRequestScreen:
         return TransitionUtils.buildTransition(
@@ -212,10 +215,13 @@ class AppRouter {
         );
 
       case RoutePath.viewProductDetailsScreen:
-        return TransitionUtils.buildTransition(
-          const ViewProductDetailsScreen(),
-          settings,
-        );
+        if (args is ProductModel) {
+          return TransitionUtils.buildTransition(
+            ViewProductDetailsScreen(product: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Store
       case RoutePath.newStoreScreen:
@@ -270,6 +276,16 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.viewSalesOrderScreen:
+        final args = settings.arguments as String?;
+        if (args != null) {
+          return TransitionUtils.buildTransition(
+            ViewSalesOrderScreen(id: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
       // Returns
       case RoutePath.returnRefundScreen:
         return TransitionUtils.buildTransition(
@@ -282,6 +298,15 @@ class AppRouter {
           const LogNewReturnScreen(),
           settings,
         );
+
+      case RoutePath.viewReturnsScreen:
+        if (args is RefundData) {
+          return TransitionUtils.buildTransition(
+            ViewReturnsScreen(refund: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Staff
       case RoutePath.staffManagementScreen:
@@ -325,6 +350,21 @@ class AppRouter {
           const CustomersManagementScreen(),
           settings,
         );
+
+      case RoutePath.newCustomerScreen:
+        return TransitionUtils.buildTransition(
+          const NewCustomerScreen(),
+          settings,
+        );
+
+      case RoutePath.viewCustomerScreen:
+        if (args is CustomerData) {
+          return TransitionUtils.buildTransition(
+            ViewCustomerScreen(customer: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Discount
       case RoutePath.discountManagementScreen:

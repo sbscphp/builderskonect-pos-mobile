@@ -11,8 +11,19 @@ class ProductScreen extends ConsumerStatefulWidget {
 }
 
 class _ProductScreenState extends ConsumerState<ProductScreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref
+          .read(productInventoryVmodel)
+          .getInventoryProducts(productReview: true);
+    });
+  }
 
   @override
   void dispose() {
@@ -25,7 +36,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final productVm = ref.watch(productInventoryVmodel);
     return Scaffold(
+        key: _scaffoldKey,
+        drawer: const CustomDrawer(),
         appBar: CustomAppbar(
           title: "Products and Inventory",
           trailingWidget: InkWell(
@@ -72,174 +86,202 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
               height: Sizer.height(32),
             ),
           ),
-          leadingWidget: CustomCircleAvatar(onTap: () {}),
-        ),
-        body: ListView(
-          padding: EdgeInsets.only(
-            left: Sizer.width(16),
-            right: Sizer.width(16),
-            bottom: Sizer.height(50),
+          leadingWidget: CustomCircleAvatar(
+            avatarUrl: ref.read(authVmodel).user?.avatar,
+            onTap: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
           ),
-          children: [
-            YBox(16),
-            Container(
-              padding: EdgeInsets.all(Sizer.radius(16)),
-              decoration: BoxDecoration(
-                color: colorScheme.white,
-                borderRadius: BorderRadius.circular(Sizer.radius(4)),
+        ),
+        body: Builder(builder: (context) {
+          if (productVm.busy(getState)) {
+            return const Center(
+              child: SizerLoader(
+                height: double.infinity,
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FilterHeader(
-                    title: "Products and Inventory",
-                    subTitle: "View and manage products in your business",
-                    trailingWidget: NewButtonWidget(
-                      onTap: () {
-                        Navigator.pushNamed(
-                            context, RoutePath.searchAddProductScreen);
-                      },
-                    ),
+            );
+          }
+          return RefreshIndicator(
+            onRefresh: () async {
+              await productVm.getInventoryProducts();
+            },
+            child: ListView(
+              padding: EdgeInsets.only(
+                left: Sizer.width(16),
+                right: Sizer.width(16),
+                bottom: Sizer.height(50),
+              ),
+              children: [
+                YBox(16),
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(16)),
+                  decoration: BoxDecoration(
+                    color: colorScheme.white,
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
                   ),
-                  YBox(16),
-                  Container(
-                    width: double.infinity,
-                    height: Sizer.height(140),
-                    padding: EdgeInsets.all(Sizer.radius(16)),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.blueDD9),
-                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ProductColText(
-                          title: "TOTAL PRODUCT VALUE",
-                          value: "2",
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FilterHeader(
+                        title: "Products and Inventory",
+                        subTitle: "View and manage products in your business",
+                        trailingWidget: NewButtonWidget(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.searchAddProductScreen);
+                          },
                         ),
-                        Row(
+                      ),
+                      YBox(16),
+                      Container(
+                        width: double.infinity,
+                        height: Sizer.height(140),
+                        padding: EdgeInsets.all(Sizer.radius(16)),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.blueDD9),
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ProductColText(
-                              textColor: colorScheme.black85,
-                              title: "Total Products",
-                              value: "2",
-                              valueTextSize: 12,
-                              valueColor: AppColors.green1A,
+                              title: "TOTAL PRODUCT VALUE",
+                              value:
+                                  "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: productVm.productStats?.totalProductsValue ?? 0)}",
                             ),
-                            ProductColText(
-                              textColor: colorScheme.black85,
-                              title: "Total Sales",
-                              value: "2",
-                              valueTextSize: 12,
-                              valueColor: AppColors.red2D,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ProductColText(
+                                  textColor: colorScheme.black85,
+                                  title: "Total Products",
+                                  value:
+                                      "${productVm.productStats?.totalProducts ?? 0}",
+                                  valueTextSize: 12,
+                                  // valueColor: AppColors.green1A,
+                                ),
+                                ProductColText(
+                                  textColor: colorScheme.black85,
+                                  title: "Total Sales",
+                                  value:
+                                      "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(productVm.productStats?.totalSales ?? "0") ?? 0)}",
+                                  valueTextSize: 12,
+                                  valueColor: AppColors.green1A,
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
-                  ),
-                  YBox(40),
-                  FilterHeader(
-                    title: "All Products",
-                    subTitle: "See all products added to your business.",
-                    onFilter: () {
-                      ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: FilterDataModal(),
-                      );
-                    },
-                  ),
-                  YBox(16),
-                  CustomTextField(
-                    controller: searchC,
-                    focusNode: searchFocus,
-                    isRequired: false,
-                    showLabelHeader: false,
-                    hintText: "Search by product id, name etc.",
-                    onChanged: (value) {
-                      setState(() {});
-                    },
-                    suffixIcon: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (searchC.text.isNotEmpty)
-                          InkWell(
-                            onTap: () {},
-                            child: Padding(
-                              padding: EdgeInsets.all(Sizer.width(10)),
-                              child: Icon(
-                                Icons.close,
-                                size: Sizer.width(20),
-                                color: AppColors.gray500,
-                              ),
-                            ),
-                          ),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            padding: EdgeInsets.all(Sizer.width(10)),
-                            decoration: BoxDecoration(
-                                border: Border(
-                              left: BorderSide(
-                                color: AppColors.neutral5,
-                              ),
-                            )),
-                            child: SvgPicture.asset(AppSvgs.search),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  YBox(10),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    padding: EdgeInsets.only(
-                      top: Sizer.height(14),
-                    ),
-                    itemCount: 10,
-                    separatorBuilder: (_, __) => HDivider(),
-                    itemBuilder: (ctx, i) {
-                      return ProductWithStatusListTile(
-                        productImage: AppUtils.dummyImage,
-                        productTitle: "Premium Cement",
-                        subTitle: "10kg Smooth",
-                        status: "Active",
-                        date: "2023-01-01",
-                        onTap: () {
+                      ),
+                      YBox(40),
+                      FilterHeader(
+                        title: "All Products",
+                        subTitle: "See all products added to your business.",
+                        onFilter: () {
                           ModalWrapper.bottomSheet(
                             context: context,
-                            widget: StoreOptionModal(options: [
-                              ModalOption(
-                                title: "View product details",
-                                onTap: () {
-                                  Navigator.pushNamed(
-                                    context,
-                                    RoutePath.viewProductDetailsScreen,
-                                  );
-                                },
-                              ),
-                              ModalOption(
-                                title: "Edit product details",
-                                onTap: () {},
-                              ),
-                              ModalOption(
-                                title: "Delete product",
-                                textColor: AppColors.red2D,
-                                onTap: () {},
-                              ),
-                            ]),
+                            widget: FilterDataModal(),
                           );
                         },
-                      );
-                    },
+                      ),
+                      YBox(16),
+                      CustomTextField(
+                        controller: searchC,
+                        focusNode: searchFocus,
+                        isRequired: false,
+                        showLabelHeader: false,
+                        hintText: "Search by product id, name etc.",
+                        onChanged: (value) {
+                          setState(() {});
+                        },
+                        suffixIcon: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (searchC.text.isNotEmpty)
+                              InkWell(
+                                onTap: () {},
+                                child: Padding(
+                                  padding: EdgeInsets.all(Sizer.width(10)),
+                                  child: Icon(
+                                    Icons.close,
+                                    size: Sizer.width(20),
+                                    color: AppColors.gray500,
+                                  ),
+                                ),
+                              ),
+                            InkWell(
+                              onTap: () {},
+                              child: Container(
+                                padding: EdgeInsets.all(Sizer.width(10)),
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                  left: BorderSide(
+                                    color: AppColors.neutral5,
+                                  ),
+                                )),
+                                child: SvgPicture.asset(AppSvgs.search),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      YBox(10),
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: EdgeInsets.only(
+                          top: Sizer.height(14),
+                        ),
+                        itemCount: productVm.inventoryProducts.length,
+                        separatorBuilder: (_, __) => HDivider(),
+                        itemBuilder: (ctx, i) {
+                          final product = productVm.inventoryProducts[i];
+                          return ProductWithStatusListTile(
+                            productImage: product.primaryMediaUrl ?? "",
+                            productTitle: product.name ?? '',
+                            subTitle: product.productType ?? '',
+                            subTitle1: "Price: ",
+                            subValue1:
+                                "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(product.costPrice ?? "0") ?? 0)}",
+                            subTitle2: "Stock level: ",
+                            subValue2: "${product.quantity} left",
+                            status: product.status ?? '',
+                            onTap: () {
+                              ModalWrapper.bottomSheet(
+                                context: context,
+                                widget: StoreOptionModal(options: [
+                                  ModalOption(
+                                    title: "View product details",
+                                    onTap: () {
+                                      Navigator.pushNamed(
+                                        context,
+                                        RoutePath.viewProductDetailsScreen,
+                                        arguments: product,
+                                      );
+                                    },
+                                  ),
+                                  ModalOption(
+                                    title: "Edit product details",
+                                    onTap: () {},
+                                  ),
+                                  ModalOption(
+                                    title: "Delete product",
+                                    textColor: AppColors.red2D,
+                                    onTap: () {},
+                                  ),
+                                ]),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ));
+          );
+        }));
   }
 }

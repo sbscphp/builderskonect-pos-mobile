@@ -208,13 +208,16 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
       context: context,
       widget: ConfirmationModal(
         modalConfirmationArg: ModalConfirmationArg(
-          iconPath: AppSvgs.checkIcon,
+          iconPath: AppSvgs.infoCircle,
           title: "Submit Registration Form",
           description:
               "Are you sure you want to submit this form? Kindly check that all information is correctly filled.",
           solidBtnText: "Yes Submit",
           onSolidBtnOnTap: () {
             Navigator.pop(context, true);
+          },
+          onOutlineBtnOnTap: () {
+            Navigator.pop(context, false);
           },
         ),
       ),

@@ -9,6 +9,12 @@ class AppSvgs {
   static const String procurement = "$svgIcon/procurement.svg";
   static const String dashboard = "$svgIcon/dashboard.svg";
 
+  // Quick Action
+  static const String customer = "$svgIcon/customer.svg";
+  static const String returns = "$svgIcon/return.svg";
+  static const String discount = "$svgIcon/discount.svg";
+  static const String userFilled = "$svgIcon/userFilled.svg";
+
   static const String circleBack = "$svgIcon/circleBack.svg";
   static const String bag = "$svgIcon/bag.svg";
   static const String notification = "$svgIcon/notification.svg";
@@ -58,6 +64,9 @@ class AppSvgs {
   static const String plus = "$svgIcon/plus.svg";
   static const String trash = "$svgIcon/trash.svg";
   static const String trashOutline = "$svgIcon/trashOutline.svg";
+  static const String circleAvatar = "$svgIcon/circleAvatar.svg";
 
   static const String arrowUpRight = "$svgIcon/arrowUpRight.svg";
+  static const String checkC = "$svgIcon/checkC.svg";
+  static const String infoC = "$svgIcon/infoC.svg";
 }

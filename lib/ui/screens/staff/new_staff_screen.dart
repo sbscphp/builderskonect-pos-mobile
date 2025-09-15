@@ -102,7 +102,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     showLabelHeader: true,
                     keyboardType: TextInputType.phone,
                     validator: Validators.phoneNumber(),
-                    onTsp: () async {},
+                    onTap: () async {},
                   ),
                   YBox(16),
                   CustomTextField(
@@ -115,7 +115,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: RoleModal(),
@@ -138,7 +138,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     // validator: Validators.required(),//optional
-                    onTsp: () async {
+                    onTap: () async {
                       //todo:: handle store bit here
                     },
                   ),
@@ -146,8 +146,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                   CustomBtn.solid(
                     text: "Save",
                     onTap: () async {
-                      if (_formKey.currentState?.validate() == true) {                  
-
+                      if (_formKey.currentState?.validate() == true) {
                         final res = await vm.addNewStaff(
                             fullName: fullNameC.text,
                             email: emailC.text,

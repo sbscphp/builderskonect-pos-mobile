@@ -9,10 +9,10 @@ class CityModal extends ConsumerStatefulWidget {
   final int stateId;
 
   @override
-  ConsumerState<CityModal> createState() => _CustomListModalState();
+  ConsumerState<CityModal> createState() => _CCityModalState();
 }
 
-class _CustomListModalState extends ConsumerState<CityModal> {
+class _CCityModalState extends ConsumerState<CityModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 

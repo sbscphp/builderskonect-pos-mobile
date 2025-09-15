@@ -72,7 +72,7 @@ class _BankDetailsState extends ConsumerState<BankDetails> {
                     size: 20,
                     color: AppColors.neutral9,
                   ),
-                  onTsp: () async {
+                  onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: SelectBankModal(selectedBank: selectedBank));
@@ -98,7 +98,7 @@ class _BankDetailsState extends ConsumerState<BankDetails> {
                     LengthLimitingTextInputFormatter(10),
                   ],
                   readOnly: selectedBank == null,
-                  onTsp: () {
+                  onTap: () {
                     if (selectedBank == null) {
                       return FlushBarToast.fLSnackBar(
                         snackBarType: SnackBarType.warning,

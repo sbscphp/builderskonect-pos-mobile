@@ -29,11 +29,9 @@ class StaffListTile extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          CustomCircleAvatar(
-            showBorder: false,
-            size: 24,
-            avatarUrl: staffImageUrl ?? AppUtils.dummyImage,
-            onTap: () {},
+          SvgPicture.asset(
+            AppSvgs.circleAvatar,
+            height: Sizer.height(24),
           ),
           XBox(8),
           Expanded(

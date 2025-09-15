@@ -53,10 +53,12 @@ class RoutePath {
   static const newSalesScreen = '/newSalesScreen';
   static const pausedSalesScreen = '/pausedSalesScreen';
   static const orderAnalyticsScreen = '/orderAnalyticsScreen';
+  static const viewSalesOrderScreen = '/viewSalesOrderScreen';
 
   // Returns
   static const returnRefundScreen = '/returnRefundScreen';
   static const logNewReturnScreen = '/logNewReturnScreen';
+  static const viewReturnsScreen = '/viewReturnsScreen';
 
   // Staff
   static const staffManagementScreen = '/staffManagementScreen';
@@ -67,6 +69,8 @@ class RoutePath {
 
   // Customers
   static const customersManagementScreen = '/customersManagementScreen';
+  static const newCustomerScreen = '/newCustomerScreen';
+  static const viewCustomerScreen = '/viewCustomerScreen';
 
   // Discount
   static const discountManagementScreen = '/discountManagementScreen';

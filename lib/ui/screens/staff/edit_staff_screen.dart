@@ -33,7 +33,13 @@ class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
     roleC.text = viewedUser?.assignedRoles ?? '';
     assignStoreC.text =
         viewedUser?.store?.firstOrNull ?? ''; //todo ::: handle assigned store
-    roleId = ref.read(roleVm).roles.firstWhere((element) => element.name == viewedUser?.assignedRoles,).id;
+    roleId = ref
+        .read(roleVm)
+        .roles
+        .firstWhere(
+          (element) => element.name == viewedUser?.assignedRoles,
+        )
+        .id;
 
     setState(() {});
   }
@@ -123,7 +129,7 @@ class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
                     showLabelHeader: true,
                     keyboardType: TextInputType.phone,
                     validator: Validators.phoneNumber(),
-                    onTsp: () async {},
+                    onTap: () async {},
                   ),
                   YBox(16),
                   CustomTextField(
@@ -136,7 +142,7 @@ class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: RoleModal(),
@@ -159,7 +165,7 @@ class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
                     readOnly: true,
                     showSuffixIcon: true,
                     // validator: Validators.required(),//optional
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: StateModal(),
@@ -177,8 +183,7 @@ class _EditStaffScreenState extends ConsumerState<EditStaffScreen> {
                     onTap: () async {
                       if (_formKey.currentState?.validate() == true) {
                         final res = await vm.updateStaff(
-                            phone: phoneC.text,
-                            roleId: roleId);
+                            phone: phoneC.text, roleId: roleId);
 
                         handleApiResponse(
                           response: res,

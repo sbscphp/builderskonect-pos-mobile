@@ -159,7 +159,7 @@ class _EditBusinessProfileScreenState
     stateC.removeListener(_checkForChanges);
     cityC.removeListener(_checkForChanges);
     postalCodeC.removeListener(_checkForChanges);
-    
+
     // Dispose controllers
     businessNameC.dispose();
     businessCategoryC.dispose();
@@ -227,7 +227,7 @@ class _EditBusinessProfileScreenState
                         showLabelHeader: true,
                         readOnly: true,
                         validator: Validators.required(),
-                        onTsp: () async {
+                        onTap: () async {
                           final res = await ModalWrapper.bottomSheet(
                             context: context,
                             widget: BusinessCategoryTypeModal(),
@@ -246,7 +246,7 @@ class _EditBusinessProfileScreenState
                         showLabelHeader: true,
                         readOnly: true,
                         validator: Validators.required(),
-                        onTsp: () async {
+                        onTap: () async {
                           final res = await ModalWrapper.bottomSheet(
                             context: context,
                             widget:
@@ -321,7 +321,7 @@ class _EditBusinessProfileScreenState
                           size: Sizer.radius(20),
                           color: AppColors.neutral7,
                         ),
-                        onTsp: () async {
+                        onTap: () async {
                           final res = await ModalWrapper.bottomSheet(
                             context: context,
                             widget: StateModal(),
@@ -349,7 +349,7 @@ class _EditBusinessProfileScreenState
                                 size: Sizer.radius(20),
                                 color: AppColors.neutral7,
                               ),
-                              onTsp: () async {
+                              onTap: () async {
                                 if (selectedState == null) {
                                   showWarningToast("Please select state first");
                                   return;

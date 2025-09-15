@@ -7,10 +7,10 @@ class StateModal extends ConsumerStatefulWidget {
   const StateModal({super.key});
 
   @override
-  ConsumerState<StateModal> createState() => _CustomListModalState();
+  ConsumerState<StateModal> createState() => _StateModalState();
 }
 
-class _CustomListModalState extends ConsumerState<StateModal> {
+class _StateModalState extends ConsumerState<StateModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 

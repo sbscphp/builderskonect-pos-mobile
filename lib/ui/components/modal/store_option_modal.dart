@@ -1,37 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
 
-/// A reusable modal widget that displays a list of options.
-///
-/// Usage example:
-/// ```dart
-/// showModalBottomSheet(
-///   context: context,
-///   builder: (context) => StoreOptionModal(
-///     title: "Store Options", // Optional, defaults to "Choose an option"
-///     options: [
-///       ModalOption(
-///         title: "View store details",
-///         onTap: () {
-///           Navigator.pushNamed(context, RoutePath.viewStoreScreen, arguments: store);
-///         },
-///       ),
-///       ModalOption(
-///         title: "Store sales overview",
-///         onTap: () {
-///           Navigator.pushNamed(context, RoutePath.storeSalesOverviewScreen, arguments: store);
-///         },
-///       ),
-///       ModalOption(
-///         title: "Store products/inventory list",
-///         onTap: () {
-///           Navigator.pushNamed(context, RoutePath.storeInventoryOverviewScreen, arguments: store);
-///         },
-///       ),
-///     ],
-///   ),
-/// );
-/// ```
-
 class ModalOption {
   final String title;
   final VoidCallback onTap;

@@ -12,7 +12,7 @@ class CustomTextField extends StatefulWidget {
   final ValueChanged<String>? onChanged;
   final Function(String?)? onSubmit;
   final String? Function(String?)? validator;
-  final Function()? onTsp;
+  final Function()? onTap;
   final List<TextInputFormatter>? inputFormatters;
   final TextInputType? keyboardType;
   final double textSize;
@@ -35,6 +35,7 @@ class CustomTextField extends StatefulWidget {
   final Color? fillColor;
   final bool showLabelHeader;
   final double? height;
+  final BoxConstraints? prefixIconConstraints, suffixIconConstraints;
 
   const CustomTextField({
     super.key,
@@ -47,7 +48,7 @@ class CustomTextField extends StatefulWidget {
     this.onChanged,
     this.onSubmit,
     this.validator,
-    this.onTsp,
+    this.onTap,
     this.inputFormatters,
     this.keyboardType = TextInputType.text,
     this.textSize = 14,
@@ -73,6 +74,8 @@ class CustomTextField extends StatefulWidget {
     this.showLabelHeader = true,
     this.borderRadius = 4,
     this.height,
+    this.prefixIconConstraints,
+    this.suffixIconConstraints,
   });
 
   @override
@@ -158,7 +161,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 ),
                 onChanged: widget.onChanged,
                 onFieldSubmitted: widget.onSubmit,
-                onTap: widget.onTsp,
+                onTap: widget.onTap,
                 keyboardType: widget.keyboardType,
                 inputFormatters: widget.inputFormatters,
                 decoration: InputDecoration(
@@ -174,15 +177,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
                       fontSize: widget.labelSize,
                       fontWeight: FontWeight.w500),
                   suffixIcon: widget.suffixIcon ?? suffixIcon(),
-                  suffixIconConstraints: BoxConstraints(
-                    minWidth: 30.w,
-                    minHeight: 30.h,
-                  ),
+                  suffixIconConstraints: widget.suffixIconConstraints ??
+                      BoxConstraints(
+                        minWidth: 30.w,
+                        minHeight: 30.h,
+                      ),
                   prefixIcon: widget.prefixIcon,
-                  prefixIconConstraints: BoxConstraints(
-                    minWidth: 40.w,
-                    minHeight: 30.h,
-                  ),
+                  prefixIconConstraints: widget.prefixIconConstraints ??
+                      BoxConstraints(
+                        minWidth: 40.w,
+                        minHeight: 30.h,
+                      ),
                   filled: true,
                   fillColor: widget.fillColor,
                   floatingLabelBehavior: FloatingLabelBehavior.always,
@@ -253,9 +258,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ));
     }
     if (widget.showSuffixIcon && widget.suffixIcon == null) {
-      return const Icon(
+      return Icon(
         Icons.keyboard_arrow_down_rounded,
-        size: 18,
+        size: Sizer.radius(20),
         color: AppColors.black,
       );
     }

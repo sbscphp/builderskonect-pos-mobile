@@ -6,14 +6,7 @@ import 'package:builders_konnect/ui/components/components.dart';
 class WelcomeOnboardWidget extends ConsumerStatefulWidget {
   const WelcomeOnboardWidget({
     super.key,
-    required this.colorScheme,
-    required this.profileVm,
-    required this.textTheme,
   });
-
-  final ColorScheme colorScheme;
-  final ProfileVm profileVm;
-  final TextTheme textTheme;
 
   @override
   ConsumerState<WelcomeOnboardWidget> createState() =>
@@ -28,6 +21,9 @@ class _WelcomeOnboardWidgetState extends ConsumerState<WelcomeOnboardWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final profileVm = ref.watch(vendorProfileVmodel);
     return Container(
       margin: EdgeInsets.only(
         top: Sizer.height(16),
@@ -40,15 +36,15 @@ class _WelcomeOnboardWidgetState extends ConsumerState<WelcomeOnboardWidget> {
       ),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(Sizer.radius(4)),
-        color: widget.colorScheme.white,
+        color: colorScheme.white,
       ),
       child: Row(
         children: [
           CustomCircleAvatar(
             isLoading: loadingImage,
             size: 64,
-            showBorder: (widget.profileVm.vendorProfile?.logo ?? "").isEmpty,
-            avatarUrl: _imageUrl ?? widget.profileVm.vendorProfile?.logo ?? "",
+            showBorder: (profileVm.vendorProfile?.logo ?? "").isEmpty,
+            avatarUrl: _imageUrl ?? profileVm.vendorProfile?.logo ?? "",
           ),
           XBox(16),
           Expanded(
@@ -56,13 +52,13 @@ class _WelcomeOnboardWidgetState extends ConsumerState<WelcomeOnboardWidget> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Welcome Onboard!',
-                    style: widget.textTheme.text16?.medium.copyWith(
+                    style: textTheme.text16?.medium.copyWith(
                       color: AppColors.primaryBlue,
                     )),
                 YBox(2),
                 Text(
                   "Complete your business profile by uploading your business logo",
-                  style: widget.textTheme.text12?.copyWith(
+                  style: textTheme.text12?.copyWith(
                     color: AppColors.neutral8,
                   ),
                 ),
@@ -72,7 +68,7 @@ class _WelcomeOnboardWidgetState extends ConsumerState<WelcomeOnboardWidget> {
                   width: Sizer.width(90),
                   text: "Upload Logo",
                   isOutline: true,
-                  textStyle: widget.textTheme.text12?.copyWith(
+                  textStyle: textTheme.text12?.copyWith(
                     color: AppColors.primaryBlue,
                   ),
                   onTap: () async {

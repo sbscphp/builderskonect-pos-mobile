@@ -102,7 +102,7 @@ class _NewStoreScreenState extends ConsumerState<NewStoreScreen> {
                     showLabelHeader: true,
                     readOnly: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       final res = await ModalWrapper.bottomSheet(
                         context: context,
                         widget: StateModal(),
@@ -123,7 +123,7 @@ class _NewStoreScreenState extends ConsumerState<NewStoreScreen> {
                     showLabelHeader: true,
                     readOnly: true,
                     validator: Validators.required(),
-                    onTsp: () async {
+                    onTap: () async {
                       if (selectedState == null) {
                         FlushBarToast.fLSnackBar(
                           snackBarType: SnackBarType.warning,

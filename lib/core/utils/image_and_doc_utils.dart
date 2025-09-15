@@ -93,7 +93,7 @@ class ImageAndDocUtils {
   static Future<List<File>> pickMultipleImage({
     ImageSource source = ImageSource.gallery,
     int imageQuality = 100,
-    bool multiImage = false,
+    bool multiImage = true,
   }) async {
     final ImagePicker picker = ImagePicker();
     if (multiImage) {

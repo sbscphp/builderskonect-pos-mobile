@@ -1,5 +1,4 @@
 import 'package:builders_konnect/core/core.dart';
-import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomerListTile extends StatelessWidget {
   const CustomerListTile({
@@ -7,14 +6,14 @@ class CustomerListTile extends StatelessWidget {
     required this.title,
     required this.subTitle,
     required this.customerId,
-    this.date,
+    this.channel,
     this.onTap,
   });
 
   final String title;
   final String subTitle;
   final String customerId;
-  final DateTime? date;
+  final String? channel;
   final VoidCallback? onTap;
 
   @override
@@ -25,11 +24,9 @@ class CustomerListTile extends StatelessWidget {
       onTap: onTap,
       child: Row(
         children: [
-          CustomCircleAvatar(
-            showBorder: false,
-            size: 24,
-            avatarUrl: AppUtils.dummyImage,
-            onTap: () {},
+          SvgPicture.asset(
+            AppSvgs.circleAvatar,
+            height: Sizer.height(24),
           ),
           XBox(8),
           Expanded(
@@ -75,9 +72,7 @@ class CustomerListTile extends StatelessWidget {
               ),
               YBox(8),
               Text(
-                date != null
-                    ? AppUtils.dateFirstYear(date ?? DateTime.now())
-                    : 'N/A',
+                channel ?? "",
                 style: textTheme.text12?.medium.copyWith(
                   color: AppColors.gray500,
                 ),

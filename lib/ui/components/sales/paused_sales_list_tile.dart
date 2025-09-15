@@ -38,7 +38,7 @@ class PausedSalesListTile extends StatelessWidget {
                 style: textTheme.text14?.medium
                     .copyWith(color: AppColors.primaryBlue),
               ),
-              OrderStatus(status: status),
+              if (status.isNotEmpty) OrderStatus(status: status),
             ],
           ),
           YBox(8),
