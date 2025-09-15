@@ -23,3 +23,5 @@ export 'paginated_data.dart';
 export 'staff_overview_model.dart';
 export 'staff_model.dart';
 export 'role_model.dart';
+export 'discount_overview_view_model.dart';
+export 'discount_model.dart';

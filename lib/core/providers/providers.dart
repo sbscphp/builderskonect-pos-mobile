@@ -13,3 +13,4 @@ export 'user_profile_vm.dart';
 export 'vendor_profile_vm.dart';
 export 'staff_vm.dart';
 export 'role_vm.dart';
+export 'discount_vm.dart';

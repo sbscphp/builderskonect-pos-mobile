@@ -1,3 +1,5 @@
+import 'package:builders_konnect/ui/screens/discount/new_coupon_screen.dart';
+
 class RoutePath {
   // Splash
   static const splashScreen = '/';
@@ -68,6 +70,8 @@ class RoutePath {
 
   // Discount
   static const discountManagementScreen = '/discountManagementScreen';
+  static const newDiscountScreen = '/newDiscountScreen';
+  static const newCouponScreen = '/newCouponScreen';
 
   // POS
   static const moreScreen = '/moreScreen';
