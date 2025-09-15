@@ -255,8 +255,12 @@ class _DiscountManagementScreenState
                               controller: searchC,
                               isRequired: false,
                               showLabelHeader: false,
-                              hintText: "Search by product id, name etc",
+                              hintText: "Search by discount name etc",
                               onChanged: (value) {
+                                Debouncer().performAction(action: () async {
+                                  await discountViewModel.getDashboardStats(
+                                      q: value, isFirst: false);
+                                });
                                 setState(() {});
                               },
                               suffixIcon: Row(
@@ -264,7 +268,12 @@ class _DiscountManagementScreenState
                                 children: [
                                   if (searchC.text.isNotEmpty)
                                     InkWell(
-                                      onTap: () {},
+                                      onTap: () {
+                                        setState(() {
+                                          searchC.clear();
+                                          discountViewModel.getDashboardStats();
+                                        });
+                                      },
                                       child: Padding(
                                         padding:
                                             EdgeInsets.all(Sizer.width(10)),
@@ -292,34 +301,50 @@ class _DiscountManagementScreenState
                               ),
                             ),
                             YBox(10),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.only(
-                                top: Sizer.height(14),
-                                bottom: Sizer.height(50),
-                              ),
-                              itemCount: discountViewModel.discounts.length,
-                              separatorBuilder: (_, __) => HDivider(),
-                              itemBuilder: (ctx, i) {
-                                final discount = discountViewModel.discounts[i];
-                                return DiscountListTile(
-                                  title: discount.name ?? 'N/A',
-                                  code: discount.code ?? 'N/A',
-                                  amount: discount.type == 'amount'
-                                      ? "N ${AppUtils.formatNumber(
-                                          number: num.parse(
-                                              discount.amount?.toString() ??
-                                                  '0'),
-                                        )}"
-                                      : "${discount.percent ?? '0'}%",
-                                  type: discount.type ?? 'N/A',
-                                  status: discount.status ?? 'N/A',
-                                  date: discount.startDate ?? DateTime.now(),
-                                  onTap: () {},
+                            Builder(builder: (context) {
+                              if (discountViewModel.isBusy) {
+                                return SizerLoader(
+                                  height: Sizer.height(300),
                                 );
-                              },
-                            ),
+                              }
+                              if (discountViewModel.discounts.isEmpty) {
+                                return SizedBox(
+                                  height: Sizer.height(300),
+                                  child: EmptyListState(
+                                    text: "No Data",
+                                  ),
+                                );
+                              }
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.only(
+                                  top: Sizer.height(14),
+                                  bottom: Sizer.height(50),
+                                ),
+                                itemCount: discountViewModel.discounts.length,
+                                separatorBuilder: (_, __) => HDivider(),
+                                itemBuilder: (ctx, i) {
+                                  final discount =
+                                      discountViewModel.discounts[i];
+                                  return DiscountListTile(
+                                    title: discount.name ?? 'N/A',
+                                    code: discount.code ?? 'N/A',
+                                    amount: discount.type == 'amount'
+                                        ? "N ${AppUtils.formatNumber(
+                                            number: num.parse(
+                                                discount.amount?.toString() ??
+                                                    '0'),
+                                          )}"
+                                        : "${discount.percent ?? '0'}%",
+                                    type: discount.type ?? 'N/A',
+                                    status: discount.status ?? 'N/A',
+                                    date: discount.startDate ?? DateTime.now(),
+                                    onTap: () {},
+                                  );
+                                },
+                              );
+                            }),
                           ],
                         ),
                       ),
