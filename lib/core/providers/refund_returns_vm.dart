@@ -1,33 +1,48 @@
 import 'package:builders_konnect/core/core.dart';
 
 class RefundReturnsVm extends BaseVm {
+  int pageNumber = 1;
+  int? lastPage;
+
   RefundStats? _stats;
   RefundStats? get stats => _stats;
   List<RefundData> _refundData = [];
   List<RefundData> get refundData => _refundData;
 
-  Future<ApiResponse> getReturnsOverview({
-    String? q,
-    String? customerId,
-    bool paginate = true,
-  }) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/returns")
-      ..addQueryParameterIfNotEmpty("q", q ?? '')
-      ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '30')
-      ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+  Future<ApiResponse> getReturnsOverview(
+      {String? q,
+      String? customerId,
+      bool paginate = true,
+      String? busyObjectName = getState}) async {
+    if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/returns?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '30')
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: getState,
-      busyObjectName: getState,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
         if (paginate) {
           _stats = refundStatsFromJson(json.encode(data['data']?['stats']));
-          _refundData =
-              refundDataFromJson(json.encode(data['data']?['data']?['data']));
+          if (busyObjectName != paginateState) {
+            _refundData =
+                refundDataFromJson(json.encode(data['data']?['data']?['data']));
+            pageNumber++;
+            lastPage = data['data']?['data']?['last_page'];
+          } else {
+            _refundData.addAll(refundDataFromJson(
+                json.encode(data['data']?['data']?['data'])));
+          }
         } else {
           _refundData = refundDataFromJson(json.encode(data['data']));
+          pageNumber++;
         }
         return apiResponse;
       },

@@ -1,6 +1,10 @@
 import 'package:builders_konnect/core/core.dart';
 
 class SalesVm extends BaseVm {
+    //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   SalesStats? _salesStats;
   SalesStats? get salesStats => _salesStats;
   List<SalesData> _salesData = [];
@@ -13,11 +17,14 @@ class SalesVm extends BaseVm {
     String? customerId,
     bool paginate = true,
   }) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/sales-orders")
+    if (stateObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/sales-orders?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
       ..addQueryParameterIfNotEmpty("sales_type", salesType ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '30')
+      ..addQueryParameterIfNotEmpty("limit", '10')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
@@ -28,8 +35,15 @@ class SalesVm extends BaseVm {
       onSuccess: (data) {
         if (paginate) {
           _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
+           if (stateObjectName != paginateState) {
           _salesData =
               salesDataFromJson(json.encode(data['data']?['data']?['data']));
+              pageNumber++;
+              lastPage = data['data']?['data']?['last_page'];
+           }else{
+              _salesData.addAll(salesDataFromJson(json.encode(data['data']?['data']?['data'])));
+              pageNumber++;
+           }
         } else {
           _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
         }

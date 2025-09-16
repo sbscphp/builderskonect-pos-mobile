@@ -1,14 +1,23 @@
 import 'package:builders_konnect/core/core.dart';
 
 class StoreVm extends BaseVm {
+    //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   StoreLocationModel? _storeLocationModel;
   Stats? get stats => _storeLocationModel?.stats;
-  List<StoreModel> get storeList => _storeLocationModel?.data?.data ?? [];
+  List<StoreModel> _storeList = [];
+  List<StoreModel> get storeList => _storeList;
   Future<ApiResponse> getStoreOverview({
     String? q,
     String? sortBy,
+    String? busyObjectName = getState
   }) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/locations")
+        if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/locations?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("sort_by", sortBy ?? '')
       ..addQueryParameterIfNotEmpty("limit", '50')
@@ -16,11 +25,21 @@ class StoreVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: getState,
-      busyObjectName: getState,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
+        if (busyObjectName != paginateState) {
         _storeLocationModel =
             storeLocationModelFromJson(json.encode(data['data']));
+            _storeList = _storeLocationModel?.data?.data ?? [];
+           pageNumber++;
+          lastPage = _storeLocationModel?.data?.lastPage;
+            }else{
+               _storeLocationModel =
+            storeLocationModelFromJson(json.encode(data['data']));
+              _storeList.addAll(_storeLocationModel?.data?.data ?? []);
+           pageNumber++;
+            }
         return apiResponse;
       },
     );

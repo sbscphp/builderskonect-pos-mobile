@@ -36,40 +36,45 @@ class ProfileTopWidget extends StatelessWidget {
             avatarUrl: avatarUrl,
           ),
           XBox(16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                storeName,
-                style: textTheme.text16?.medium,
-              ),
-              YBox(2),
-              Row(
-                children: [
-                  SvgPicture.asset(AppSvgs.mail),
-                  XBox(8),
-                  Text(
-                    email,
-                    style: textTheme.text16?.copyWith(
-                      color: AppColors.neutral9,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  storeName,
+                  style: textTheme.text16?.medium,
+                ),
+                YBox(2),
+                Row(
+                  children: [
+                    SvgPicture.asset(AppSvgs.mail),
+                    XBox(8),
+                    Expanded(
+                      child: Text(
+                        email,
+                        maxLines: 1,
+                        style: textTheme.text16?.copyWith(
+                          color: AppColors.neutral9,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              YBox(2),
-              Row(
-                children: [
-                  SvgPicture.asset(AppSvgs.phone),
-                  XBox(8),
-                  Text(
-                    phone,
-                    style: textTheme.text16?.copyWith(
-                      color: AppColors.neutral9,
+                  ],
+                ),
+                YBox(2),
+                Row(
+                  children: [
+                    SvgPicture.asset(AppSvgs.phone),
+                    XBox(8),
+                    Text(
+                      phone,
+                      style: textTheme.text16?.copyWith(
+                        color: AppColors.neutral9,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           )
         ],
       ),

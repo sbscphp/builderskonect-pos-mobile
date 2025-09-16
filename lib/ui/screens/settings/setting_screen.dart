@@ -120,128 +120,133 @@ class _SettingScreenState extends ConsumerState<SettingScreen> {
               );
             },
             contentBuilder: (context) {
-              return ListView(
-                padding: EdgeInsets.only(
-                  bottom: Sizer.height(50),
-                ),
-                children: [
-                  YBox(16),
-                  ProfileTopWidget(
-                    avatarUrl: profileVm.userProfile?.avatar ?? "",
-                    storeName: profileVm.userProfile?.name ?? "",
-                    email: profileVm.userProfile?.email ?? "",
-                    phone: profileVm.userProfile?.phone ?? "",
+              return RefreshIndicator(
+                onRefresh: () async {
+                  profileVm.getUserProfile();
+                },
+                child: ListView(
+                  padding: EdgeInsets.only(
+                    bottom: Sizer.height(50),
                   ),
-                  YBox(16),
-                  Container(
-                    margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizer.width(16),
-                      vertical: Sizer.height(16),
+                  children: [
+                    YBox(16),
+                    ProfileTopWidget(
+                      avatarUrl: profileVm.userProfile?.avatar ?? "",
+                      storeName: profileVm.userProfile?.name ?? "",
+                      email: profileVm.userProfile?.email ?? "",
+                      phone: profileVm.userProfile?.phone ?? "",
                     ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                      color: colorScheme.white,
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              "User Profile",
-                              style: textTheme.text16?.medium,
-                            ),
-                          ],
-                        ),
-                        YBox(16),
-                        Container(
-                          width: double.infinity,
-                          padding: EdgeInsets.all(Sizer.radius(16)),
-                          decoration: BoxDecoration(
-                            color: AppColors.neutral3,
-                            borderRadius:
-                                BorderRadius.circular(Sizer.radius(4)),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                    YBox(16),
+                    Container(
+                      margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: Sizer.width(16),
+                        vertical: Sizer.height(16),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        color: colorScheme.white,
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              ProfileColText(
-                                title: "Full name",
-                                subTitle: profileVm.userProfile?.name ?? "",
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "Email",
-                                subTitle: profileVm.userProfile?.email ?? "",
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "Phone number",
-                                subTitle: profileVm.userProfile?.phone ?? "",
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "Role",
-                                subTitle: profileVm.userProfile?.role ?? "N/A",
-                              ),
-                              YBox(16),
                               Text(
-                                "Store",
-                                style: textTheme.text12?.copyWith(
-                                  color: AppColors.grey175,
-                                ),
+                                "User Profile",
+                                style: textTheme.text16?.medium,
                               ),
-                              YBox(4),
-                              ...List.generate(
-                                profileVm.userProfile?.store?.length ?? 0,
-                                (i) => Padding(
-                                  padding: EdgeInsets.only(
-                                    bottom: Sizer.height(8),
+                            ],
+                          ),
+                          YBox(16),
+                          Container(
+                            width: double.infinity,
+                            padding: EdgeInsets.all(Sizer.radius(16)),
+                            decoration: BoxDecoration(
+                              color: AppColors.neutral3,
+                              borderRadius:
+                                  BorderRadius.circular(Sizer.radius(4)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ProfileColText(
+                                  title: "Full name",
+                                  subTitle: profileVm.userProfile?.name ?? "",
+                                ),
+                                YBox(16),
+                                ProfileColText(
+                                  title: "Email",
+                                  subTitle: profileVm.userProfile?.email ?? "",
+                                ),
+                                YBox(16),
+                                ProfileColText(
+                                  title: "Phone number",
+                                  subTitle: profileVm.userProfile?.phone ?? "",
+                                ),
+                                YBox(16),
+                                ProfileColText(
+                                  title: "Role",
+                                  subTitle: profileVm.userProfile?.role ?? "N/A",
+                                ),
+                                YBox(16),
+                                Text(
+                                  "Store",
+                                  style: textTheme.text12?.copyWith(
+                                    color: AppColors.grey175,
                                   ),
-                                  child: Text(
-                                    profileVm.userProfile?.store?[i].name ??
-                                        "N/A",
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: textTheme.text14?.medium.copyWith(
-                                      color: AppColors.black23,
+                                ),
+                                YBox(4),
+                                ...List.generate(
+                                  profileVm.userProfile?.store?.length ?? 0,
+                                  (i) => Padding(
+                                    padding: EdgeInsets.only(
+                                      bottom: Sizer.height(8),
+                                    ),
+                                    child: Text(
+                                      profileVm.userProfile?.store?[i].name ??
+                                          "N/A",
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: textTheme.text14?.medium.copyWith(
+                                        color: AppColors.black23,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "User ID",
-                                subTitle:
-                                    profileVm.userProfile?.staffId ?? "N/A",
-                                onCopy: () async {
-                                  await Clipboard.setData(ClipboardData(
-                                    text: profileVm.userProfile?.staffId ?? "",
-                                  ));
-                                  showSuccessToastMessage(
-                                      "Copied to clipboard");
-                                },
-                              ),
-                              YBox(16),
-                              ProfileColText(
-                                title: "Last Active",
-                                subTitle:
-                                    profileVm.userProfile?.lastActive == null
-                                        ? "N/A"
-                                        : AppUtils.formatDateTime(
-                                            profileVm.userProfile?.lastActive ??
-                                                DateTime.now(),
-                                          ),
-                              ),
-                              YBox(16),
-                            ],
+                                YBox(16),
+                                ProfileColText(
+                                  title: "User ID",
+                                  subTitle:
+                                      profileVm.userProfile?.staffId ?? "N/A",
+                                  onCopy: () async {
+                                    await Clipboard.setData(ClipboardData(
+                                      text: profileVm.userProfile?.staffId ?? "",
+                                    ));
+                                    showSuccessToastMessage(
+                                        "Copied to clipboard");
+                                  },
+                                ),
+                                YBox(16),
+                                ProfileColText(
+                                  title: "Last Active",
+                                  subTitle:
+                                      profileVm.userProfile?.lastActive == null
+                                          ? "N/A"
+                                          : AppUtils.formatDateTime(
+                                              profileVm.userProfile?.lastActive ??
+                                                  DateTime.now(),
+                                            ),
+                                ),
+                                YBox(16),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }));
   }

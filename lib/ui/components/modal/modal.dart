@@ -18,3 +18,5 @@ export 'select_reason_modal.dart';
 export 'select_source_modal.dart';
 export 'state_modal.dart';
 export 'store_option_modal.dart';
+export 'discount_options_modal.dart';
+export 'search_product_modal.dart';

@@ -11,18 +11,38 @@ class InventoryScreen extends ConsumerStatefulWidget {
 class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {});
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      ref
+          .read(productInventoryVmodel)
+          .getInventoryProducts(productReview: true);
+      _scrollListener();
+    });
   }
 
   @override
   void dispose() {
     searchC.dispose();
     searchFocus.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  _scrollListener() {
+    final vm = ref.watch(productInventoryVmodel);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getInventoryProducts(busyObjectName: paginateState);
+        }
+      }
+    });
   }
 
   @override
@@ -52,6 +72,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                 right: Sizer.width(16),
                 bottom: Sizer.height(50),
               ),
+              controller: _scrollController,
               children: [
                 YBox(16),
                 Container(
@@ -157,7 +178,36 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                       FilterHeader(
                         title: "Inventory List",
                         subTitle: "See all products in inventory",
-                        onFilter: () {},
+                        onFilter: () {
+                          ModalWrapper.bottomSheet(
+                            context: context,
+                            widget: FilterDataModal(
+                              title: "Filter Products",
+                              subtitle: "Filter products by multiple criteria",
+                              dateTitle: "Product Added Date",
+                              selectorGroups: [
+                                SelectorGroup(
+                                  key: "status",
+                                  title: "Status",
+                                  options: [
+                                    "All",
+                                    "Active",
+                                    "Inactive",
+                                  ],
+                                  // selectedValue: "All",
+                                ),
+                              ],
+                              showPriceRange: true,
+                              onFilter: (filterData) {
+                                printty("Filter applied: $filterData");
+                              },
+                              onReset: () {
+                                printty("Filters reset");
+                                // Handle reset action here
+                              },
+                            ),
+                          );
+                        },
                       ),
                       YBox(16),
                       CustomTextField(
@@ -254,6 +304,22 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                           );
                         },
                       ),
+                      if (productVm.busy(paginateState))
+                        SpinKitLoader(
+                          size: 16,
+                          color: AppColors.neutral5,
+                        ),
+                      if (productVm.error(paginateState))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ErrorState(
+                            onPressed: () {
+                              productVm.getInventoryProducts(
+                                  busyObjectName: paginateState);
+                            },
+                            isPaginationType: true,
+                          ),
+                        )
                     ],
                   ),
                 ),

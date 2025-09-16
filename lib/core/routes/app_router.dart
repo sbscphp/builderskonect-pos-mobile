@@ -373,6 +373,18 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.newDiscountScreen:
+        return TransitionUtils.buildTransition(
+          const NewDiscountScreen(),
+          settings,
+        );
+
+      // case RoutePath.newCouponScreen:
+      //   return TransitionUtils.buildTransition(
+      //     const NewCouponScreen(),
+      //     settings,
+      //   );
+
       // POS
       case RoutePath.moreScreen:
         return TransitionUtils.buildTransition(

@@ -1,3 +1,4 @@
+
 class RoutePath {
   // Splash
   static const splashScreen = '/';
@@ -72,6 +73,8 @@ class RoutePath {
 
   // Discount
   static const discountManagementScreen = '/discountManagementScreen';
+  static const newDiscountScreen = '/newDiscountScreen';
+  static const newCouponScreen = '/newCouponScreen';
 
   // POS
   static const moreScreen = '/moreScreen';

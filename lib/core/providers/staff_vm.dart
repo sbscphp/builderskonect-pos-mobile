@@ -1,31 +1,52 @@
 import 'package:builders_konnect/core/core.dart';
 
 class StaffVm extends BaseVm {
+  //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   StaffOverviewModel? _staffOverviewModel;
   StaffOverviewModel? get staffOverviewModel => _staffOverviewModel;
 
   List<StaffModel> _staffs = [];
   List<StaffModel> get staffs => _staffs;
 
-  Future<ApiResponse> getDashboardStats({String q = '',bool isFirst = true}) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/staff")
-      ..addQueryParameterIfNotEmpty("paginate", "1")
-      ..addQueryParameterIfNotEmpty("limit", "10")
-      ..addQueryParameterIfNotEmpty('q', q);
+  Future<ApiResponse> getDashboardStats(
+      {String q = '',
+      bool isFirst = true,
+      String? busyObjectName = firstState}) async {
+    if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/staff?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("paginate", "1")
+          ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("status", "10")
+          ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      busyObjectName:isFirst ? firstState : paginateState,
+      busyObjectName: busyObjectName,
+      errorObjectName: busyObjectName,
       onSuccess: (data) {
-        _staffOverviewModel =
-            staffOverviewModelFromJson(json.encode(data["data"]));
-        _staffs = staffModelListFromJson(
-            json.encode(_staffOverviewModel?.data?.data));
+        if (busyObjectName != paginateState) {
+          _staffOverviewModel =
+              staffOverviewModelFromJson(json.encode(data["data"]));
+          _staffs = staffModelListFromJson(
+              json.encode(_staffOverviewModel?.data?.data));
+          pageNumber++;
+          lastPage = _staffOverviewModel?.data?.lastPage;
+        } else {
+          _staffOverviewModel =
+              staffOverviewModelFromJson(json.encode(data["data"]));
+          _staffs.addAll(staffModelListFromJson(
+              json.encode(_staffOverviewModel?.data?.data)));
+          pageNumber++;
+        }
 
-        return apiResponse;
-      },
-      onError: (errorMessage) {
         return apiResponse;
       },
     );
@@ -48,9 +69,6 @@ class StaffVm extends BaseVm {
       method: apiService.postWithAuth,
       body: body,
       onSuccess: (data) {
-        return apiResponse;
-      },
-      onError: (errorMessage) {
         return apiResponse;
       },
     );

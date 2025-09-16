@@ -29,6 +29,7 @@ class FilterDataModal extends ConsumerStatefulWidget {
   final Function(Map<String, dynamic>)? onFilter;
   final VoidCallback? onReset;
   final String? selectedSelector; // Deprecated - use selectorGroups instead
+  final double? modalHeight;
 
   const FilterDataModal({
     super.key,
@@ -45,6 +46,7 @@ class FilterDataModal extends ConsumerStatefulWidget {
     this.onFilter,
     this.onReset,
     this.selectedSelector,
+    this.modalHeight
   });
 
   @override
@@ -87,55 +89,6 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
     _priceFromController.dispose();
     _priceToController.dispose();
     super.dispose();
-  }
-
-  // Show custom date picker dialog
-  Future<void> _showCustomDatePicker(BuildContext context) async {
-    final result = await showDialog<Map<String, DateTime?>>(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          insetPadding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(Sizer.radius(16)),
-          ),
-          child: CustomDatePicker(
-            initialDate: selectedDate ?? DateTime.now(),
-            endDate: endDate,
-            minDate: DateTime.now()
-                .subtract(const Duration(days: 365)), // 1 year ago
-            maxDate: DateTime.now()
-                .add(const Duration(days: 365)), // 1 year from now
-            onDateSelected: (startDate, rangeEndDate) {
-              Navigator.of(context).pop({
-                'startDate': startDate,
-                'endDate': rangeEndDate,
-              });
-            },
-          ),
-        );
-      },
-    );
-
-    if (result != null) {
-      setState(() {
-        selectedDate = result['startDate'];
-        endDate = result['endDate'];
-        isCustomdate = true;
-        // Reset the predefined date options when custom date is selected
-        selectedLabel = null;
-
-        // Update text controllers
-        if (selectedDate != null) {
-          _startDateController.text =
-              "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
-        }
-        if (endDate != null) {
-          _endDateController.text =
-              "${endDate!.day}/${endDate!.month}/${endDate!.year}";
-        }
-      });
-    }
   }
 
   void _handleReset() {
@@ -195,7 +148,7 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return SizedBox(
-      height: Sizer.screenHeight * 0.6,
+      height:widget.modalHeight ?? Sizer.screenHeight * 0.6,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +214,49 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
                                 isRequired: false,
                                 readOnly: true,
                                 onTap: () async {
-                                  await _showCustomDatePicker(context);
+                                  final result =
+                                      await showDialog<Map<String, DateTime?>>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        insetPadding: EdgeInsets.symmetric(
+                                            horizontal: Sizer.width(16)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              Sizer.radius(16)),
+                                        ),
+                                        child: CustomDatePicker(
+                                          initialDate:
+                                              selectedDate ?? DateTime.now(),
+                                          endDate: endDate,
+                                          minDate: DateTime.now().subtract(
+                                              const Duration(
+                                                  days: 365)), // 1 year ago
+                                          maxDate: DateTime.now().add(
+                                              const Duration(
+                                                  days:
+                                                      365)), // 1 year from now
+                                          onDateSelected:
+                                              (startDate, rangeEndDate) {
+                                            Navigator.of(context).pop({
+                                              'startDate': startDate,
+                                              'endDate': rangeEndDate,
+                                            });
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  if (result != null) {
+                                    setState(() {
+                                      selectedDate = result['startDate'];
+                                      // Update text controllers
+                                      if (selectedDate != null) {
+                                        _startDateController.text =
+                                            "${selectedDate!.day}/${selectedDate!.month}/${selectedDate!.year}";
+                                      }
+                                    });
+                                  }
                                 },
                                 suffixIcon: Padding(
                                   padding: EdgeInsets.only(
@@ -282,7 +277,47 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
                                 isRequired: false,
                                 readOnly: true,
                                 onTap: () async {
-                                  await _showCustomDatePicker(context);
+                                  final result =
+                                      await showDialog<Map<String, DateTime?>>(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        insetPadding: EdgeInsets.symmetric(
+                                            horizontal: Sizer.width(16)),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                              Sizer.radius(16)),
+                                        ),
+                                        child: CustomDatePicker(
+                                          initialDate:
+                                              endDate ?? DateTime.now(),
+                                          minDate: selectedDate, // 1 year ago
+                                          maxDate: DateTime.now().add(
+                                              const Duration(
+                                                  days:
+                                                      365)), // 1 year from now
+                                          onDateSelected:
+                                              (startDate, rangeEndDate) {
+                                            Navigator.of(context).pop({
+                                              'startDate': startDate,
+                                              'endDate': rangeEndDate,
+                                            });
+                                          },
+                                        ),
+                                      );
+                                    },
+                                  );
+                                  if (result != null) {
+                                    setState(() {
+                                      endDate
+                                       = result['startDate'];
+                                      // Update text controllers
+                                      if (endDate != null) {
+                                        _endDateController.text =
+                                            "${endDate!.day}/${endDate!.month}/${endDate!.year}";
+                                      }
+                                    });
+                                  }
                                 },
                                 suffixIcon: Padding(
                                   padding: EdgeInsets.only(
