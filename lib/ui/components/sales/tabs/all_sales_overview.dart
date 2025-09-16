@@ -13,7 +13,6 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
   final searchFocus = FocusNode();
   final _scrollController = ScrollController();
 
-
   @override
   void initState() {
     super.initState();
@@ -31,7 +30,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
     super.dispose();
   }
 
-    _scrollListener() {
+  _scrollListener() {
     final vm = ref.watch(salesVmodel);
 
     _scrollController.addListener(() {
@@ -153,7 +152,33 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                   FilterHeader(
                     title: "Sales List",
                     subTitle: "See all sales made in your business",
-                    onFilter: () {},
+                    onFilter: () {
+                      ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "All",
+                                  "Processing",
+                                  "Cancelled",
+                                  "Completed"
+                                ],
+                                selectedValue: "All",
+                              ),
+                            ],
+                            showPriceRange: true,
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+                    },
                   ),
                   YBox(16),
                   CustomTextField(
@@ -226,18 +251,22 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                       },
                     );
                   }),
-                    if (salesVm.busy(paginateState))
-                      SpinKitLoader(
-                        size: 16,
-                        color: AppColors.neutral5,
+                  if (salesVm.busy(paginateState))
+                    SpinKitLoader(
+                      size: 16,
+                      color: AppColors.neutral5,
+                    ),
+                  if (salesVm.error(paginateState))
+                    Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: ErrorState(
+                        onPressed: () {
+                          salesVm.getSalesOverview(
+                              stateObjectName: paginateState);
+                        },
+                        isPaginationType: true,
                       ),
-                   if (salesVm.error(paginateState)) 
-                   Padding(
-                     padding: const EdgeInsets.only(top: 16.0),
-                     child: ErrorState(onPressed: (){
-                       salesVm.getSalesOverview(stateObjectName: paginateState);
-                     },isPaginationType: true,),
-                   )                  
+                    )
                 ],
               ),
             ),

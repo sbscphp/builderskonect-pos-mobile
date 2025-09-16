@@ -42,7 +42,8 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
-          vm.getSalesOverview(stateObjectName: paginateState,salesType: SalesType.omp.text);
+          vm.getSalesOverview(
+              stateObjectName: paginateState, salesType: SalesType.omp.text);
         }
       }
     });
@@ -131,7 +132,33 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                   FilterHeader(
                     title: "Sales List",
                     subTitle: "See all sales made in your business",
-                    onFilter: () {},
+                    onFilter: () {
+                      ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "All",
+                                  "Processing",
+                                  "Cancelled",
+                                  "Completed"
+                                ],
+                                selectedValue: "All",
+                              ),
+                            ],
+                            showPriceRange: true,
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+                    },
                   ),
                   YBox(16),
                   CustomTextField(
@@ -208,7 +235,8 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                       child: ErrorState(
                         onPressed: () {
                           salesVm.getSalesOverview(
-                              stateObjectName: paginateState,salesType: SalesType.omp.text);
+                              stateObjectName: paginateState,
+                              salesType: SalesType.omp.text);
                         },
                         isPaginationType: true,
                       ),

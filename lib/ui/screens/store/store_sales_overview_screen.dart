@@ -78,7 +78,31 @@ class _StoreSalesOverviewScreenState
                       FilterHeader(
                         title: "Sales Overview",
                         subTitle: "See details of the selected subscription",
-                        onFilter: () {},
+                        onFilter: () {
+                           ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "Completed",
+                                  "Processing",
+                                  "Cancelled",
+                                ],
+                                // selectedValue: "Completed",
+                              ),
+                            ],
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+                        },
                       ),
                       YBox(24),
                       Container(

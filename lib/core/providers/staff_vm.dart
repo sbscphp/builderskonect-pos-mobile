@@ -22,6 +22,8 @@ class StaffVm extends BaseVm {
         UriBuilder("/api/v1/merchants/staff?page=$pageNumber")
           ..addQueryParameterIfNotEmpty("paginate", "1")
           ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("status", "10")
           ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(

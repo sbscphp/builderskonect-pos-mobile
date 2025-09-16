@@ -210,7 +210,32 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                         title: "Billing History",
                         subTitle:
                             "This shows the vendors billing history overtime",
-                        onFilter: () {},
+                        onFilter: () {
+                           ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "All status",
+                                  "Active",
+                                  "Expired",
+                                  "Cancelled",
+                                ],
+                                // selectedValue: "Completed",
+                              ),
+                            ],
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+                        },
                       ),
                       YBox(16),
                       CustomTextField(

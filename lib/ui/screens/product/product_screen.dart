@@ -198,7 +198,31 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                         onFilter: () {
                           ModalWrapper.bottomSheet(
                             context: context,
-                            widget: FilterDataModal(),
+                            widget: FilterDataModal(
+                              title: "Filter Products",
+                              subtitle: "Filter products by multiple criteria",
+                              dateTitle: "Product Added Date",
+                              selectorGroups: [
+                                SelectorGroup(
+                                  key: "status",
+                                  title: "Status",
+                                  options: [
+                                    "All",
+                                    "Active",
+                                    "Inactive",
+                                  ],
+                                  // selectedValue: "All",
+                                ),
+                              ],
+                              showPriceRange: true,
+                              onFilter: (filterData) {
+                                printty("Filter applied: $filterData");
+                              },
+                              onReset: () {
+                                printty("Filters reset");
+                                // Handle reset action here
+                              },
+                            ),
                           );
                         },
                       ),

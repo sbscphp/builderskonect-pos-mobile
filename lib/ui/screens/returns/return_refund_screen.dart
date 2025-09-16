@@ -156,7 +156,34 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                       FilterHeader(
                         title: "Logged Returns",
                         subTitle: "See all logged returns your business",
-                        onFilter: () {},
+                        onFilter: () {
+                          ModalWrapper.bottomSheet(
+                              context: context,
+                              widget: FilterDataModal(
+                                selectorGroups: [
+                                  SelectorGroup(
+                                    key: "status",
+                                    title: "Status",
+                                    options: [
+                                      "All",
+                                      "Processing",
+                                      "Cancelled",
+                                      "Completed",
+                                    ],
+                                    // selectedValue: staffStatus,
+                                  ),
+                                ],
+                                showPriceRange: true,
+                                onFilter: (filterData) {
+                                  printty("Filter applied: $filterData");
+                                  // staffViewModel.getDashboardStats();
+                                },
+                                onReset: () {
+                                  printty("Filters reset");
+                                  // Handle reset action here
+                                },
+                              ));
+                        },
                       ),
                       YBox(16),
                       CustomTextField(
@@ -232,19 +259,22 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                               },
                             );
                           }),
-                           if (refundsVm.busy(paginateState))
-                      SpinKitLoader(
-                        size: 16,
-                        color: AppColors.neutral5,
-                      ),
-                   if (refundsVm.error(paginateState)) 
-                   Padding(
-                     padding: const EdgeInsets.only(top: 16.0),
-                     child: ErrorState(onPressed: (){
-                       refundsVm.getReturnsOverview(busyObjectName: paginateState);
-                     },isPaginationType: true,),
-                   )
-
+                      if (refundsVm.busy(paginateState))
+                        SpinKitLoader(
+                          size: 16,
+                          color: AppColors.neutral5,
+                        ),
+                      if (refundsVm.error(paginateState))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ErrorState(
+                            onPressed: () {
+                              refundsVm.getReturnsOverview(
+                                  busyObjectName: paginateState);
+                            },
+                            isPaginationType: true,
+                          ),
+                        )
                     ],
                   ),
                 ),

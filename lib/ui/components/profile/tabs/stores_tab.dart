@@ -143,7 +143,31 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                       title: "Store List",
                       subTitle:
                           "This shows the stores created under this vendor ",
-                      onFilter: () async {},
+                      onFilter: () async {
+                         ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "All",
+                                  "Active",
+                                  "Deactivated",
+                                ],
+                                selectedValue: "All",
+                              ),
+                            ],
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+                      },
                     ),
                     YBox(16),
                     Builder(builder: (context) {

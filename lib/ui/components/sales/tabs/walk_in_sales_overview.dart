@@ -134,13 +134,10 @@ class _WalkInSalesOverviewState extends ConsumerState<WalkInSalesOverview> {
                       ModalWrapper.bottomSheet(
                           context: context,
                           widget: FilterDataModal(
-                            title: "Filter Products",
-                            subtitle: "Filter products by multiple criteria",
-                            dateTitle: "Product Added Date",
                             selectorGroups: [
                               SelectorGroup(
-                                key: "stock_status",
-                                title: "Stock Status",
+                                key: "status",
+                                title: "Status",
                                 options: [
                                   "All",
                                   "Processing",
@@ -150,6 +147,7 @@ class _WalkInSalesOverviewState extends ConsumerState<WalkInSalesOverview> {
                                 selectedValue: "All",
                               ),
                             ],
+                            showPriceRange: true,
                             onFilter: (filterData) {
                               printty("Filter applied: $filterData");
                             },

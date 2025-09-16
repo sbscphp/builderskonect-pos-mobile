@@ -356,7 +356,33 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                         title: "Revenue Analytics",
                         subTitle:
                             "Get insights into revenue analytics right here.",
-                        onFilter: () {},
+                        onFilter: () {
+                          ModalWrapper.bottomSheet(
+                              context: context,
+                              widget: FilterDataModal(
+                                modalHeight: Sizer.screenHeight * .5,
+                                selectorGroups: [
+                                  SelectorGroup(
+                                    key: "stores",
+                                    title: "Stores",
+                                    options: [
+                                      "All Stores",
+                                      // "Processing",
+                                      // "Cancelled",
+                                      // "Completed"
+                                    ],
+                                    selectedValue: "All Stores",
+                                  ),
+                                ],
+                                onFilter: (filterData) {
+                                  printty("Filter applied: $filterData");
+                                },
+                                onReset: () {
+                                  printty("Filters reset");
+                                  // Handle reset action here
+                                },
+                              ));
+                        },
                       ),
                       YBox(16),
                       StatCard(
@@ -388,7 +414,43 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                 style: textTheme.text16?.medium),
                           ),
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              ModalWrapper.bottomSheet(
+                                  context: context,
+                                  widget: FilterDataModal(
+                                    selectorGroups: [
+                                      SelectorGroup(
+                                        key: "stores",
+                                        title: "Stores",
+                                        options: [
+                                          "All Stores",
+                                          // "Processing",
+                                          // "Cancelled",
+                                          // "Completed"
+                                        ],
+                                        selectedValue: "All Stores",
+                                      ),
+                                       SelectorGroup(
+                                        key: "type",
+                                        title: "Customer Tpe",
+                                        options: [
+                                          "All customers",
+                                          "Walk-in customers",
+                                          "Online customers",
+                                          // "Completed"
+                                        ],
+                                        selectedValue: "All Stores",
+                                      ),
+                                    ],
+                                    onFilter: (filterData) {
+                                      printty("Filter applied: $filterData");
+                                    },
+                                    onReset: () {
+                                      printty("Filters reset");
+                                      // Handle reset action here
+                                    },
+                                  ));
+                            },
                             child: SvgPicture.asset(
                               AppSvgs.filter,
                               height: Sizer.height(32),

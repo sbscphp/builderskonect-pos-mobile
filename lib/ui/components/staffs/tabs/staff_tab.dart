@@ -10,7 +10,7 @@ class StaffTab extends ConsumerStatefulWidget {
 
 class _StaffTabState extends ConsumerState<StaffTab> {
   final searchC = TextEditingController();
-
+  String staffStatus = "All";
   @override
   void dispose() {
     searchC.dispose();
@@ -87,7 +87,32 @@ class _StaffTabState extends ConsumerState<StaffTab> {
           FilterHeader(
             title: "Staff List",
             subTitle: "See all staff created",
-            onFilter: () async {},
+            onFilter: () async {
+                                    ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: FilterDataModal(
+                            selectorGroups: [
+                              SelectorGroup(
+                                key: "status",
+                                title: "Status",
+                                options: [
+                                  "All",
+                                  "Active",
+                                  "Deactivated",
+                                ],
+                                selectedValue: staffStatus,
+                              ),
+                            ],
+                            onFilter: (filterData) {
+                              printty("Filter applied: $filterData");
+                              staffViewModel.getDashboardStats();
+                            },
+                            onReset: () {
+                              printty("Filters reset");
+                              // Handle reset action here
+                            },
+                          ));
+            },
           ),
           YBox(16),
           CustomTextField(

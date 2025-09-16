@@ -128,7 +128,21 @@ class _OnlineCustomersTabState extends ConsumerState<OnlineCustomersTab> {
                 FilterHeader(
                   title: "All Customers",
                   subTitle: "See all customers that hav returns your business",
-                  onFilter: () async {},
+                  onFilter: () async {
+                    ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: FilterDataModal(
+                          modalHeight: Sizer.screenHeight * 0.4,
+                          onFilter: (filterData) {
+                            printty("Filter applied: $filterData");
+                            // staffViewModel.getDashboardStats();
+                          },
+                          onReset: () {
+                            printty("Filters reset");
+                            // Handle reset action here
+                          },
+                        ));
+                  },
                 ),
                 YBox(16),
                 CustomTextField(
