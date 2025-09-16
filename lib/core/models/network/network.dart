@@ -1,3 +1,4 @@
+export 'application_access_model.dart';
 export 'auth_user_model.dart';
 export 'bank_model.dart';
 export 'business_category_type_model.dart';

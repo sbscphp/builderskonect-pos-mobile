@@ -100,6 +100,9 @@ class Data {
       };
 }
 
+List<StoreModel> storeModelFromJson(String str) =>
+    List<StoreModel>.from(json.decode(str).map((x) => StoreModel.fromJson(x)));
+
 class StoreModel {
   final String? id;
   final String? storeId;

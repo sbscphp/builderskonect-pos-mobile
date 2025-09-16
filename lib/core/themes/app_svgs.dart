@@ -36,6 +36,7 @@ class AppSvgs {
   static const String shop = "$svgIcon/shop.svg";
   static const String plusCircle = "$svgIcon/plusCircle.svg";
   static const String checkCircle = "$svgIcon/checkCircle.svg";
+  static const String checkCircleOutline = "$svgIcon/checkCircleOutline.svg";
   static const String chevronRight = "$svgIcon/chevronRight.svg";
   static const String upload = "$svgIcon/upload.svg";
 

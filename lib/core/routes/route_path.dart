@@ -1,4 +1,3 @@
-
 class RoutePath {
   // Splash
   static const splashScreen = '/';
@@ -37,6 +36,7 @@ class RoutePath {
   static const inventoryScreen = '/inventoryScreen';
   static const viewUploadScreen = '/viewUploadScreen';
   static const viewProductDetailsScreen = '/viewProductDetailsScreen';
+  static const inventoryDetailsScreen = '/inventoryDetailsScreen';
 
   // Settings
   static const settingScreen = '/settingScreen';

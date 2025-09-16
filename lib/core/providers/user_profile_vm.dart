@@ -1,8 +1,12 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:collection/collection.dart';
 
 class UserProfileVm extends BaseVm {
   UserProfileModel? _userProfile;
   UserProfileModel? get userProfile => _userProfile;
+  Store? get currentStore => _userProfile?.store?.firstWhereOrNull(
+        (store) => store.current == true,
+      );
   Future<ApiResponse> getUserProfile() async {
     return await performApiCall(
       url: "/api/v1/merchants/staff/get/profile",

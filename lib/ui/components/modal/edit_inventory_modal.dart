@@ -2,35 +2,42 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class EditInventoryModal extends ConsumerStatefulWidget {
-  const EditInventoryModal({super.key});
+  const EditInventoryModal({
+    super.key,
+    required this.product,
+  });
+
+  final ProductModel product;
 
   @override
   ConsumerState<EditInventoryModal> createState() => _EditInventoryModalState();
 }
 
 class _EditInventoryModalState extends ConsumerState<EditInventoryModal> {
+  final _formKey = GlobalKey<FormState>();
+  final _stockLevelC = TextEditingController();
+  final _reOrderValueC = TextEditingController();
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchFormRoles();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  _fetchFormRoles() async {
-    final vm = ref.read(roleVm);
-    if (vm.roles.isEmpty) {
-      await vm.getAvailableRoles();
-    }
+  @override
+  void dispose() {
+    _formKey.currentState?.dispose();
+    _stockLevelC.dispose();
+    _reOrderValueC.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final vm = ref.watch(roleVm);
+    final inventoryVm = ref.watch(productInventoryVmodel);
     return Container(
-      height: Sizer.screenHeight * 0.70,
       padding: EdgeInsets.symmetric(
         horizontal: Sizer.width(16),
       ),
@@ -92,7 +99,7 @@ class _EditInventoryModalState extends ConsumerState<EditInventoryModal> {
                           ),
                           YBox(4),
                           Text(
-                            "Golden Cement (10kg)",
+                            widget.product.name ?? "N/A",
                             style: textTheme.text14?.medium.copyWith(
                               color: AppColors.black23,
                             ),
@@ -100,37 +107,144 @@ class _EditInventoryModalState extends ConsumerState<EditInventoryModal> {
                         ],
                       ),
                     ),
-                    OrderStatus(status: "Low Stock")
+                    OrderStatus(status: widget.product.status ?? "N/A")
                   ],
                 ),
+                YBox(16),
                 Row(
                   children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Product Name",
-                            style: textTheme.text12?.copyWith(
-                              color: AppColors.grey175,
-                            ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Stock Level",
+                          style: textTheme.text12?.copyWith(
+                            color: AppColors.grey175,
                           ),
-                          YBox(4),
-                          Text(
-                            "Golden Cement (10kg)",
-                            style: textTheme.text14?.medium.copyWith(
-                              color: AppColors.black23,
-                            ),
+                        ),
+                        YBox(4),
+                        Text(
+                          widget.product.quantity?.toString() ?? "N/A",
+                          style: textTheme.text14?.medium.copyWith(
+                            color: AppColors.black23,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    OrderStatus(status: "Low Stock")
+                    Spacer(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Re-order Level",
+                          style: textTheme.text12?.copyWith(
+                            color: AppColors.grey175,
+                          ),
+                        ),
+                        YBox(4),
+                        Text(
+                          widget.product.reorderValue?.toString() ?? "N/A",
+                          style: textTheme.text14?.medium.copyWith(
+                            color: AppColors.black23,
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 )
               ],
             ),
-          )
+          ),
+          YBox(24),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                CustomTextField(
+                  controller: _stockLevelC,
+                  isRequired: false,
+                  labelText: 'Added Stock Quantity',
+                  hintText: 'Enter quantity',
+                  showLabelHeader: true,
+                  validator: Validators.required(),
+                ),
+                YBox(16),
+                CustomTextField(
+                  controller: _reOrderValueC,
+                  isRequired: false,
+                  labelText: 'New Reorder Level',
+                  hintText: 'Enter reorder level',
+                  showLabelHeader: true,
+                  // validator: Validators.required(),
+                ),
+                YBox(24),
+              ],
+            ),
+          ),
+          inventoryVm.busy(updateState)
+              ? BtnLoadState()
+              : Row(
+                  children: [
+                    Expanded(
+                      child: CustomBtn.solid(
+                        text: "Cancel",
+                        isOutline: true,
+                        outlineColor: AppColors.neutral5,
+                        textStyle: textTheme.text16,
+                        onTap: () {},
+                      ),
+                    ),
+                    XBox(16),
+                    Expanded(
+                      child: CustomBtn.solid(
+                        text: "Save",
+                        onTap: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final result = await ModalWrapper.bottomSheet(
+                              context: context,
+                              widget: ConfirmationModal(
+                                modalConfirmationArg: ModalConfirmationArg(
+                                  iconPath: AppSvgs.infoCircleRed,
+                                  title: "Trigger Reorder",
+                                  description:
+                                      "Are you sure you want to trigger a reorder of this product? Procurement will be notified of this restock request.",
+                                  solidBtnText: "Yes, trigger",
+                                  onSolidBtnOnTap: () {
+                                    Navigator.pop(context, true);
+                                  },
+                                  onOutlineBtnOnTap: () {
+                                    Navigator.pop(context, false);
+                                  },
+                                ),
+                              ),
+                            );
+                            if (result == true) {
+                              final res = await ref
+                                  .read(productInventoryVmodel)
+                                  .editInventoryLevel(
+                                    productId: widget.product.id ?? "",
+                                    quantity: _stockLevelC.text.trim(),
+                                    reOrderValue: _reOrderValueC.text.trim(),
+                                  );
+
+                              handleApiResponse(
+                                response: res,
+                                onSuccess: () {
+                                  Navigator.pop(
+                                      NavKey.appNavKey.currentContext!);
+                                  ref
+                                      .read(productInventoryVmodel)
+                                      .getInventoryProducts();
+                                },
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+          YBox(40),
         ],
       ),
     );

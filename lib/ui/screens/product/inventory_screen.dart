@@ -17,9 +17,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref
-          .read(productInventoryVmodel)
-          .getInventoryProducts(productReview: true);
+      ref.read(productInventoryVmodel).getInventoryProducts();
       _scrollListener();
     });
   }
@@ -47,14 +45,15 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final productVm = ref.watch(productInventoryVmodel);
     return Scaffold(
-        appBar: CustomAppbar(
-          title: "Inventory",
-        ),
-        body: Builder(builder: (context) {
+      appBar: CustomAppbar(
+        title: "Inventory",
+      ),
+      body: Builder(
+        builder: (context) {
           if (productVm.busy(getState)) {
             return const Center(
               child: SizerLoader(
@@ -256,6 +255,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         padding: EdgeInsets.only(
                           top: Sizer.height(14),
+                          bottom: Sizer.height(20),
                         ),
                         itemCount: 10,
                         separatorBuilder: (_, __) => HDivider(),
@@ -279,7 +279,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                     onTap: () {
                                       Navigator.pushNamed(
                                         context,
-                                        RoutePath.viewProductDetailsScreen,
+                                        RoutePath.inventoryDetailsScreen,
                                         arguments: product,
                                       );
                                     },
@@ -287,16 +287,55 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                   ModalOption(
                                     title: "Edit inventory",
                                     onTap: () {
+                                      Navigator.pop(context);
                                       ModalWrapper.bottomSheet(
                                         context: context,
-                                        widget: EditInventoryModal(),
+                                        widget: EditInventoryModal(
+                                          product: product,
+                                        ),
                                       );
                                     },
                                   ),
                                   ModalOption(
                                     title: "Trigger Re-order",
                                     textColor: AppColors.red2D,
-                                    onTap: () {},
+                                    onTap: () async {
+                                      Navigator.pop(context);
+                                      final result =
+                                          await ModalWrapper.bottomSheet(
+                                        context: context,
+                                        widget: ConfirmationModal(
+                                          modalConfirmationArg:
+                                              ModalConfirmationArg(
+                                            iconPath: AppSvgs.infoCircleRed,
+                                            title: "Trigger Reorder",
+                                            description:
+                                                "Are you sure you want to trigger a reorder of this product? Procurement will be notified of this restock request.",
+                                            solidBtnText: "Yes, trigger",
+                                            onSolidBtnOnTap: () {
+                                              Navigator.pop(context, true);
+                                            },
+                                            onOutlineBtnOnTap: () {
+                                              Navigator.pop(context, false);
+                                            },
+                                          ),
+                                        ),
+                                      );
+
+                                      if (result == true) {
+                                        final res = await ref
+                                            .read(productInventoryVmodel)
+                                            .triggerReorder(
+                                          ids: [product.id ?? ''],
+                                        );
+
+                                        handleApiResponse(
+                                            response: res,
+                                            onSuccess: () {
+                                              productVm.getInventoryProducts();
+                                            });
+                                      }
+                                    },
                                   ),
                                 ]),
                               );
@@ -326,6 +365,8 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
               ],
             ),
           );
-        }));
+        },
+      ),
+    );
   }
 }

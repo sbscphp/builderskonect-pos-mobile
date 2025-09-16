@@ -221,6 +221,15 @@ class AppRouter {
             settings,
           );
         }
+
+        return errorScreen(settings);
+      case RoutePath.inventoryDetailsScreen:
+        if (args is ProductModel) {
+          return TransitionUtils.buildTransition(
+            InventoryDetailsScreen(product: args),
+            settings,
+          );
+        }
         return errorScreen(settings);
 
       // Store

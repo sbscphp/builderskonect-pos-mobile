@@ -5,9 +5,11 @@ class EmptyListState extends StatelessWidget {
     super.key,
     required this.text,
     this.imageHeight,
+    this.fontSize,
   });
 
   final String text;
+  final double? fontSize;
   final double? imageHeight;
 
   @override
@@ -27,6 +29,7 @@ class EmptyListState extends StatelessWidget {
             text,
             textAlign: TextAlign.center,
             style: textTheme.text16?.copyWith(
+              fontSize: fontSize,
               color: colorScheme.black85,
             ),
           ),
