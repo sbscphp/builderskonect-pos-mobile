@@ -1,6 +1,10 @@
 import 'package:builders_konnect/core/core.dart';
 
 class DiscountVm extends BaseVm {
+  //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   DiscountOverviewViewModel? _discountOverviewModel;
   DiscountOverviewViewModel? get discountOverviewModel =>
       _discountOverviewModel;
@@ -9,21 +13,35 @@ class DiscountVm extends BaseVm {
   List<DiscountModel> get discounts => _discounts;
 
   Future<ApiResponse> getDashboardStats(
-      {String q = '', bool isFirst = true}) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/discounts")
-      ..addQueryParameterIfNotEmpty("paginate", "1")
-      ..addQueryParameterIfNotEmpty("limit", "10")
-      ..addQueryParameterIfNotEmpty('q', q);
+      {String q = '', String? busyObjectName = firstState}) async {
+    if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/discounts?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("paginate", "1")
+          ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      busyObjectName: isFirst ? firstState : paginateState,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
-        _discountOverviewModel =
-            discountOverviewViewModelFromJson(json.encode(data["data"]));
-        _discounts = discountListFromJson(
-            json.encode(_discountOverviewModel?.data?.data));
+        if (busyObjectName != paginateState) {
+          _discountOverviewModel =
+              discountOverviewViewModelFromJson(json.encode(data["data"]));
+          _discounts = discountListFromJson(
+              json.encode(_discountOverviewModel?.data?.data));
+          pageNumber++;
+          lastPage = _discountOverviewModel?.data?.lastPage;
+        }else {
+          _discountOverviewModel =
+              discountOverviewViewModelFromJson(json.encode(data["data"]));
+          _discounts.addAll(discountListFromJson(
+              json.encode(_discountOverviewModel?.data?.data)));
+          pageNumber++;
+        }
 
         return apiResponse;
       },
@@ -41,7 +59,8 @@ class DiscountVm extends BaseVm {
       required String endDate,
       required String type,
       required bool isAllProducts,
-      dynamic value,List? products}) async {
+      dynamic value,
+      List? products}) async {
     final body = {
       "name": name,
       "code": code,
@@ -53,7 +72,7 @@ class DiscountVm extends BaseVm {
       "value": value,
     };
 
-    if(isAllProducts == false){
+    if (isAllProducts == false) {
       body["discounted_products"] = products;
     }
 
@@ -62,7 +81,7 @@ class DiscountVm extends BaseVm {
       method: apiService.postWithAuth,
       body: body,
       onSuccess: (data) {
-        getDashboardStats(isFirst: true);
+        getDashboardStats();
         return apiResponse;
       },
     );

@@ -14,22 +14,39 @@ class DiscountManagementScreen extends ConsumerStatefulWidget {
 class _DiscountManagementScreenState
     extends ConsumerState<DiscountManagementScreen> {
   final searchC = TextEditingController();
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _fetchDiscountDashboardData();
+      _scrollListener();
     });
   }
 
   @override
   void dispose() {
     searchC.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   _fetchDiscountDashboardData() async {
     await ref.read(discountVm).getDashboardStats();
+  }
+
+  _scrollListener() {
+    final vm = ref.watch(discountVm);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getDashboardStats(busyObjectName: paginateState);
+        }
+      }
+    });
   }
 
   @override
@@ -66,6 +83,7 @@ class _DiscountManagementScreenState
                     _fetchDiscountDashboardData();
                   },
                   child: ListView(
+                    controller: _scrollController,
                     padding: EdgeInsets.only(
                       left: Sizer.width(16),
                       right: Sizer.width(16),
@@ -259,7 +277,7 @@ class _DiscountManagementScreenState
                               onChanged: (value) {
                                 Debouncer().performAction(action: () async {
                                   await discountViewModel.getDashboardStats(
-                                      q: value, isFirst: false);
+                                      q: value, busyObjectName: searchState);
                                 });
                                 setState(() {});
                               },
@@ -271,7 +289,7 @@ class _DiscountManagementScreenState
                                       onTap: () {
                                         setState(() {
                                           searchC.clear();
-                                          discountViewModel.getDashboardStats();
+                                          discountViewModel.getDashboardStats(busyObjectName: searchState);
                                         });
                                       },
                                       child: Padding(
@@ -345,6 +363,22 @@ class _DiscountManagementScreenState
                                 },
                               );
                             }),
+                            if (discountViewModel.busy(paginateState))
+                              SpinKitLoader(
+                                size: 16,
+                                color: AppColors.neutral5,
+                              ),
+                            if (discountViewModel.error(paginateState))
+                              Padding(
+                                padding: const EdgeInsets.only(top: 16.0),
+                                child: ErrorState(
+                                  onPressed: () {
+                                    discountViewModel.getDashboardStats(
+                                        busyObjectName: paginateState);
+                                  },
+                                  isPaginationType: true,
+                                ),
+                              )
                           ],
                         ),
                       ),

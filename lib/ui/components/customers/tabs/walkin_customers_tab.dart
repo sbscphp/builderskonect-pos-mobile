@@ -10,6 +10,8 @@ class WalkInCustomersTab extends ConsumerStatefulWidget {
 
 class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
   final searchC = TextEditingController();
+  final _scrollController = ScrollController();
+
   @override
   void initState() {
     super.initState();
@@ -17,6 +19,27 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
       final customerVm = ref.read(customerVmodel);
       if (customerVm.walkInCustomerData.isEmpty) {
         customerVm.getCustomerOverview(type: CustomType.offline);
+      }
+      _scrollListener();
+    });
+  }
+
+  @override
+  void dispose() {
+    searchC.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  _scrollListener() {
+    final vm = ref.watch(customerVmodel);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getCustomerOverview(busyObjectName: paginateState);
+        }
       }
     });
   }
@@ -35,6 +58,7 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
           right: Sizer.width(16),
           bottom: Sizer.height(50),
         ),
+        controller: _scrollController,
         children: [
           YBox(16),
           Container(
@@ -193,6 +217,22 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                     ],
                   );
                 }),
+                if (customerVm.busy(paginateState))
+                  SpinKitLoader(
+                    size: 16,
+                    color: AppColors.neutral5,
+                  ),
+                if (customerVm.error(paginateState))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: ErrorState(
+                      onPressed: () {
+                        customerVm.getCustomerOverview(
+                            busyObjectName: paginateState);
+                      },
+                      isPaginationType: true,
+                    ),
+                  )
               ],
             ),
           ),

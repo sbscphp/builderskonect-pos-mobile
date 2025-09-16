@@ -1,15 +1,23 @@
 import 'package:builders_konnect/core/core.dart';
 
 class ProductInventoryVm extends BaseVm {
+    //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   InventoryProductModel? _inventoryProductModel;
   ProductStats? get productStats => _inventoryProductModel?.stats;
-  List<ProductModel> get inventoryProducts =>
-      _inventoryProductModel?.data?.data ?? [];
+   List<ProductModel>  _inventoryProducts = [];
+  List<ProductModel> get inventoryProducts => _inventoryProducts;
   Future<ApiResponse> getInventoryProducts({
     String? q,
     bool productReview = false,
+    String? busyObjectName = getState
   }) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/inventory-products")
+        if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/inventory-products?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("product_review", productReview.toString())
       ..addQueryParameterIfNotEmpty("limit", '50')
@@ -19,11 +27,23 @@ class ProductInventoryVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: getState,
-      busyObjectName: getState,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
+          if (busyObjectName != paginateState) {
         _inventoryProductModel =
             inventoryProductModelFromJson(json.encode(data['data']));
+        _inventoryProducts = 
+        _inventoryProductModel?.data?.data ?? [];
+          pageNumber++;
+          lastPage = _inventoryProductModel?.data?.lastPage;
+          }else {
+          _inventoryProductModel =
+              inventoryProductModelFromJson(json.encode(data["data"]));
+          _inventoryProducts.addAll(_inventoryProductModel?.data?.data ?? []);
+          pageNumber++;
+        }
+
         return apiResponse;
       },
     );

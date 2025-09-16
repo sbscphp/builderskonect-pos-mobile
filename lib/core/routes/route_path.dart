@@ -1,4 +1,3 @@
-import 'package:builders_konnect/ui/screens/discount/new_coupon_screen.dart';
 
 class RoutePath {
   // Splash

@@ -1,6 +1,10 @@
 import 'package:builders_konnect/core/core.dart';
 
 class CustomerVm extends BaseVm {
+    //page number
+  int pageNumber = 1;
+  int? lastPage;
+
   CustomerStats? _customerStats;
   CustomerStats? get customerStats => _customerStats;
   CustomerStats? _onlineCustomerStats;
@@ -19,22 +23,27 @@ class CustomerVm extends BaseVm {
     String? q,
     CustomType? type,
     bool paginate = true,
+    String? busyObjectName = getState
   }) async {
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/customers")
+     if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/customers?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("type", type?.apiValue ?? "")
-      ..addQueryParameterIfNotEmpty("limit", '30')
+      ..addQueryParameterIfNotEmpty("limit", '10')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: getState,
-      busyObjectName: getState,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
         if (paginate) {
           final customerStats =
               customerStatsFromJson(json.encode(data['data']?['stats']));
+               if (busyObjectName != paginateState) {
           final customerData = customerDataListFromJson(
               json.encode(data['data']?['data']?['data']));
           if (type == null) {
@@ -47,6 +56,24 @@ class CustomerVm extends BaseVm {
             _walkInCustomerStats = customerStats;
             _walkInCustomerData = customerData;
           }
+            pageNumber++;
+            lastPage =  data['data']?['data']?['last_page'];
+               }else{
+           if (type == null) {
+              _customerData.addAll(customerDataListFromJson(
+              json.encode(data['data']?['data']?['data'])));
+            } else if (type == CustomType.online) {
+              _onlineCustomerData.addAll(customerDataListFromJson(
+              json.encode(data['data']?['data']?['data'])));
+            } else if (type == CustomType.offline) {
+              _walkInCustomerData.addAll(customerDataListFromJson(
+              json.encode(data['data']?['data']?['data'])));
+            }
+          pageNumber++;
+
+               }
+
+               
         } else {
           final customerData =
               customerDataListFromJson(json.encode(data['data']));

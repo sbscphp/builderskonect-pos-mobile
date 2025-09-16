@@ -11,11 +11,14 @@ class AllSalesOverview extends ConsumerStatefulWidget {
 class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
+  final _scrollController = ScrollController();
+
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollListener();
       ref.read(salesVmodel).getSalesOverview();
     });
   }
@@ -24,7 +27,21 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
   void dispose() {
     searchC.dispose();
     searchFocus.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+    _scrollListener() {
+    final vm = ref.watch(salesVmodel);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getSalesOverview(stateObjectName: paginateState);
+        }
+      }
+    });
   }
 
   @override
@@ -56,6 +73,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
             right: Sizer.width(16),
             bottom: Sizer.height(50),
           ),
+          controller: _scrollController,
           children: [
             YBox(16),
             Container(
@@ -208,6 +226,18 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                       },
                     );
                   }),
+                    if (salesVm.busy(paginateState))
+                      SpinKitLoader(
+                        size: 16,
+                        color: AppColors.neutral5,
+                      ),
+                   if (salesVm.error(paginateState)) 
+                   Padding(
+                     padding: const EdgeInsets.only(top: 16.0),
+                     child: ErrorState(onPressed: (){
+                       salesVm.getSalesOverview(stateObjectName: paginateState);
+                     },isPaginationType: true,),
+                   )                  
                 ],
               ),
             ),

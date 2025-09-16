@@ -11,7 +11,7 @@ class StaffManagementScreen extends ConsumerStatefulWidget {
 
 class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   final searchC = TextEditingController();
-
+  final _scrollController = ScrollController();
   int indexStack = 0;
 
   @override
@@ -19,17 +19,32 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _fetchStaffDashboardData();
+      _scrollListener();
     });
   }
 
   @override
   void dispose() {
     searchC.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
+  _scrollListener() {
+    final vm = ref.watch(staffVm);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getDashboardStats(busyObjectName: paginateState);
+        }
+      }
+    });
+  }
+
   _fetchStaffDashboardData() async {
-    await ref.read(staffVm).getDashboardStats();
+    await ref.read(staffVm).getDashboardStats(busyObjectName: firstState);
     await ref.read(roleVm).getAvailableRoles();
   }
 
@@ -69,6 +84,7 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
                   _fetchStaffDashboardData();
                 },
                 child: ListView(
+                  controller: _scrollController,
                   padding: EdgeInsets.only(
                     left: Sizer.width(16),
                     right: Sizer.width(16),
@@ -106,7 +122,19 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
                         StaffTab(),
                         RolePermissionTab(),
                       ],
-                    )
+                    ),
+                    if (staffViewModel.busy(paginateState))
+                      SpinKitLoader(
+                        size: 16,
+                        color: AppColors.neutral5,
+                      ),
+                   if (staffViewModel.error(paginateState)) 
+                   Padding(
+                     padding: const EdgeInsets.only(top: 16.0),
+                     child: ErrorState(onPressed: (){
+                       staffViewModel.getDashboardStats(busyObjectName: paginateState);
+                     },isPaginationType: true,),
+                   )
                   ],
                 ),
               ),
