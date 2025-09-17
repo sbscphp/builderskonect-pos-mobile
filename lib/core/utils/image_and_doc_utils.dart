@@ -112,7 +112,10 @@ class ImageAndDocUtils {
   }
 
   //image picker
-  static Future<File?> pickImage({ImageSource? imageSource}) async {
+  static Future<File?> pickImage({
+    ImageSource? imageSource,
+    bool enableCropping = false,
+  }) async {
     final ImagePicker picker = ImagePicker();
     final XFile? pickedFile = await picker.pickImage(
       source: imageSource ?? ImageSource.gallery,
@@ -121,7 +124,16 @@ class ImageAndDocUtils {
       File sample = File(pickedFile.path);
       String extension = sample.path.split('.').last;
       debugPrint('extension type:::::$extension>>>>');
-      return File(pickedFile.path);
+      
+      File imageFile = File(pickedFile.path);
+      
+      // If cropping is enabled, crop the image before returning
+      if (enableCropping) {
+        File? croppedFile = await cropImage(image: imageFile);
+        return croppedFile ?? imageFile; // Return original if cropping fails
+      }
+      
+      return imageFile;
     }
     return null;
   }

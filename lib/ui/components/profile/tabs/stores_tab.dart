@@ -64,6 +64,13 @@ class _StoresTabState extends ConsumerState<StoresTab> {
           ),
         );
       },
+      errorBuilder: (context) {
+        return ErrorState(
+          onPressed: () {
+            storeVm.getStoreOverview();
+          },
+        );
+      },
       contentBuilder: (context) {
         return RefreshIndicator(
           onRefresh: () async {
@@ -144,29 +151,29 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                       subTitle:
                           "This shows the stores created under this vendor ",
                       onFilter: () async {
-                         ModalWrapper.bottomSheet(
-                          context: context,
-                          widget: FilterDataModal(
-                            selectorGroups: [
-                              SelectorGroup(
-                                key: "status",
-                                title: "Status",
-                                options: [
-                                  "All",
-                                  "Active",
-                                  "Deactivated",
-                                ],
-                                selectedValue: "All",
-                              ),
-                            ],
-                            onFilter: (filterData) {
-                              printty("Filter applied: $filterData");
-                            },
-                            onReset: () {
-                              printty("Filters reset");
-                              // Handle reset action here
-                            },
-                          ));
+                        ModalWrapper.bottomSheet(
+                            context: context,
+                            widget: FilterDataModal(
+                              selectorGroups: [
+                                SelectorGroup(
+                                  key: "status",
+                                  title: "Status",
+                                  options: [
+                                    "All",
+                                    "Active",
+                                    "Deactivated",
+                                  ],
+                                  selectedValue: "All",
+                                ),
+                              ],
+                              onFilter: (filterData) {
+                                printty("Filter applied: $filterData");
+                              },
+                              onReset: () {
+                                printty("Filters reset");
+                                // Handle reset action here
+                              },
+                            ));
                       },
                     ),
                     YBox(16),

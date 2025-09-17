@@ -20,7 +20,7 @@ class ProfileVm extends BaseVm {
     body.removeWhere((k, v) => v == null || v == "");
     return await performApiCall(
       url: "/api/v1/merchants/profile",
-      method: apiService.putWithAuth,
+      method: apiService.postWithAuth,
       busyObjectName: updateState,
       body: body,
       onSuccess: (data) {

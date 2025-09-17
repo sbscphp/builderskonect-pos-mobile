@@ -69,106 +69,123 @@ class _CustomersManagementScreenState
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final storeVm = ref.watch(storeVmodel);
+    final staffRef = ref.watch(staffVm);
     return Scaffold(
       appBar: CustomAppbar(
         title: "Customers Management",
-        trailingWidget: InkWell(
-          onTap: () {
-            showMenu(
-              context: context,
-              position: RelativeRect.fromLTRB(100, 100, 0, 0),
-              items: [
-                PopupMenuItem(
-                  value: 'new_customer',
-                  child: Text('Add New Customer', style: textTheme.text14),
-                ),
-                PopupMenuItem(
-                  value: 'reviews',
-                  child: Text('Reviews and Feedback', style: textTheme.text14),
-                ),
-              ],
-            ).then((value) {
-              if (value != null && context.mounted) {
-                printty('Selected: $value');
-                switch (value) {
-                  case 'new_customer':
-                    Navigator.pushNamed(context, RoutePath.newCustomerScreen);
-                    break;
-                  case 'reviews':
-                    // Navigator.pushNamed(context, RoutePath.reviewsScreen);
-                    break;
-
-                  default:
-                    break;
-                }
-              }
-            });
-          },
-          child: SvgPicture.asset(AppSvgs.menu),
-        ),
-      ),
-      body: Column(
-        children: [
-          AnimatedBuilder(
-            animation: _fadeAnimation,
-            builder: (context, child) {
-              return FadeTransition(
-                opacity: _fadeAnimation,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                  color: colorScheme.white,
-                  child: Row(
-                    children: [
-                      ProfileTab(
-                        title: "All Customers",
-                        isSelected: currentIndex == 0,
-                        onTap: () => _onTabChanged(0),
-                      ),
-                      XBox(30),
-                      ProfileTab(
-                        title: "Online",
-                        isSelected: currentIndex == 1,
-                        onTap: () => _onTabChanged(1),
-                      ),
-                      XBox(30),
-                      ProfileTab(
-                        title: "Walk-in",
-                        isSelected: currentIndex == 2,
-                        onTap: () => _onTabChanged(2),
+        trailingWidget: !staffRef.hasAccessToCustomerOverview
+            ? null
+            : InkWell(
+                onTap: () {
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: [
+                      // PopupMenuItem(
+                      //   value: 'new_customer',
+                      //   child:
+                      //       Text('Add New Customer', style: textTheme.text14),
+                      // ),
+                      PopupMenuItem(
+                        value: 'reviews',
+                        child: Text('Reviews and Feedback',
+                            style: textTheme.text14),
                       ),
                     ],
+                  ).then((value) {
+                    if (value != null && context.mounted) {
+                      printty('Selected: $value');
+                      switch (value) {
+                        // case 'new_customer':
+                        //   Navigator.pushNamed(
+                        //       context, RoutePath.newCustomerScreen);
+                        //   break;
+                        case 'reviews':
+                          // Navigator.pushNamed(context, RoutePath.reviewsScreen);
+                          break;
+
+                        default:
+                          break;
+                      }
+                    }
+                  });
+                },
+                child: SvgPicture.asset(AppSvgs.menu),
+              ),
+      ),
+      body: !staffRef.hasAccessToCustomerOverview
+          ? RequestAccessWidget(
+              isLoading: staffRef.busy(RowParams.customer),
+              onRequestAccess: () async {
+                final res =
+                    await staffRef.requestApplicationAccess(RowParams.customer);
+
+                handleApiResponse(response: res);
+              },
+            )
+          : Column(
+              children: [
+                AnimatedBuilder(
+                  animation: _fadeAnimation,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                        color: colorScheme.white,
+                        child: Row(
+                          children: [
+                            ProfileTab(
+                              title: "All Customers",
+                              isSelected: currentIndex == 0,
+                              onTap: () => _onTabChanged(0),
+                            ),
+                            XBox(30),
+                            ProfileTab(
+                              title: "Online",
+                              isSelected: currentIndex == 1,
+                              onTap: () => _onTabChanged(1),
+                            ),
+                            XBox(30),
+                            ProfileTab(
+                              title: "Walk-in",
+                              isSelected: currentIndex == 2,
+                              onTap: () => _onTabChanged(2),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.1, 0.0),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          )),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      key: ValueKey<int>(currentIndex),
+                      child: _buildTabContent(),
+                    ),
                   ),
                 ),
-              );
-            },
-          ),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.1, 0.0),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut,
-                    )),
-                    child: child,
-                  ),
-                );
-              },
-              child: Container(
-                key: ValueKey<int>(currentIndex),
-                child: _buildTabContent(),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

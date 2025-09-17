@@ -24,6 +24,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     await ref.read(dashboardVmodel).getDashboardStats();
     await ref.read(dashboardVmodel).getRevenueAndTraffic();
     await ref.read(dashboardVmodel).getProductOverview();
+    await ref.read(staffVm).getApplicationAccess();
     await ref.read(vendorProfileVmodel).getVendorProfile();
     await ref.read(userProfileVmodel).getUserProfile();
   }
@@ -34,6 +35,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final dashVm = ref.watch(dashboardVmodel);
     final vendorProfileVm = ref.watch(vendorProfileVmodel);
+    final staffRef = ref.watch(staffVm);
+    final profileVm = ref.watch(vendorProfileVmodel);
 
     return SizedBox(
       height: Sizer.screenHeight,
@@ -61,446 +64,418 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               },
             ),
           ),
-          body: RefreshIndicator(
-            onRefresh: () async {
-              await _callDashboardData();
-            },
-            child: ListView(
-              padding: EdgeInsets.only(
-                left: Sizer.width(16),
-                right: Sizer.width(16),
-                bottom: Sizer.height(50),
-              ),
-              children: [
-                YBox(16),
-                if (vendorProfileVm.vendorProfile?.onboardingStatus !=
-                    "approved")
-                  InfoContainer(
-                    show: _isExpanded,
-                    title: "Account Under Review",
-                    content:
-                        "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
-                    onTap: () {
-                      _isExpanded = !_isExpanded;
-                      setState(() {});
-                    },
-                  ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Sizer.width(16),
-                    vertical: Sizer.height(14),
-                  ),
-                  width: Sizer.screenWidth,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(AppImages.banner),
-                      fit: BoxFit.cover,
+          body: !staffRef.hasAccessToDashboardOverview
+              ? RequestAccessWidget()
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    await _callDashboardData();
+                  },
+                  child: ListView(
+                    padding: EdgeInsets.only(
+                      left: Sizer.width(16),
+                      right: Sizer.width(16),
+                      bottom: Sizer.height(50),
                     ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "Welcome Onboard!",
-                        style: textTheme.text16?.medium.copyWith(
-                          color: colorScheme.white,
-                        ),
-                      ),
-                      YBox(4),
-                      Text(
-                        "Complete your business profile by uploading your business logo",
-                        style: textTheme.text12?.copyWith(
-                          color: colorScheme.white,
-                        ),
-                      ),
-                      YBox(10),
-                      Row(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Sizer.width(8),
-                              vertical: Sizer.height(4),
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.white,
-                              borderRadius:
-                                  BorderRadius.circular(Sizer.radius(4)),
-                            ),
-                            child: Text(
-                              "Upload Logo",
-                              style: textTheme.text12?.copyWith(
-                                color: colorScheme.primaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.white,
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Quick Actions", style: textTheme.text16?.medium),
                       YBox(16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          QuickActionCol(
-                            title: "Customers",
-                            svgPath: AppSvgs.customer,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoutePath.customersManagementScreen);
-                            },
+                      if (vendorProfileVm.vendorProfile?.onboardingStatus !=
+                          "approved")
+                        InfoContainer(
+                          show: _isExpanded,
+                          title: "Account Under Review",
+                          content:
+                              "Your account has not yet being verified. You will gain access to the full features when your account is approved.",
+                          onTap: () {
+                            _isExpanded = !_isExpanded;
+                            setState(() {});
+                          },
+                        ),
+                      if ((profileVm.vendorProfile?.logo ?? "").isEmpty)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: Sizer.height(16),
                           ),
-                          QuickActionCol(
-                            title: "Returns",
-                            svgPath: AppSvgs.returns,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoutePath.returnRefundScreen);
-                            },
-                          ),
-                          QuickActionCol(
-                            title: "Discounts",
-                            svgPath: AppSvgs.discount,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoutePath.discountManagementScreen);
-                            },
-                          ),
-                          QuickActionCol(
-                            title: "Staff",
-                            svgPath: AppSvgs.userFilled,
-                            onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoutePath.staffManagementScreen);
-                            },
-                          ),
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: Sizer.radius(16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.white,
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                        child:
-                            Text("My To-dos", style: textTheme.text16?.medium),
-                      ),
+                          child: HomeWelcomeOnboardWidget(),
+                        ),
                       YBox(16),
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
+                      Container(
+                        padding: EdgeInsets.all(Sizer.radius(16)),
+                        decoration: BoxDecoration(
+                          color: colorScheme.white,
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            XBox(16),
-                            MyTodoRol(
-                              leadiconPath: AppSvgs.shop,
-                              isDone: dashVm.merchantCheckListModel?.hasStore ??
-                                  false,
-                              title: "Create a store",
-                            ),
-                            XBox(8),
-                            MyTodoRol(
-                              leadiconPath: AppSvgs.plusCircle,
-                              isDone:
-                                  dashVm.merchantCheckListModel?.hasProducts ??
-                                      false,
-                              title: "Add products",
-                            ),
-                            XBox(8),
-                            MyTodoRol(
-                              leadiconPath: AppSvgs.plusCircle,
-                              isDone: dashVm.merchantCheckListModel?.hasRole ??
-                                  false,
-                              title: "Create role",
-                            ),
-                            XBox(8),
-                            MyTodoRol(
-                              leadiconPath: AppSvgs.plusCircle,
-                              isDone: dashVm.merchantCheckListModel?.hasStaff ??
-                                  false,
-                              title: "Add user",
-                            ),
-                            XBox(8),
-                            MyTodoRol(
-                              leadiconPath: AppSvgs.plusCircle,
-                              isDone: dashVm.merchantCheckListModel?.hasSales ??
-                                  false,
-                              title: "Create sales order",
-                            ),
-                            XBox(30),
+                            Text("Quick Actions",
+                                style: textTheme.text16?.medium),
+                            YBox(16),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                QuickActionCol(
+                                  title: "Customers",
+                                  svgPath: AppSvgs.customer,
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        RoutePath.customersManagementScreen);
+                                  },
+                                ),
+                                QuickActionCol(
+                                  title: "Returns",
+                                  svgPath: AppSvgs.returns,
+                                  onTap: () {
+                                    Navigator.pushNamed(
+                                        context, RoutePath.returnRefundScreen);
+                                  },
+                                ),
+                                QuickActionCol(
+                                  title: "Discounts",
+                                  svgPath: AppSvgs.discount,
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        RoutePath.discountManagementScreen);
+                                  },
+                                ),
+                                QuickActionCol(
+                                  title: "Staff",
+                                  svgPath: AppSvgs.userFilled,
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        RoutePath.staffManagementScreen);
+                                  },
+                                ),
+                              ],
+                            )
                           ],
                         ),
-                      )
-                    ],
-                  ),
-                ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.white,
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Overview", style: textTheme.text16?.medium),
-                      Text("Track and measure store performance and analytics ",
-                          style: textTheme.text12
-                              ?.copyWith(color: colorScheme.black45)),
-                      YBox(16),
-                      Column(
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: StatCard(
-                                  title: "Total Products",
-                                  value: AppUtils.formatNumber(
-                                    number: double.tryParse(
-                                          dashVm.statModel?.totalProducts ??
-                                              "0",
-                                        ) ??
-                                        0,
-                                  ),
-                                  bgColor: AppColors.blueFF,
-                                  borderColor: AppColors.blue5,
-                                  amountColor: AppColors.primaryBlue,
-                                  onTap: () {},
-                                ),
-                              ),
-                              XBox(16),
-                              Expanded(
-                                child: StatCard(
-                                  title: "Revenue",
-                                  value:
-                                      dashVm.statModel?.revenueGenerated ?? "0",
-                                  bgColor: AppColors.magentaF8,
-                                  borderColor: AppColors.magenta4,
-                                  borderButtomColor: AppColors.magenta2,
-                                  amountColor: AppColors.magenta6,
-                                  onTap: () {},
-                                ),
-                              ),
-                            ],
-                          ),
-                          YBox(16),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: StatCard(
-                                  title: "Total Sales Order",
-                                  value:
-                                      dashVm.statModel?.totalSalesOrders ?? "0",
-                                  borderButtomColor: AppColors.purple2,
-                                  bgColor: AppColors.yellowE6,
-                                  borderColor: AppColors.yellow4,
-                                  amountColor: AppColors.yellow6,
-                                  onTap: () {},
-                                ),
-                              ),
-                              XBox(16),
-                              Expanded(
-                                child: StatCard(
-                                  title: "Total Customers",
-                                  value: dashVm.statModel?.totalCustomers
-                                          ?.toString() ??
-                                      "0",
-                                  bgColor: AppColors.greenED,
-                                  borderColor: AppColors.green4,
-                                  borderButtomColor: AppColors.purple2,
-                                  amountColor: AppColors.green7,
-                                  iconPath: AppSvgs.chart,
-                                  onTap: () {},
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.white,
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FilterHeader(
-                        title: "Revenue Analytics",
-                        subTitle:
-                            "Get insights into revenue analytics right here.",
-                        onFilter: () {
-                          ModalWrapper.bottomSheet(
-                              context: context,
-                              widget: FilterDataModal(
-                                modalHeight: Sizer.screenHeight * .5,
-                                selectorGroups: [
-                                  SelectorGroup(
-                                    key: "stores",
-                                    title: "Stores",
-                                    options: [
-                                      "All Stores",
-                                      // "Processing",
-                                      // "Cancelled",
-                                      // "Completed"
-                                    ],
-                                    selectedValue: "All Stores",
-                                  ),
-                                ],
-                                onFilter: (filterData) {
-                                  printty("Filter applied: $filterData");
-                                },
-                                onReset: () {
-                                  printty("Filters reset");
-                                  // Handle reset action here
-                                },
-                              ));
-                        },
                       ),
                       YBox(16),
-                      StatCard(
-                        title: "Total Revenue",
-                        value: dashVm.revenueAndTrafficModel?.revenue ?? "0",
-                        bgColor: AppColors.yellowE8,
-                        borderColor: AppColors.yellow1C,
-                        borderButtomColor: AppColors.yellowBF,
-                        amountColor: AppColors.yellow1C,
-                        onTap: () {},
-                      ),
-                    ],
-                  ),
-                ),
-                YBox(16),
-                Container(
-                  padding: EdgeInsets.all(Sizer.radius(16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.white,
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text("Customer Traffic",
-                                style: textTheme.text16?.medium),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              ModalWrapper.bottomSheet(
-                                  context: context,
-                                  widget: FilterDataModal(
-                                    selectorGroups: [
-                                      SelectorGroup(
-                                        key: "stores",
-                                        title: "Stores",
-                                        options: [
-                                          "All Stores",
-                                          // "Processing",
-                                          // "Cancelled",
-                                          // "Completed"
-                                        ],
-                                        selectedValue: "All Stores",
-                                      ),
-                                       SelectorGroup(
-                                        key: "type",
-                                        title: "Customer Tpe",
-                                        options: [
-                                          "All customers",
-                                          "Walk-in customers",
-                                          "Online customers",
-                                          // "Completed"
-                                        ],
-                                        selectedValue: "All Stores",
-                                      ),
-                                    ],
-                                    onFilter: (filterData) {
-                                      printty("Filter applied: $filterData");
-                                    },
-                                    onReset: () {
-                                      printty("Filters reset");
-                                      // Handle reset action here
-                                    },
-                                  ));
-                            },
-                            child: SvgPicture.asset(
-                              AppSvgs.filter,
-                              height: Sizer.height(32),
+                      Container(
+                        padding:
+                            EdgeInsets.symmetric(vertical: Sizer.radius(16)),
+                        decoration: BoxDecoration(
+                          color: colorScheme.white,
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Sizer.width(16)),
+                              child: Text("My To-dos",
+                                  style: textTheme.text16?.medium),
                             ),
-                          )
-                        ],
+                            YBox(16),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  XBox(16),
+                                  MyTodoRol(
+                                    leadiconPath: AppSvgs.shop,
+                                    isDone: dashVm
+                                            .merchantCheckListModel?.hasStore ??
+                                        false,
+                                    title: "Create a store",
+                                  ),
+                                  XBox(8),
+                                  MyTodoRol(
+                                    leadiconPath: AppSvgs.plusCircle,
+                                    isDone: dashVm.merchantCheckListModel
+                                            ?.hasProducts ??
+                                        false,
+                                    title: "Add products",
+                                  ),
+                                  XBox(8),
+                                  MyTodoRol(
+                                    leadiconPath: AppSvgs.plusCircle,
+                                    isDone: dashVm
+                                            .merchantCheckListModel?.hasRole ??
+                                        false,
+                                    title: "Create role",
+                                  ),
+                                  XBox(8),
+                                  MyTodoRol(
+                                    leadiconPath: AppSvgs.plusCircle,
+                                    isDone: dashVm
+                                            .merchantCheckListModel?.hasStaff ??
+                                        false,
+                                    title: "Add user",
+                                  ),
+                                  XBox(8),
+                                  MyTodoRol(
+                                    leadiconPath: AppSvgs.plusCircle,
+                                    isDone: dashVm
+                                            .merchantCheckListModel?.hasSales ??
+                                        false,
+                                    title: "Create sales order",
+                                  ),
+                                  XBox(30),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                       YBox(16),
-                      Column(
-                        children: [
-                          Row(
+                      Container(
+                        padding: EdgeInsets.all(Sizer.radius(16)),
+                        decoration: BoxDecoration(
+                          color: colorScheme.white,
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("Overview", style: textTheme.text16?.medium),
+                            Text(
+                                "Track and measure store performance and analytics ",
+                                style: textTheme.text12
+                                    ?.copyWith(color: colorScheme.black45)),
+                            YBox(16),
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Total Products",
+                                        value: AppUtils.formatNumber(
+                                          number: double.tryParse(
+                                                dashVm.statModel
+                                                        ?.totalProducts ??
+                                                    "0",
+                                              ) ??
+                                              0,
+                                        ),
+                                        bgColor: AppColors.blueFF,
+                                        borderColor: AppColors.blue5,
+                                        amountColor: AppColors.primaryBlue,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                    XBox(16),
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Revenue",
+                                        value: dashVm
+                                                .statModel?.revenueGenerated ??
+                                            "0",
+                                        bgColor: AppColors.magentaF8,
+                                        borderColor: AppColors.magenta4,
+                                        borderButtomColor: AppColors.magenta2,
+                                        amountColor: AppColors.magenta6,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                YBox(16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Total Sales Order",
+                                        value: dashVm
+                                                .statModel?.totalSalesOrders ??
+                                            "0",
+                                        borderButtomColor: AppColors.purple2,
+                                        bgColor: AppColors.yellowE6,
+                                        borderColor: AppColors.yellow4,
+                                        amountColor: AppColors.yellow6,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                    XBox(16),
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Total Customers",
+                                        value: dashVm.statModel?.totalCustomers
+                                                ?.toString() ??
+                                            "0",
+                                        bgColor: AppColors.greenED,
+                                        borderColor: AppColors.green4,
+                                        borderButtomColor: AppColors.purple2,
+                                        amountColor: AppColors.green7,
+                                        iconPath: AppSvgs.chart,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (staffRef.hasAccessToRevenueAnalytics)
+                        Container(
+                          padding: EdgeInsets.all(Sizer.radius(16)),
+                          margin: EdgeInsets.only(
+                            top: Sizer.radius(16),
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.white,
+                            borderRadius:
+                                BorderRadius.circular(Sizer.radius(4)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: StatCard(
-                                  title: "Walk-in",
-                                  value: dashVm.revenueAndTrafficModel?.traffic
-                                          ?.pos?.value ??
-                                      "0",
-                                  bgColor: AppColors.blueFF,
-                                  borderColor: AppColors.blue5,
-                                  amountColor: AppColors.primaryBlue,
-                                  onTap: () {},
-                                ),
+                              FilterHeader(
+                                title: "Revenue Analytics",
+                                subTitle:
+                                    "Get insights into revenue analytics right here.",
+                                onFilter: () {
+                                  ModalWrapper.bottomSheet(
+                                      context: context,
+                                      widget: FilterDataModal(
+                                        modalHeight: Sizer.screenHeight * .5,
+                                        selectorGroups: [
+                                          SelectorGroup(
+                                            key: "stores",
+                                            title: "Stores",
+                                            options: [
+                                              "All Stores",
+                                              // "Processing",
+                                              // "Cancelled",
+                                              // "Completed"
+                                            ],
+                                            selectedValue: "All Stores",
+                                          ),
+                                        ],
+                                        onFilter: (filterData) {
+                                          printty(
+                                              "Filter applied: $filterData");
+                                        },
+                                        onReset: () {
+                                          printty("Filters reset");
+                                          // Handle reset action here
+                                        },
+                                      ));
+                                },
                               ),
-                              XBox(16),
-                              Expanded(
-                                child: StatCard(
-                                  title: "Online",
-                                  value: dashVm.revenueAndTrafficModel?.traffic
-                                          ?.omp?.value ??
-                                      "0",
-                                  bgColor: AppColors.magentaF8,
-                                  borderColor: AppColors.magenta4,
-                                  borderButtomColor: AppColors.magenta2,
-                                  amountColor: AppColors.magenta6,
-                                  onTap: () {},
-                                ),
+                              YBox(16),
+                              StatCard(
+                                title: "Total Revenue",
+                                value: dashVm.revenueAndTrafficModel?.revenue ??
+                                    "0",
+                                bgColor: AppColors.yellowE8,
+                                borderColor: AppColors.yellow1C,
+                                borderButtomColor: AppColors.yellowBF,
+                                amountColor: AppColors.yellow1C,
+                                onTap: () {},
                               ),
                             ],
                           ),
-                        ],
+                        ),
+                      YBox(16),
+                      Container(
+                        padding: EdgeInsets.all(Sizer.radius(16)),
+                        decoration: BoxDecoration(
+                          color: colorScheme.white,
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text("Customer Traffic",
+                                      style: textTheme.text16?.medium),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    ModalWrapper.bottomSheet(
+                                        context: context,
+                                        widget: FilterDataModal(
+                                          selectorGroups: [
+                                            SelectorGroup(
+                                              key: "stores",
+                                              title: "Stores",
+                                              options: [
+                                                "All Stores",
+                                                // "Processing",
+                                                // "Cancelled",
+                                                // "Completed"
+                                              ],
+                                              selectedValue: "All Stores",
+                                            ),
+                                            SelectorGroup(
+                                              key: "type",
+                                              title: "Customer Tpe",
+                                              options: [
+                                                "All customers",
+                                                "Walk-in customers",
+                                                "Online customers",
+                                                // "Completed"
+                                              ],
+                                              selectedValue: "All Stores",
+                                            ),
+                                          ],
+                                          onFilter: (filterData) {
+                                            printty(
+                                                "Filter applied: $filterData");
+                                          },
+                                          onReset: () {
+                                            printty("Filters reset");
+                                            // Handle reset action here
+                                          },
+                                        ));
+                                  },
+                                  child: SvgPicture.asset(
+                                    AppSvgs.filter,
+                                    height: Sizer.height(32),
+                                  ),
+                                )
+                              ],
+                            ),
+                            YBox(16),
+                            Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Walk-in",
+                                        value: dashVm.revenueAndTrafficModel
+                                                ?.traffic?.pos?.value ??
+                                            "0",
+                                        bgColor: AppColors.blueFF,
+                                        borderColor: AppColors.blue5,
+                                        amountColor: AppColors.primaryBlue,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                    XBox(16),
+                                    Expanded(
+                                      child: StatCard(
+                                        title: "Online",
+                                        value: dashVm.revenueAndTrafficModel
+                                                ?.traffic?.omp?.value ??
+                                            "0",
+                                        bgColor: AppColors.magentaF8,
+                                        borderColor: AppColors.magenta4,
+                                        borderButtomColor: AppColors.magenta2,
+                                        amountColor: AppColors.magenta6,
+                                        onTap: () {},
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
+                      YBox(16),
+                      ProductOverviewWidget(),
                     ],
                   ),
                 ),
-                YBox(16),
-                ProductOverviewWidget(),
-              ],
-            ),
-          ),
         ),
       ),
     );

@@ -64,6 +64,7 @@ class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final staffRef = ref.watch(staffVm);
     return Scaffold(
       appBar: CustomAppbar(
         leadingWidget: SizedBox.shrink(),
@@ -75,68 +76,80 @@ class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
             },
             child: SvgPicture.asset(AppSvgs.support)),
       ),
-      body: Column(
-        children: [
-          YBox(10),
-          AnimatedBuilder(
-            animation: _fadeAnimation,
-            builder: (context, child) {
-              return FadeTransition(
-                opacity: _fadeAnimation,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                  color: colorScheme.white,
-                  child: Row(
-                    children: [
-                      ProfileTab(
-                        title: "Profile Information",
-                        isSelected: currentIndex == 0,
-                        onTap: () => _onTabChanged(0),
+      body: !staffRef.hasAccessToVendorProfile
+          ? RequestAccessWidget(
+              isLoading: staffRef.busy(RowParams.vendorProfile),
+              onRequestAccess: () async {
+                final res = await staffRef
+                    .requestApplicationAccess(RowParams.vendorProfile);
+
+                handleApiResponse(response: res);
+              },
+            )
+          : Column(
+              children: [
+                YBox(10),
+                AnimatedBuilder(
+                  animation: _fadeAnimation,
+                  builder: (context, child) {
+                    return FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Container(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+                        color: colorScheme.white,
+                        child: Row(
+                          children: [
+                            ProfileTab(
+                              title: "Profile Information",
+                              isSelected: currentIndex == 0,
+                              onTap: () => _onTabChanged(0),
+                            ),
+                            XBox(30),
+                            ProfileTab(
+                              title: "Stores",
+                              isSelected: currentIndex == 1,
+                              onTap: () => _onTabChanged(1),
+                            ),
+                            XBox(30),
+                            ProfileTab(
+                              title: "Subscription",
+                              isSelected: currentIndex == 2,
+                              onTap: () => _onTabChanged(2),
+                            ),
+                          ],
+                        ),
                       ),
-                      XBox(30),
-                      ProfileTab(
-                        title: "Stores",
-                        isSelected: currentIndex == 1,
-                        onTap: () => _onTabChanged(1),
-                      ),
-                      XBox(30),
-                      ProfileTab(
-                        title: "Subscription",
-                        isSelected: currentIndex == 2,
-                        onTap: () => _onTabChanged(2),
-                      ),
-                    ],
+                    );
+                  },
+                ),
+                Expanded(
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder:
+                        (Widget child, Animation<double> animation) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(0.1, 0.0),
+                            end: Offset.zero,
+                          ).animate(CurvedAnimation(
+                            parent: animation,
+                            curve: Curves.easeInOut,
+                          )),
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Container(
+                      key: ValueKey<int>(currentIndex),
+                      child: _buildTabContent(),
+                    ),
                   ),
                 ),
-              );
-            },
-          ),
-          Expanded(
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              transitionBuilder: (Widget child, Animation<double> animation) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0.1, 0.0),
-                      end: Offset.zero,
-                    ).animate(CurvedAnimation(
-                      parent: animation,
-                      curve: Curves.easeInOut,
-                    )),
-                    child: child,
-                  ),
-                );
-              },
-              child: Container(
-                key: ValueKey<int>(currentIndex),
-                child: _buildTabContent(),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

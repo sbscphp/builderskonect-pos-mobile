@@ -8,10 +8,32 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with TickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController(text: 'olutan@yopmail.com');
   final _passwordController = TextEditingController(text: 'password1');
+
+  late AnimationController _customController;
+  late Animation<double> _customAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _customController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _customAnimation = CurvedAnimation(
+      parent: _customController,
+      curve: Curves.easeInOut,
+    );
+
+    // Start form animation after a delay
+    Future.delayed(const Duration(milliseconds: 300), () {
+      _customController.forward();
+    });
+  }
 
   @override
   void dispose() {
@@ -73,80 +95,94 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         YBox(30),
                         Form(
                           key: _formKey,
-                          child: Column(
-                            children: [
-                              CustomTextField(
-                                controller: _emailController,
-                                isRequired: true,
-                                labelText: 'Email',
-                                hintText: 'Enter your email',
-                                showLabelHeader: true,
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your email';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  setState(() {});
-                                },
-                              ),
-                              YBox(20),
-                              CustomTextField(
-                                controller: _passwordController,
-                                isRequired: true,
-                                labelText: 'Password',
-                                hintText: 'Enter your password',
-                                isPassword: true,
-                                showLabelHeader: true,
-                                validator: (p0) {
-                                  if (p0 == null || p0.isEmpty) {
-                                    return 'Please enter your password';
-                                  }
-                                  return null;
-                                },
-                                onChanged: (value) {
-                                  setState(() {});
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                        YBox(30),
-                        CustomBtn.solid(
-                          text: "Log in",
-                          onTap: () async {
-                            FocusScope.of(context).unfocus();
-                            if (_formKey.currentState?.validate() ?? false) {
-                              final res = await ref.read(authVmodel).login(
-                                    identifier: _emailController.text.trim(),
-                                    password: _passwordController.text.trim(),
-                                  );
+                          child: FadeTransition(
+                            opacity: _customAnimation,
+                            child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(0, 0.2),
+                                end: const Offset(0, 0),
+                              ).animate(_customAnimation),
+                              child: Column(
+                                children: [
+                                  CustomTextField(
+                                    controller: _emailController,
+                                    isRequired: true,
+                                    labelText: 'Email',
+                                    hintText: 'Enter your email',
+                                    showLabelHeader: true,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter your email';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                  ),
+                                  YBox(20),
+                                  CustomTextField(
+                                    controller: _passwordController,
+                                    isRequired: true,
+                                    labelText: 'Password',
+                                    hintText: 'Enter your password',
+                                    isPassword: true,
+                                    showLabelHeader: true,
+                                    validator: (p0) {
+                                      if (p0 == null || p0.isEmpty) {
+                                        return 'Please enter your password';
+                                      }
+                                      return null;
+                                    },
+                                    onChanged: (value) {
+                                      setState(() {});
+                                    },
+                                  ),
+                                  YBox(30),
+                                  CustomBtn.solid(
+                                    text: "Log in",
+                                    onTap: () async {
+                                      FocusScope.of(context).unfocus();
+                                      if (_formKey.currentState?.validate() ??
+                                          false) {
+                                        final res = await ref
+                                            .read(authVmodel)
+                                            .login(
+                                              identifier:
+                                                  _emailController.text.trim(),
+                                              password: _passwordController.text
+                                                  .trim(),
+                                            );
 
-                              handleApiResponse(
-                                response: res,
-                                onSuccess: () {
-                                  Navigator.pushNamed(
-                                      context, RoutePath.selectModuleScreen);
-                                },
-                              );
-                            }
-                          },
-                        ),
-                        YBox(26),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pushNamed(
-                              RoutePath.forgotPasswordScreen,
-                            );
-                          },
-                          child: Text(
-                            "Forgot Password?",
-                            style: textTheme.text16?.copyWith(
-                              color: colorScheme.primaryColor,
+                                        handleApiResponse(
+                                          response: res,
+                                          onSuccess: () {
+                                            Navigator.pushNamed(context,
+                                                RoutePath.selectModuleScreen);
+                                          },
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  YBox(26),
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pushNamed(
+                                        RoutePath.forgotPasswordScreen,
+                                      );
+                                    },
+                                    child: Text(
+                                      "Forgot Password?",
+                                      style: textTheme.text16?.copyWith(
+                                        color: colorScheme.primaryColor,
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ),
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),

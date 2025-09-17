@@ -55,93 +55,106 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
     final staffViewModel = ref.watch(staffVm);
     return Scaffold(
       appBar: CustomAppbar(title: "Staff Management"),
-      body: LoadableContentBuilder(
-        isBusy: staffViewModel.busy(getState),
-        isError: staffViewModel.error(getState),
-        loadingBuilder: (p0) {
-          return SizerLoader(
-            height: double.infinity,
-          );
-        },
-        emptyBuilder: (context) {
-          return Center(
-            child: Text(
-              "No Data",
-              style: textTheme.text14?.medium.copyWith(
-                color: AppColors.gray500,
-              ),
-            ),
-          );
-        },
-        contentBuilder: (context) {
-          return SizedBox(
-            height: Sizer.screenHeight,
-            width: Sizer.screenWidth,
-            child: BusyOverlay(
-              show: staffViewModel.busy(firstState),
-              child: RefreshIndicator(
-                onRefresh: () async {
-                  _fetchStaffDashboardData();
-                },
-                child: ListView(
-                  controller: _scrollController,
-                  padding: EdgeInsets.only(
-                    left: Sizer.width(16),
-                    right: Sizer.width(16),
-                    bottom: Sizer.height(50),
+      body: !staffViewModel.hasAccessToStaff
+          ? RequestAccessWidget(
+              isLoading: staffViewModel.busy(RowParams.staff),
+              onRequestAccess: () async {
+                final res = await staffViewModel
+                    .requestApplicationAccess(RowParams.staff);
+                handleApiResponse(response: res);
+              },
+            )
+          : LoadableContentBuilder(
+              isBusy: staffViewModel.busy(getState),
+              isError: staffViewModel.error(getState),
+              loadingBuilder: (p0) {
+                return SizerLoader(
+                  height: double.infinity,
+                );
+              },
+              emptyBuilder: (context) {
+                return Center(
+                  child: Text(
+                    "No Data",
+                    style: textTheme.text14?.medium.copyWith(
+                      color: AppColors.gray500,
+                    ),
                   ),
-                  children: [
-                    YBox(16),
-                    Row(
-                      children: [
-                        NotificationTab(
-                          text: "Staff",
-                          isSelected: indexStack == 0,
-                          onTap: () {
-                            indexStack = 0;
-                            setState(() {});
-                            // notyVm.getNotifications();
-                          },
+                );
+              },
+              contentBuilder: (context) {
+                return SizedBox(
+                  height: Sizer.screenHeight,
+                  width: Sizer.screenWidth,
+                  child: BusyOverlay(
+                    show: staffViewModel.busy(firstState),
+                    child: RefreshIndicator(
+                      onRefresh: () async {
+                        _fetchStaffDashboardData();
+                      },
+                      child: ListView(
+                        controller: _scrollController,
+                        padding: EdgeInsets.only(
+                          left: Sizer.width(16),
+                          right: Sizer.width(16),
+                          bottom: Sizer.height(50),
                         ),
-                        XBox(6),
-                        NotificationTab(
-                          text: "Roles and Permissions",
-                          isSelected: indexStack == 1,
-                          onTap: () {
-                            indexStack = 1;
-                            setState(() {});
-                            // notyVm.getNotifications(unread: true);
-                          },
-                        ),
-                      ],
-                    ),
-                    YBox(16),
-                    IndexedStack(
-                      index: indexStack,
-                      children: [
-                        StaffTab(),
-                        RolePermissionTab(),
-                      ],
-                    ),
-                    if (staffViewModel.busy(paginateState))
-                      SpinKitLoader(
-                        size: 16,
-                        color: AppColors.neutral5,
+                        children: [
+                          YBox(16),
+                          Row(
+                            children: [
+                              NotificationTab(
+                                text: "Staff",
+                                isSelected: indexStack == 0,
+                                onTap: () {
+                                  indexStack = 0;
+                                  setState(() {});
+                                  // notyVm.getNotifications();
+                                },
+                              ),
+                              XBox(6),
+                              NotificationTab(
+                                text: "Roles and Permissions",
+                                isSelected: indexStack == 1,
+                                onTap: () {
+                                  indexStack = 1;
+                                  setState(() {});
+                                  // notyVm.getNotifications(unread: true);
+                                },
+                              ),
+                            ],
+                          ),
+                          YBox(16),
+                          IndexedStack(
+                            index: indexStack,
+                            children: [
+                              StaffTab(),
+                              RolePermissionTab(),
+                            ],
+                          ),
+                          if (staffViewModel.busy(paginateState))
+                            SpinKitLoader(
+                              size: 16,
+                              color: AppColors.neutral5,
+                            ),
+                          if (staffViewModel.error(paginateState))
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: ErrorState(
+                                onPressed: () {
+                                  staffViewModel.getDashboardStats(
+                                      busyObjectName: paginateState);
+                                },
+                                isPaginationType: true,
+                              ),
+                            )
+                        ],
                       ),
-                   if (staffViewModel.error(paginateState)) 
-                   Padding(
-                     padding: const EdgeInsets.only(top: 16.0),
-                     child: ErrorState(onPressed: (){
-                       staffViewModel.getDashboardStats(busyObjectName: paginateState);
-                     },isPaginationType: true,),
-                   )
-                  ],
-                ),
-              ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }

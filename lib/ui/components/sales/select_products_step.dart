@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:builders_konnect/core/core.dart';
-import 'package:builders_konnect/ui/components/components.dart';
 import 'package:builders_konnect/ui/components/barcode/barcode_scanner_screen.dart';
+import 'package:builders_konnect/ui/components/components.dart';
 
 class SelectProductsStep extends ConsumerStatefulWidget {
   const SelectProductsStep({
@@ -76,55 +76,62 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
     try {
       final inventoryProductVm = ref.read(productInventoryVmodel);
       final salesVm = ref.read(salesVmodel);
-      
+
       // Validate barcode input
       if (barcode.trim().isEmpty) {
         showWarningToast('Invalid barcode scanned');
         return;
       }
-      
+
       // Show loading state
       setState(() {
         isSearching = true;
       });
-      
+
       // Search for product using barcode as query
       await inventoryProductVm.getInventoryProducts(q: barcode.trim());
-      
+
       if (inventoryProductVm.inventoryProducts.isNotEmpty) {
         // Find exact match by SKU, EAN, or code
-        final exactMatch = inventoryProductVm.inventoryProducts.where(
-          (p) => p.sku?.toLowerCase() == barcode.toLowerCase() || 
-                 p.ean?.toLowerCase() == barcode.toLowerCase() ||
-                 p.code?.toLowerCase() == barcode.toLowerCase(),
-        ).toList();
-        
-        final product = exactMatch.isNotEmpty 
-            ? exactMatch.first 
+        final exactMatch = inventoryProductVm.inventoryProducts
+            .where(
+              (p) =>
+                  p.sku?.toLowerCase() == barcode.toLowerCase() ||
+                  p.ean?.toLowerCase() == barcode.toLowerCase() ||
+                  p.code?.toLowerCase() == barcode.toLowerCase(),
+            )
+            .toList();
+
+        final product = exactMatch.isNotEmpty
+            ? exactMatch.first
             : inventoryProductVm.inventoryProducts.first;
-        
+
         // Check if product is already in the list
-        final existingProductIndex = salesVm.productList
-            .indexWhere((p) => p.id == product.id);
-            
+        final existingProductIndex =
+            salesVm.productList.indexWhere((p) => p.id == product.id);
+
         if (existingProductIndex != -1) {
           // Update quantity of existing product
-          final currentQuantity = salesVm.productList[existingProductIndex].quantity ?? 0;
-          salesVm.productList[existingProductIndex] = salesVm.productList[
-              existingProductIndex].copyWith(
-                  quantity: currentQuantity + 1);
-          showSuccessToastMessage('Quantity updated for "${product.name}" (${currentQuantity + 1})');
+          final currentQuantity =
+              salesVm.productList[existingProductIndex].quantity ?? 0;
+          salesVm.productList[existingProductIndex] = salesVm
+              .productList[existingProductIndex]
+              .copyWith(quantity: currentQuantity + 1);
+          showSuccessToastMessage(
+              'Quantity updated for "${product.name}" (${currentQuantity + 1})');
         } else {
           // Add new product to selection
           salesVm.productList.add(product.copyWith(quantity: 1));
-          showSuccessToastMessage('Product "${product.name}" added to selection');
+          showSuccessToastMessage(
+              'Product "${product.name}" added to selection');
         }
-        
+
         setState(() {});
-        
+
         // If no exact match found, show warning
         if (exactMatch.isEmpty) {
-          showWarningToast('No exact barcode match found. Added closest result.');
+          showWarningToast(
+              'No exact barcode match found. Added closest result.');
         }
       } else {
         // Show error message if no product found
@@ -229,7 +236,7 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
                             productTitle: product.name ?? '',
                             subTitle: product.productType ?? '',
                             productImage: product.primaryMediaUrl ?? '',
-                            sku: product.sku ?? '',
+                            sku: product.quantity?.toString() ?? '',
                             onTap: () {
                               printty(
                                   "product image ${product.primaryMediaUrl}");

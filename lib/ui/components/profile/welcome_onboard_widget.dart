@@ -93,7 +93,7 @@ class _WelcomeOnboardWidgetState extends ConsumerState<WelcomeOnboardWidget> {
       // Reset progress tracking for any previous uploads
       ref.read(fileUploadVm).resetProgress();
 
-      final pickedFile = await ImageAndDocUtils.pickImage();
+      final pickedFile = await ImageAndDocUtils.pickImage(enableCropping: true);
 
       if (pickedFile != null) {
         _imageFile = File(pickedFile.path);
