@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:collection/collection.dart';
 
 class StaffVm extends BaseVm {
   //page number
@@ -85,16 +86,16 @@ class StaffVm extends BaseVm {
         _viewedStaff = staffModelFromJson(json.encode(data["data"]));
         return apiResponse;
       },
-      onError: (errorMessage) {
-        return apiResponse;
-      },
     );
   }
 
   Future<ApiResponse> updateStaff(
       {String? phone, int? isActive, dynamic roleId}) async {
-    final body = {"phone": phone, "role_id": roleId, "is_active": isActive}
-      ..removeWhere((key, value) => value == null);
+    final body = {
+      "phone": phone,
+      "role_id": roleId,
+      "is_active": isActive,
+    }..removeWhere((key, value) => value == null);
 
     return await performApiCall(
       url: "/api/v1/merchants/staff/${_viewedStaff?.id}",
@@ -104,7 +105,61 @@ class StaffVm extends BaseVm {
         _viewedStaff = staffModelFromJson(json.encode(data["data"]));
         return apiResponse;
       },
-      onError: (errorMessage) {
+    );
+  }
+
+  Future<ApiResponse> requestApplicationAccess(String module) async {
+    return await performApiCall(
+      url: "/api/v1/merchants/access/application/$module/requests",
+      method: apiService.getWithAuth,
+      busyObjectName: module,
+      onSuccess: (data) {
+        _viewedStaff = staffModelFromJson(json.encode(data["data"]));
+        return apiResponse;
+      },
+    );
+  }
+
+  List<ApplicationAccessModel> _applicationAccess = [];
+
+  /// Helper method to check access for a specific role tag
+  bool _hasAccessToRole(String roleTag) {
+    final appAccess = _applicationAccess.firstWhereOrNull(
+      (element) => element.tag?.toLowerCase() == roleTag.toLowerCase(),
+    );
+    return appAccess?.access ?? false;
+  }
+
+  bool get hasAccessToDashboardOverview =>
+      _hasAccessToRole(RoleTags.dashboardOverview);
+  bool get hasAccessToRevenueAnalytics =>
+      _hasAccessToRole(RoleTags.revenueAnalytics);
+  bool get hasAccessToCustomerOverview =>
+      _hasAccessToRole(RoleTags.customerOverview);
+  bool get hasAccessToRecentCustomers =>
+      _hasAccessToRole(RoleTags.recentCustomers);
+  bool get hasAccessToProductOverview =>
+      _hasAccessToRole(RoleTags.productOverview);
+  bool get hasAccessToNewProducts => _hasAccessToRole(RoleTags.newProducts);
+  bool get hasAccessToVendorProfile => _hasAccessToRole(RoleTags.vendorProfile);
+  bool get hasAccessToProduct => _hasAccessToRole(RoleTags.product);
+  bool get hasAccessToSales => _hasAccessToRole(RoleTags.sales);
+  bool get hasAccessToSalesAnalytics =>
+      _hasAccessToRole(RoleTags.salesAnalytics);
+  bool get hasAccessToReturns => _hasAccessToRole(RoleTags.returns);
+  bool get hasAccessToCustomer => _hasAccessToRole(RoleTags.customer);
+  bool get hasAccessToReview => _hasAccessToRole(RoleTags.review);
+  bool get hasAccessToDiscount => _hasAccessToRole(RoleTags.discount);
+  bool get hasAccessToStaff => _hasAccessToRole(RoleTags.staff);
+  bool get hasAccessToReports => _hasAccessToRole(RoleTags.reports);
+
+  Future<ApiResponse> getApplicationAccess() async {
+    return await performApiCall(
+      url: "/api/v1/merchants/access/application/access",
+      method: apiService.getWithAuth,
+      onSuccess: (data) {
+        _applicationAccess =
+            applicationAccessModelFromJson(json.encode(data["data"]));
         return apiResponse;
       },
     );

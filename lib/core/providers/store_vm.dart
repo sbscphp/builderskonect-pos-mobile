@@ -1,45 +1,55 @@
 import 'package:builders_konnect/core/core.dart';
 
 class StoreVm extends BaseVm {
-    //page number
+  //page number
   int pageNumber = 1;
   int? lastPage;
 
-  StoreLocationModel? _storeLocationModel;
-  Stats? get stats => _storeLocationModel?.stats;
+  // StoreLocationModel? _storeLocationModel;
+  Stats? _stats;
+  Stats? get stats => _stats;
   List<StoreModel> _storeList = [];
   List<StoreModel> get storeList => _storeList;
   Future<ApiResponse> getStoreOverview({
     String? q,
     String? sortBy,
-    String? busyObjectName = getState
+    String? busyObjectName = getState,
+    bool paginate = true,
   }) async {
-        if (busyObjectName != paginateState) {
+    if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/locations?page=$pageNumber")
-      ..addQueryParameterIfNotEmpty("q", q ?? '')
-      ..addQueryParameterIfNotEmpty("sort_by", sortBy ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '50')
-      ..addQueryParameterIfNotEmpty("paginate", '1');
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/locations?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("sort_by", sortBy ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '50')
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
       errorObjectName: busyObjectName,
       busyObjectName: busyObjectName,
       onSuccess: (data) {
-        if (busyObjectName != paginateState) {
-        _storeLocationModel =
-            storeLocationModelFromJson(json.encode(data['data']));
-            _storeList = _storeLocationModel?.data?.data ?? [];
-           pageNumber++;
-          lastPage = _storeLocationModel?.data?.lastPage;
-            }else{
-               _storeLocationModel =
-            storeLocationModelFromJson(json.encode(data['data']));
-              _storeList.addAll(_storeLocationModel?.data?.data ?? []);
-           pageNumber++;
-            }
+        if (paginate) {
+          _stats = Stats.fromJson(data['data']['stats']);
+          _storeList =
+              storeModelFromJson(json.encode(data['data']['data']["data"]));
+        } else {
+          _storeList = storeModelFromJson(json.encode(data['data']));
+        }
+        // if (busyObjectName != paginateState) {
+        //   _storeLocationModel =
+        //       storeLocationModelFromJson(json.encode(data['data']));
+        //   _storeList = _storeLocationModel?.data?.data ?? [];
+        //   pageNumber++;
+        //   lastPage = _storeLocationModel?.data?.lastPage;
+        // } else {
+        //   _storeLocationModel =
+        //       storeLocationModelFromJson(json.encode(data['data']));
+        //   _storeList.addAll(_storeLocationModel?.data?.data ?? []);
+        //   pageNumber++;
+        // }
         return apiResponse;
       },
     );
@@ -121,6 +131,20 @@ class StoreVm extends BaseVm {
       method: apiService.putWithAuth,
       // busyObjectName: updateState,
       body: {"is_active": isActive},
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> switchStore({
+    required String storeId,
+    String? busyObjectName,
+  }) async {
+    return await performApiCall(
+      url: "/api/v1/merchants/locations/switch/$storeId",
+      method: apiService.getWithAuth,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
         return apiResponse;
       },

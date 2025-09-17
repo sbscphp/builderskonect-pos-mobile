@@ -45,7 +45,7 @@ class SalesVm extends BaseVm {
               pageNumber++;
            }
         } else {
-          _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
+          _salesData = salesDataFromJson(json.encode(data?['data']));
         }
         return apiResponse;
       },
