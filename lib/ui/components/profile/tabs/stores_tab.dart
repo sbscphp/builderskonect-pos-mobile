@@ -161,17 +161,22 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                                   options: [
                                     "All",
                                     "Active",
-                                    "Deactivated",
+                                    "Inactive",
                                   ],
                                   selectedValue: "All",
                                 ),
                               ],
                               onFilter: (filterData) {
-                                printty("Filter applied: $filterData");
-                              },
-                              onReset: () {
-                                printty("Filters reset");
-                                // Handle reset action here
+                                // printty("Filter applied: $filterData");
+                                //todo: no date filter in doc
+                                storeVm.getStoreOverview(
+                                    status: filterData["selectorGroups"]
+                                                ["status"] ==
+                                            "All"
+                                        ? ''
+                                        : (filterData["selectorGroups"]
+                                                ["status"] as String)
+                                            .toLowerCase());
                               },
                             ));
                       },

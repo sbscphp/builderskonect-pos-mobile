@@ -232,18 +232,25 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         options: [
                                           "All",
                                           "Active",
-                                          "Inactive",
+                                          "Not active",
+                                          "Sold out",
+                                          "Low stock",
                                         ],
-                                        // selectedValue: "All",
+                                        selectedValue: "All",
                                       ),
                                     ],
-                                    showPriceRange: true,
+                                    // showPriceRange: true,
                                     onFilter: (filterData) {
-                                      printty("Filter applied: $filterData");
-                                    },
-                                    onReset: () {
-                                      printty("Filters reset");
-                                      // Handle reset action here
+                                      // printty("Filter applied: $filterData");
+                                      productVm.getInventoryProducts(
+                                          dateFilter: filterData['date_filter'],
+                                          status: filterData["selectorGroups"]
+                                                      ["status"] ==
+                                                  "All"
+                                              ? ''
+                                              : (filterData["selectorGroups"]
+                                                      ["status"] as String)
+                                                  .toLowerCase());
                                     },
                                   ),
                                 );

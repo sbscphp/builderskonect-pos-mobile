@@ -21,6 +21,7 @@ class CustomerVm extends BaseVm {
 
   Future<ApiResponse> getCustomerOverview({
     String? q,
+    String? dateFilter,
     CustomType? type,
     bool paginate = true,
     String? busyObjectName = getState
@@ -31,6 +32,7 @@ class CustomerVm extends BaseVm {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/customers?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("type", type?.apiValue ?? "")
+      ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? "")
       ..addQueryParameterIfNotEmpty("limit", '10')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 

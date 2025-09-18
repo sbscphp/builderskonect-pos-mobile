@@ -15,7 +15,7 @@ class StaffVm extends BaseVm {
   Future<ApiResponse> getDashboardStats(
       {String q = '',
       bool isFirst = true,
-      String? busyObjectName = firstState}) async {
+      String? busyObjectName = firstState,String? dateFilter,String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -23,8 +23,8 @@ class StaffVm extends BaseVm {
         UriBuilder("/api/v1/merchants/staff?page=$pageNumber")
           ..addQueryParameterIfNotEmpty("paginate", "1")
           ..addQueryParameterIfNotEmpty("limit", "10")
-          ..addQueryParameterIfNotEmpty("limit", "10")
-          ..addQueryParameterIfNotEmpty("status", "10")
+          ..addQueryParameterIfNotEmpty("status", status ?? '')
+          ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
           ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(

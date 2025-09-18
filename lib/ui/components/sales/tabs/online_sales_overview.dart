@@ -142,21 +142,28 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                                 title: "Status",
                                 options: [
                                   "All",
-                                  "Processing",
-                                  "Cancelled",
+                                  "Shipped",
+                                  "Failed",
                                   "Completed"
                                 ],
                                 selectedValue: "All",
                               ),
                             ],
-                            showPriceRange: true,
+                            // showPriceRange: true,//todo:NOT IN DOC
                             onFilter: (filterData) {
-                              printty("Filter applied: $filterData");
+                              // printty("Filter applied: $filterData");
+                              salesVm.getSalesOverview(
+                                  salesType: SalesType.omp.text,
+                                  dateFilter: filterData["date_filter"],
+                                  status: filterData["selectorGroups"]
+                                              ["status"] ==
+                                          "All"
+                                      ? ''
+                                      : (filterData["selectorGroups"]["status"]
+                                              as String)
+                                          .toLowerCase());
                             },
-                            onReset: () {
-                              printty("Filters reset");
-                              // Handle reset action here
-                            },
+                           
                           ));
                     },
                   ),

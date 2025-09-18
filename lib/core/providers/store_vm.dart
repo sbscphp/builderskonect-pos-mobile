@@ -13,6 +13,7 @@ class StoreVm extends BaseVm {
   Future<ApiResponse> getStoreOverview({
     String? q,
     String? sortBy,
+    String? status,
     String? busyObjectName = getState,
     bool paginate = true,
   }) async {
@@ -23,6 +24,7 @@ class StoreVm extends BaseVm {
         UriBuilder("/api/v1/merchants/locations?page=$pageNumber")
           ..addQueryParameterIfNotEmpty("q", q ?? '')
           ..addQueryParameterIfNotEmpty("sort_by", sortBy ?? '')
+          ..addQueryParameterIfNotEmpty("status", status ?? '')
           ..addQueryParameterIfNotEmpty("limit", '50')
           ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
     return await performApiCall(

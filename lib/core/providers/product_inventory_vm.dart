@@ -12,7 +12,7 @@ class ProductInventoryVm extends BaseVm {
   Future<ApiResponse> getInventoryProducts(
       {String? q,
       bool productReview = false,
-      String? busyObjectName = getState}) async {
+      String? busyObjectName = getState,String? dateFilter,String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -20,6 +20,8 @@ class ProductInventoryVm extends BaseVm {
         "/api/v1/merchants/inventory-products?page=$pageNumber")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("product_review", productReview.toString())
+      ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
+      ..addQueryParameterIfNotEmpty("status", status ?? '')
       ..addQueryParameterIfNotEmpty("limit", '50')
       ..addQueryParameterIfNotEmpty("paginate", '1');
 

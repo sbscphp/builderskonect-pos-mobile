@@ -146,12 +146,9 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                           //   ),
                           // ],
                           onFilter: (filterData) {
-                            printty("Filter applied: $filterData");
-                            // staffViewModel.getDashboardStats();
-                          },
-                          onReset: () {
-                            printty("Filters reset");
-                            // Handle reset action here
+                            customerVm.getCustomerOverview(
+                                type: CustomType.online,
+                                dateFilter: filterData["date_filter"]);
                           },
                         ));
                   },

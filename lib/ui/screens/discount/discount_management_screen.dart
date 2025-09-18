@@ -267,17 +267,33 @@ class _DiscountManagementScreenState
                                             ],
                                             selectedValue: "All",
                                           ),
-                                          SelectorGroup(
-                                            key: "type",
-                                            title: "Loyalty Type",
-                                            selectedValue: "All",
-                                            options: [
-                                              "All",
-                                              "Discount",
-                                              "Coupon",
-                                            ],
-                                          ),
+                                          //type no longer available
+                                          // SelectorGroup(
+                                          //   key: "type",
+                                          //   title: "Loyalty Type",
+                                          //   selectedValue: "All",
+                                          //   options: [
+                                          //     "All",
+                                          //     "Discount",
+                                          //     "Coupon",
+                                          //   ],
+                                          // ),
                                         ],
+                                        onFilter: (data) async {
+                                          printty(data.toString());
+                                          printty(data["date_filter"]);
+                                          await discountViewModel
+                                              .getDashboardStats(
+                                                  busyObjectName: firstState,
+                                                  dateFilter:
+                                                      data["date_filter"],
+                                                  status:
+                                                      data["selectorGroups"]["status"] == "All"
+                                                          ? ''
+                                                          : (data["selectorGroups"]["status"]
+                                                                  as String)
+                                                              .toLowerCase());
+                                        },
                                       ),
                                     );
                                   },
