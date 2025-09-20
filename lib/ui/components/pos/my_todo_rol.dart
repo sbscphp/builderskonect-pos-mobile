@@ -21,6 +21,7 @@ class MyTodoRol extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
+        margin: EdgeInsets.only(right: Sizer.width(8)),
         padding: EdgeInsets.symmetric(
           horizontal: Sizer.width(12),
           vertical: Sizer.height(12),

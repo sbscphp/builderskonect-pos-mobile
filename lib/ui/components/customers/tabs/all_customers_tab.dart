@@ -24,14 +24,14 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
     });
   }
 
-    @override
+  @override
   void dispose() {
     searchC.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-    _scrollListener() {
+  _scrollListener() {
     final vm = ref.watch(customerVmodel);
 
     _scrollController.addListener(() {
@@ -73,12 +73,12 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                 FilterHeader(
                   title: "Customer Overview",
                   subTitle: "Manage online and walk-in customers",
-                  svgIcon: AppSvgs.circleAdd,
-                  trailingWidget: NewButtonWidget(
-                    onTap: () {
-                      Navigator.pushNamed(context, RoutePath.newCustomerScreen);
-                    },
-                  ),
+                  // svgIcon: AppSvgs.circleAdd,
+                  // trailingWidget: NewButtonWidget(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, RoutePath.newCustomerScreen);
+                  //   },
+                  // ),
                 ),
                 YBox(16),
                 Container(
@@ -95,7 +95,8 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                     children: [
                       ProductColText(
                         title: "TOTAL CUSTOMERS",
-                        value: customerVm.customerStats?.total.toString() ?? '0',
+                        value:
+                            customerVm.customerStats?.total.toString() ?? '0',
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -128,30 +129,30 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                   title: "All Customers",
                   subTitle: "See all customers that hav returns your business",
                   onFilter: () async {
-                     ModalWrapper.bottomSheet(
-                              context: context,
-                              widget: FilterDataModal(
-                                selectorGroups: [
-                                  SelectorGroup(
-                                    key: "channel",
-                                    title: "Channel",
-                                    options: [
-                                      "All",
-                                      "Online",
-                                      "Walk-in",
-                                    ],
-                                    // selectedValue: staffStatus,
-                                  ),
-                                ],
-                                onFilter: (filterData) {
-                                  printty("Filter applied: $filterData");
-                                  // staffViewModel.getDashboardStats();
-                                },
-                                onReset: () {
-                                  printty("Filters reset");
-                                  // Handle reset action here
-                                },
-                              ));
+                    ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: FilterDataModal(
+                          selectorGroups: [
+                            SelectorGroup(
+                              key: "channel",
+                              title: "Channel",
+                              options: [
+                                "All",
+                                "Online",
+                                "Walk-in",
+                              ],
+                              // selectedValue: staffStatus,
+                            ),
+                          ],
+                          onFilter: (filterData) {
+                            printty("Filter applied: $filterData");
+                            // staffViewModel.getDashboardStats();
+                          },
+                          onReset: () {
+                            printty("Filters reset");
+                            // Handle reset action here
+                          },
+                        ));
                   },
                 ),
                 YBox(16),
@@ -224,7 +225,8 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                             customerId: "#${customer.customerId ?? ""}",
                             title: customer.name ?? "N/A",
                             subTitle: customer.email ?? "N/A",
-                            channel: customer.channel?.toLowerCase() == "offline"
+                            channel: customer.channel?.toLowerCase() ==
+                                    "offline"
                                 ? "Walk-in"
                                 : customer.channel?.capitalizeFirst ?? "N/A",
                             onTap: () {
@@ -240,18 +242,22 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                     ],
                   );
                 }),
-                 if (customerVm.busy(paginateState))
-                      SpinKitLoader(
-                        size: 16,
-                        color: AppColors.neutral5,
-                      ),
-                   if (customerVm.error(paginateState)) 
-                   Padding(
-                     padding: const EdgeInsets.only(top: 16.0),
-                     child: ErrorState(onPressed: (){
-                       customerVm.getCustomerOverview(busyObjectName: paginateState);
-                     },isPaginationType: true,),
-                   )
+                if (customerVm.busy(paginateState))
+                  SpinKitLoader(
+                    size: 16,
+                    color: AppColors.neutral5,
+                  ),
+                if (customerVm.error(paginateState))
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: ErrorState(
+                      onPressed: () {
+                        customerVm.getCustomerOverview(
+                            busyObjectName: paginateState);
+                      },
+                      isPaginationType: true,
+                    ),
+                  )
               ],
             ),
           ),

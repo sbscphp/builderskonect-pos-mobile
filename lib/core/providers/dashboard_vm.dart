@@ -66,7 +66,14 @@ class DashboardVm extends BaseVm {
   }
 
   MerchantCheckListModel? _merchantCheckListModel;
-  MerchantCheckListModel? get merchantCheckListModel => _merchantCheckListModel;
+  bool get hasStore => _merchantCheckListModel?.hasStore ?? false;
+  bool get hasProducts => _merchantCheckListModel?.hasProducts ?? false;
+  bool get hasRole => _merchantCheckListModel?.hasRole ?? false;
+  bool get hasStaff => _merchantCheckListModel?.hasStaff ?? false;
+  bool get hasSales => _merchantCheckListModel?.hasSales ?? false;
+  bool get showTodoCard =>
+      hasStore && hasProducts && hasRole && hasStaff && hasSales;
+
   Future<ApiResponse> getMerchantCheckList() async {
     return await performApiCall(
       url: "/api/v1/merchants/dashboard/checklist",

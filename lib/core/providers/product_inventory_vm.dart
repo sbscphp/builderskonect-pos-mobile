@@ -122,6 +122,24 @@ class ProductInventoryVm extends BaseVm {
       },
     );
   }
+
+  // Create Product from Catalogue
+  Future<ApiResponse> createProductFromCatalogue({
+    required ProductCatalogueParams params,
+  }) async {
+    final body = params.toJson();
+
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products",
+      method: apiService.postWithAuth,
+      errorObjectName: getState,
+      busyObjectName: getState,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
 }
 
 final productInventoryVmodel =

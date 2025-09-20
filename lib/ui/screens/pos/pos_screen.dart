@@ -22,6 +22,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
   _callDashboardData() async {
     await ref.read(dashboardVmodel).getDashboardStats();
+    await ref.read(dashboardVmodel).getMerchantCheckList();
     await ref.read(dashboardVmodel).getRevenueAndTraffic();
     await ref.read(dashboardVmodel).getProductOverview();
     await ref.read(staffVm).getApplicationAccess();
@@ -150,75 +151,68 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                           ],
                         ),
                       ),
-                      YBox(16),
-                      Container(
-                        padding:
-                            EdgeInsets.symmetric(vertical: Sizer.radius(16)),
-                        decoration: BoxDecoration(
-                          color: colorScheme.white,
-                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: Sizer.width(16)),
-                              child: Text("My To-dos",
-                                  style: textTheme.text16?.medium),
-                            ),
-                            YBox(16),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Row(
-                                children: [
-                                  XBox(16),
-                                  MyTodoRol(
-                                    leadiconPath: AppSvgs.shop,
-                                    isDone: dashVm
-                                            .merchantCheckListModel?.hasStore ??
-                                        false,
-                                    title: "Create a store",
-                                  ),
-                                  XBox(8),
-                                  MyTodoRol(
-                                    leadiconPath: AppSvgs.plusCircle,
-                                    isDone: dashVm.merchantCheckListModel
-                                            ?.hasProducts ??
-                                        false,
-                                    title: "Add products",
-                                  ),
-                                  XBox(8),
-                                  MyTodoRol(
-                                    leadiconPath: AppSvgs.plusCircle,
-                                    isDone: dashVm
-                                            .merchantCheckListModel?.hasRole ??
-                                        false,
-                                    title: "Create role",
-                                  ),
-                                  XBox(8),
-                                  MyTodoRol(
-                                    leadiconPath: AppSvgs.plusCircle,
-                                    isDone: dashVm
-                                            .merchantCheckListModel?.hasStaff ??
-                                        false,
-                                    title: "Add user",
-                                  ),
-                                  XBox(8),
-                                  MyTodoRol(
-                                    leadiconPath: AppSvgs.plusCircle,
-                                    isDone: dashVm
-                                            .merchantCheckListModel?.hasSales ??
-                                        false,
-                                    title: "Create sales order",
-                                  ),
-                                  XBox(30),
-                                ],
+                      if (!dashVm.showTodoCard)
+                        Container(
+                          margin: EdgeInsets.only(top: Sizer.height(16)),
+                          padding:
+                              EdgeInsets.symmetric(vertical: Sizer.radius(16)),
+                          decoration: BoxDecoration(
+                            color: colorScheme.white,
+                            borderRadius:
+                                BorderRadius.circular(Sizer.radius(4)),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: Sizer.width(16)),
+                                child: Text("My To-dos",
+                                    style: textTheme.text16?.medium),
                               ),
-                            )
-                          ],
+                              YBox(16),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    XBox(16),
+                                    if (!dashVm.hasStore)
+                                      MyTodoRol(
+                                        leadiconPath: AppSvgs.shop,
+                                        isDone: dashVm.hasStore,
+                                        title: "Create a store",
+                                      ),
+                                    if (!dashVm.hasProducts)
+                                      MyTodoRol(
+                                        leadiconPath: AppSvgs.plusCircle,
+                                        isDone: dashVm.hasProducts,
+                                        title: "Add products",
+                                      ),
+                                    if (!dashVm.hasRole)
+                                      MyTodoRol(
+                                        leadiconPath: AppSvgs.plusCircle,
+                                        isDone: dashVm.hasRole,
+                                        title: "Create role",
+                                      ),
+                                    if (!dashVm.hasStaff)
+                                      MyTodoRol(
+                                        leadiconPath: AppSvgs.plusCircle,
+                                        isDone: dashVm.hasStaff,
+                                        title: "Add user",
+                                      ),
+                                    if (!dashVm.hasSales)
+                                      MyTodoRol(
+                                        leadiconPath: AppSvgs.plusCircle,
+                                        isDone: dashVm.hasSales,
+                                        title: "Create sales order",
+                                      ),
+                                    XBox(30),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
-                      ),
                       YBox(16),
                       Container(
                         padding: EdgeInsets.all(Sizer.radius(16)),
