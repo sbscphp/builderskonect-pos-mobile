@@ -135,6 +135,7 @@ class ProductModel {
   final String? primaryMediaUrl;
   final List<String>? media;
   final dynamic attributes;
+  int? requestQuantity;
 
   ProductModel({
     this.id,
@@ -165,6 +166,7 @@ class ProductModel {
     this.primaryMediaUrl,
     this.media,
     this.attributes,
+    this.requestQuantity
   });
 
   // ProductModel copywith

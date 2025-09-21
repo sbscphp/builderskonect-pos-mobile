@@ -7,6 +7,7 @@ const String updateState = 'updateState';
 const String deleteState = 'deleteState';
 const String searchState = 'searchState';
 const String viewState = 'viewState';
+const String filterState = 'filterState';
 
 // slaes
 const String draftSalesState = 'draftSalesState';

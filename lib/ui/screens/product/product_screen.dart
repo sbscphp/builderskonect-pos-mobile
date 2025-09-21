@@ -95,8 +95,8 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                 context, RoutePath.inventoryScreen);
                             break;
                           case 'product_transfer':
-                            // Navigator.pushNamed(
-                            //     context, RoutePath.productTransferScreen);
+                            Navigator.pushNamed(
+                                context, RoutePath.productTransferScreen);
                             break;
                           default:
                             break;

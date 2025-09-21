@@ -65,12 +65,14 @@ class _OrderStatusState extends State<OrderStatus> {
           "borderColor": AppColors.green4,
         };
       case "draft":
+      case "request sent":
         return {
           "bgColor": AppColors.neutral2,
           "textColor": colorScheme.black85,
           "borderColor": AppColors.neutral5,
         };
       case "paid":
+      case "action taken":
         return {
           "bgColor": AppColors.dayBreakBlue,
           "textColor": colorScheme.primaryColor,

@@ -280,8 +280,6 @@ class _DiscountManagementScreenState
                                           // ),
                                         ],
                                         onFilter: (data) async {
-                                          printty(data.toString());
-                                          printty(data["date_filter"]);
                                           await discountViewModel
                                               .getDashboardStats(
                                                   busyObjectName: firstState,

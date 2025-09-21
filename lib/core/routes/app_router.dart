@@ -232,6 +232,35 @@ class AppRouter {
         }
         return errorScreen(settings);
 
+      case RoutePath.productTransferScreen:
+        return TransitionUtils.buildTransition(
+          const ProductTransferScreen(),
+          settings,
+        );
+
+      case RoutePath.productTransferRequestScreen:
+        return TransitionUtils.buildTransition(
+          const ProductTransferRequestScreen(),
+          settings,
+        );
+
+      case RoutePath.productTransferPreviewScreen:
+        return TransitionUtils.buildTransition(
+          const ProductTransferPreviewScreen(),
+          settings,
+        );
+
+     case RoutePath.viewProductTransferScreen:
+       
+        if (args is String) {
+           return TransitionUtils.buildTransition(
+           ViewProductTransferScreen(productId: args),
+          settings,
+        );
+          
+        }
+        return errorScreen(settings);
+
       // Store
       case RoutePath.newStoreScreen:
         return TransitionUtils.buildTransition(

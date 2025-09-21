@@ -39,3 +39,7 @@ export 'user_subcription.dart';
 export 'vendor_profile_model.dart';
 export 'discount_overview_view_model.dart';
 export 'discount_model.dart';
+
+
+export 'transfer_product_overview_model.dart';
+export 'transfer_product_model.dart';
