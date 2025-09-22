@@ -106,7 +106,7 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
                     return SizedBox(
                       height: Sizer.height(500),
                       child: EmptyListState(
-                          text: "Customer Currently have no Review."),
+                          text: "Customer currently have no Review."),
                     );
                   }
                   return ListView(

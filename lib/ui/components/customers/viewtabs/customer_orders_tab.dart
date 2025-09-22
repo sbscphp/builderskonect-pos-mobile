@@ -107,7 +107,7 @@ class CustomerOrdersTabState extends ConsumerState<CustomerOrdersTab> {
                     return SizedBox(
                       height: Sizer.height(500),
                       child: EmptyListState(
-                          text: "Customer Currently have no Order."),
+                          text: "Customer currently have no Order."),
                     );
                   }
                   return Column(
