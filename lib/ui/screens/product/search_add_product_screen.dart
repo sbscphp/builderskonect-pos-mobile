@@ -104,31 +104,30 @@ class _SearchAddProductScreenState
           await productVm.createProductFromCatalogue(params: params);
 
       if (response.success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content:
-                Text('${products.length} product(s) created successfully!'),
-            backgroundColor: Colors.green,
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content:
+        //         Text('${products.length} product(s) created successfully!'),
+        //     backgroundColor: Colors.green,
+        //   ),
+        // );
         Navigator.pop(context);
+        showSuccessToastMessage(
+            '${products.length} product(s) created successfully!');
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message ?? 'Failed to create products'),
-            backgroundColor: Colors.red,
-            duration: Duration(seconds: 3),
-          ),
-        );
+        // Show error toast message
+        showWarningToast(response.message ?? 'Failed to create products');
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text(response.message ?? 'Failed to create products'),
+        //     backgroundColor: Colors.red,
+        //     duration: Duration(seconds: 3),
+        //   ),
+        // );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error creating products: ${e.toString()}'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
+      // Show error toast message
+      showWarningToast('Error creating products: ${e.toString()}');
     } finally {
       if (mounted) {
         setState(() {

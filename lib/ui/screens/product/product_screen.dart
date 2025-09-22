@@ -55,78 +55,78 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     final productVm = ref.watch(productInventoryVmodel);
     final staffRef = ref.watch(staffVm);
     return Scaffold(
-        key: _scaffoldKey,
-        drawer: const CustomDrawer(),
-        appBar: CustomAppbar(
-          title: "Products and Inventory",
-          trailingWidget: !staffRef.hasAccessToProductOverview
-              ? null
-              : InkWell(
-                  onTap: () {
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(100, 100, 0, 0),
-                      items: [
-                        PopupMenuItem(
-                          value: 'add_product',
-                          child: Text('Add Product', style: textTheme.text14),
-                        ),
-                        PopupMenuItem(
-                          value: 'view_inventory',
-                          child:
-                              Text('View Inventory', style: textTheme.text14),
-                        ),
-                        PopupMenuItem(
-                          value: 'product_transfer',
-                          child:
-                              Text('Product Transfer', style: textTheme.text14),
-                        ),
-                      ],
-                    ).then((value) {
-                      if (value != null) {
-                        printty('Selected: $value');
-                        switch (value) {
-                          case 'add_product':
-                            Navigator.pushNamed(
-                                context, RoutePath.searchAddProductScreen);
-                            break;
-                          case 'view_inventory':
-                            Navigator.pushNamed(
-                                context, RoutePath.inventoryScreen);
-                            break;
-                          case 'product_transfer':
-                            // Navigator.pushNamed(
-                            //     context, RoutePath.productTransferScreen);
-                            break;
-                          default:
-                            break;
-                        }
+      key: _scaffoldKey,
+      drawer: const CustomDrawer(),
+      appBar: CustomAppbar(
+        title: "Products and Inventory",
+        trailingWidget: !staffRef.hasAccessToProductOverview
+            ? null
+            : InkWell(
+                onTap: () {
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: [
+                      PopupMenuItem(
+                        value: 'add_product',
+                        child: Text('Add Product', style: textTheme.text14),
+                      ),
+                      PopupMenuItem(
+                        value: 'view_inventory',
+                        child: Text('View Inventory', style: textTheme.text14),
+                      ),
+                      PopupMenuItem(
+                        value: 'product_transfer',
+                        child:
+                            Text('Product Transfer', style: textTheme.text14),
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value != null) {
+                      printty('Selected: $value');
+                      switch (value) {
+                        case 'add_product':
+                          Navigator.pushNamed(
+                              context, RoutePath.searchAddProductScreen);
+                          break;
+                        case 'view_inventory':
+                          Navigator.pushNamed(
+                              context, RoutePath.inventoryScreen);
+                          break;
+                        case 'product_transfer':
+                          // Navigator.pushNamed(
+                          //     context, RoutePath.productTransferScreen);
+                          break;
+                        default:
+                          break;
                       }
-                    });
-                  },
-                  child: SvgPicture.asset(
-                    AppSvgs.circleMenu,
-                    height: Sizer.height(32),
-                  ),
-                ),
-          leadingWidget: CustomCircleAvatar(
-            avatarUrl: ref.read(authVmodel).user?.avatar,
-            onTap: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
-        ),
-        body: !staffRef.hasAccessToProductOverview
-            ? RequestAccessWidget(
-                isLoading: staffRef.busy(RowParams.product),
-                onRequestAccess: () async {
-                  final res = await staffRef
-                      .requestApplicationAccess(RowParams.product);
-
-                  handleApiResponse(response: res);
+                    }
+                  });
                 },
-              )
-            : Builder(builder: (context) {
+                child: SvgPicture.asset(
+                  AppSvgs.circleMenu,
+                  height: Sizer.height(32),
+                ),
+              ),
+        leadingWidget: CustomCircleAvatar(
+          avatarUrl: ref.read(authVmodel).user?.avatar,
+          onTap: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+        ),
+      ),
+      body: !staffRef.hasAccessToProductOverview
+          ? RequestAccessWidget(
+              isLoading: staffRef.busy(RowParams.product),
+              onRequestAccess: () async {
+                final res =
+                    await staffRef.requestApplicationAccess(RowParams.product);
+
+                handleApiResponse(response: res);
+              },
+            )
+          : Builder(
+              builder: (context) {
                 if (productVm.busy(getState)) {
                   return const Center(
                     child: SizerLoader(
@@ -334,7 +334,9 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                         ModalOption(
                                           title: "Delete product",
                                           textColor: AppColors.red2D,
-                                          onTap: () {},
+                                          onTap: () {
+                                            _deleteProduct(product.id ?? '');
+                                          },
                                         ),
                                       ]),
                                     );
@@ -364,6 +366,95 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                     ],
                   ),
                 );
-              }));
+              },
+            ),
+    );
+  }
+
+  _deleteProduct(String productId) {
+    final loadingProvider = StateProvider<bool>((ref) => false);
+    ModalWrapper.bottomSheet(
+      context: context,
+      widget: Consumer(builder: (context, ref, child) {
+        final isLoading = ref.watch(loadingProvider);
+        return ConfirmationModal(
+          modalConfirmationArg: ModalConfirmationArg(
+            iconPath: AppSvgs.infoCircleRed,
+            title: "Delete Product",
+            description:
+                "Are you sure you want to delete this product from your product list and inventory? This cannot be undone.",
+            solidBtnText: "Yes, delete",
+            isLoading: isLoading,
+            onSolidBtnOnTap: () async {
+              final prodVm = ref.read(productInventoryVmodel);
+              ref.read(loadingProvider.notifier).state = true;
+              final ctx = NavKey.appNavKey.currentContext!;
+              
+              bool hasNavigated = false;
+              
+              try {
+                final res = await prodVm.deleteProduct(productId: productId);
+                handleApiResponse(
+                  response: res,
+                  onSuccess: () {
+                    // Close the current modal first
+                    if (context.mounted && !hasNavigated) {
+                      Navigator.pop(ctx);
+                      hasNavigated = true;
+                    }
+                    
+                    // Show success modal after a brief delay to prevent navigation conflicts
+                    Future.delayed(const Duration(milliseconds: 100), () {
+                      if (ctx.mounted) {
+                        ModalWrapper.bottomSheet(
+                          context: ctx,
+                          widget: ConfirmationModal(
+                            modalConfirmationArg: ModalConfirmationArg(
+                              iconPath: AppSvgs.checkIcon,
+                              title: "Product Deleted",
+                              description:
+                                  "The product has been deleted \nsuccessfully.",
+                              solidBtnText: "Okay",
+                              onSolidBtnOnTap: () {
+                                final currentCtx = NavKey.appNavKey.currentContext!;
+                                Navigator.pop(currentCtx);
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                  },
+                  onError: () {
+                    // Close the modal on error
+                    if (context.mounted && !hasNavigated) {
+                      Navigator.pop(ctx);
+                      hasNavigated = true;
+                    }
+                  },
+                );
+              } catch (e) {
+                // Handle any unexpected errors
+                if (context.mounted && !hasNavigated) {
+                  Navigator.pop(ctx);
+                  hasNavigated = true;
+                }
+              } finally {
+                if (context.mounted) {
+                  ref.read(loadingProvider.notifier).state = false;
+                  // Only pop if we haven't already navigated
+                  if (!hasNavigated) {
+                    Navigator.pop(ctx);
+                  }
+                }
+              }
+            },
+            onOutlineBtnOnTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        );
+      }),
+    );
   }
 }
