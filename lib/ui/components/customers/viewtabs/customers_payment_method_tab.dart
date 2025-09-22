@@ -2,7 +2,12 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomersPaymentMethodTab extends ConsumerStatefulWidget {
-  const CustomersPaymentMethodTab({super.key});
+  const CustomersPaymentMethodTab({super.key,
+    required this.customer,
+  });
+
+  final CustomerData customer;
+
 
   @override
   CustomersPaymentMethodTabState createState() =>
