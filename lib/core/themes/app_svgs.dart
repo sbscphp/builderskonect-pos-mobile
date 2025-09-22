@@ -70,4 +70,7 @@ class AppSvgs {
   static const String arrowUpRight = "$svgIcon/arrowUpRight.svg";
   static const String checkC = "$svgIcon/checkC.svg";
   static const String infoC = "$svgIcon/infoC.svg";
+  static const String naira = "$svgIcon/naira.svg";
+  static const String edit = "$svgIcon/edit.svg";
+  static const String deleteWhite = "$svgIcon/deleteWhite.svg";
 }

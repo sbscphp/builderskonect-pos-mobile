@@ -88,7 +88,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                         switch (value) {
                           case 'add_product':
                             Navigator.pushNamed(
-                                context, RoutePath.addProductScreen);
+                                context, RoutePath.searchAddProductScreen);
                             break;
                           case 'view_inventory':
                             Navigator.pushNamed(

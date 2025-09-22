@@ -1,14 +1,14 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class CustomerReviewsTab extends ConsumerStatefulWidget {
-  const CustomerReviewsTab({super.key});
+class ProductReviewsTab extends ConsumerStatefulWidget {
+  const ProductReviewsTab({super.key});
 
   @override
-  CustomerReviewsTabState createState() => CustomerReviewsTabState();
+  ProductReviewsTabState createState() => ProductReviewsTabState();
 }
 
-class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
+class ProductReviewsTabState extends ConsumerState<ProductReviewsTab> {
   final searchC = TextEditingController();
 
   @override
@@ -28,7 +28,6 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
         bottom: Sizer.height(50),
       ),
       children: [
-        YBox(16),
         Container(
           padding: EdgeInsets.all(Sizer.radius(16)),
           decoration: BoxDecoration(
@@ -39,16 +38,15 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               FilterHeader(
-                title: "Reviews",
-                subTitle: "See all reviews by this customer",
-                onFilter: () {},
+                title: "Reviews and Feedbacks",
+                subTitle: "View and manage reviews here",
               ),
               YBox(16),
               CustomTextField(
                 controller: searchC,
                 isRequired: false,
                 showLabelHeader: false,
-                hintText: "Search by product id, name etc.",
+                hintText: "Search reviews.",
                 onChanged: (value) {
                   setState(() {});
                 },
@@ -82,12 +80,18 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
                 itemCount: 8,
                 separatorBuilder: (_, __) => HDivider(),
                 itemBuilder: (ctx, i) {
-                  return CustomerReviewListTile(
+                  return ReviewsFeedbackListTile(
                     productImage: "https://picsum.photos/200/300",
                     productName: "Product Name",
                     productType: "Product Type",
-                    date: "2023-01-01",
+                    numOfReviews: "2023-01-01",
                     rating: 4,
+                    onTap: () {
+                      Navigator.pushNamed(
+                        context,
+                        RoutePath.feedbackReviewDetailsScreen,
+                      );
+                    },
                   );
                 },
               ),

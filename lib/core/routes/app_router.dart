@@ -188,12 +188,8 @@ class AppRouter {
         );
 
       case RoutePath.addProductScreen:
-        if (args is CatalogueModel) {
-          return TransitionUtils.buildTransition(
-            AddProductScreen(product: args),
-            settings,
-          );
-        }
+        // Note: AddProductScreen now uses direct navigation with ProductCatalogueWithStatus
+        // This route is kept for backward compatibility but may not be used
         return errorScreen(settings);
 
       case RoutePath.addProductRequestScreen:
@@ -403,6 +399,18 @@ class AppRouter {
           );
         }
         return errorScreen(settings);
+
+      case RoutePath.reviewsAndFeedbackScreen:
+        return TransitionUtils.buildTransition(
+          ReviewsAndFeedbackScreen(),
+          settings,
+        );
+
+      case RoutePath.feedbackReviewDetailsScreen:
+        return TransitionUtils.buildTransition(
+          const FeedbackReviewDetailsScreen(),
+          settings,
+        );
 
       // Discount
       case RoutePath.discountManagementScreen:

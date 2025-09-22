@@ -24,12 +24,14 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
     });
   }
 
+
   @override
   void dispose() {
     searchC.dispose();
     _scrollController.dispose();
     super.dispose();
   }
+
 
   _scrollListener() {
     final vm = ref.watch(customerVmodel);
@@ -73,12 +75,12 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                 FilterHeader(
                   title: "Customer Overview",
                   subTitle: "Manage online and walk-in customers",
-                  svgIcon: AppSvgs.circleAdd,
-                  trailingWidget: NewButtonWidget(
-                    onTap: () {
-                      Navigator.pushNamed(context, RoutePath.newCustomerScreen);
-                    },
-                  ),
+                  // svgIcon: AppSvgs.circleAdd,
+                  // trailingWidget: NewButtonWidget(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, RoutePath.newCustomerScreen);
+                  //   },
+                  // ),
                 ),
                 YBox(16),
                 Container(

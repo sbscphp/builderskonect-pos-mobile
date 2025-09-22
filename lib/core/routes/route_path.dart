@@ -74,6 +74,8 @@ class RoutePath {
   static const customersManagementScreen = '/customersManagementScreen';
   static const newCustomerScreen = '/newCustomerScreen';
   static const viewCustomerScreen = '/viewCustomerScreen';
+  static const reviewsAndFeedbackScreen = '/reviewsAndFeedbackScreen';
+  static const feedbackReviewDetailsScreen = '/feedbackReviewDetailsScreen';
 
   // Discount
   static const discountManagementScreen = '/discountManagementScreen';

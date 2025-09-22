@@ -1,14 +1,14 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class CustomerReviewsTab extends ConsumerStatefulWidget {
-  const CustomerReviewsTab({super.key});
+class VendorReviewsTab extends ConsumerStatefulWidget {
+  const VendorReviewsTab({super.key});
 
   @override
-  CustomerReviewsTabState createState() => CustomerReviewsTabState();
+  VendorReviewsTabState createState() => VendorReviewsTabState();
 }
 
-class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
+class VendorReviewsTabState extends ConsumerState<VendorReviewsTab> {
   final searchC = TextEditingController();
 
   @override
@@ -28,7 +28,6 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
         bottom: Sizer.height(50),
       ),
       children: [
-        YBox(16),
         Container(
           padding: EdgeInsets.all(Sizer.radius(16)),
           decoration: BoxDecoration(

@@ -13,7 +13,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer>
     with TickerProviderStateMixin {
   late AnimationController _drawerController;
   late AnimationController _staggerController;
-  
+
   // Individual section animations
   late Animation<Offset> _drawerSlideAnimation;
   late Animation<double> _drawerFadeAnimation;
@@ -182,7 +182,7 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                      YBox(10),
+                  YBox(10),
                   // User Profile Section
                   SlideTransition(
                     position: _userProfileSlideAnimation,
@@ -196,7 +196,8 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer>
                             avatarUrl: user?.avatar,
                             onTap: () {
                               Navigator.pop(context);
-                              Navigator.pushNamed(context, RoutePath.settingScreen);
+                              Navigator.pushNamed(
+                                  context, RoutePath.settingScreen);
                             },
                           ),
                           YBox(16),
@@ -214,225 +215,231 @@ class _CustomDrawerState extends ConsumerState<CustomDrawer>
                           if (profileVm.userProfile?.roles?.isNotEmpty == true)
                             RadiusBorder(
                                 textTheme: textTheme,
-                                text: profileVm.userProfile?.roles?.first.name ?? ''),
+                                text:
+                                    profileVm.userProfile?.roles?.first.name ??
+                                        ''),
                           HDivider(),
                         ],
                       ),
                     ),
                   ),
-                      Expanded(
-                        child: ListView(
-                          children: [
-                            // Current Account Section
-                            SlideTransition(
-                              position: _currentAccountSlideAnimation,
-                              child: FadeTransition(
-                                opacity: _currentAccountFadeAnimation,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          'Current Account',
-                                          style: textTheme.text12?.copyWith(
-                                            color: colorScheme.black45,
-                                          ),
-                                        ),
-                                        XBox(4),
-                                        Container(
-                                          height: Sizer.height(6),
-                                          width: Sizer.width(6),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.red2D,
-                                            borderRadius:
-                                                BorderRadius.circular(Sizer.radius(4)),
-                                          ),
-                                        )
-                                      ],
-                                    ),
-                                    Text('Builder\'s Hub Constructions',
-                                        style: textTheme.text14),
-                                    YBox(10),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: RadiusBorder(
-                                        textTheme: textTheme,
-                                        text: profileVm.currentStore?.name ?? '',
-                                        borderColor: AppColors.blue0FF,
-                                        bgColor: AppColors.blueFF,
-                                        textColor: AppColors.primaryBlue,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: Sizer.height(16)),
-                                      child:
-                                          Divider(color: AppColors.neutral4, height: 1),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // Switch Store
-                            SlideTransition(
-                              position: _switchStoreSlideAnimation,
-                              child: FadeTransition(
-                                opacity: _switchStoreFadeAnimation,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        // Current Account Section
+                        SlideTransition(
+                          position: _currentAccountSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _currentAccountFadeAnimation,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
                                     Text(
-                                      'Switch store',
+                                      'Current Account',
                                       style: textTheme.text12?.copyWith(
                                         color: colorScheme.black45,
                                       ),
                                     ),
-                                    YBox(6),
-
-                                    SizedBox(
-                                      height: Sizer.height(200),
-                                      child: ListView.separated(
-                                        shrinkWrap: true,
-                                        padding: EdgeInsets.only(
-                                          top: Sizer.height(16),
-                                        ),
-                                        separatorBuilder: (context, index) => YBox(13),
-                                        itemCount:
-                                            profileVm.userProfile?.store?.length ?? 0,
-                                        itemBuilder: (ctx, i) {
-                                          final store =
-                                              profileVm.userProfile?.store?[i];
-                                          return SwitchValueTile(
-                                            isSelected: store?.current == true,
-                                            title: (store?.name ?? '').capitalizeFirst,
-                                            isLoading:
-                                                ref.watch(storeVmodel).busy(store?.id),
-                                            onTap: () async {
-                                              final storeRes = await ref
-                                                  .read(storeVmodel)
-                                                  .switchStore(
-                                                    storeId: store?.id ?? '',
-                                                    busyObjectName: store?.id,
-                                                  );
-
-                                              handleApiResponse(
-                                                response: storeRes,
-                                                onSuccess: () {
-                                                  ref
-                                                      .read(userProfileVmodel)
-                                                      .getUserProfile();
-                                                  Navigator.pop(context);
-                                                },
+                                    XBox(4),
+                                    Container(
+                                      height: Sizer.height(6),
+                                      width: Sizer.width(6),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.red2D,
+                                        borderRadius: BorderRadius.circular(
+                                            Sizer.radius(4)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                Text('Builder\'s Hub Constructions',
+                                    style: textTheme.text14),
+                                YBox(10),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: RadiusBorder(
+                                    textTheme: textTheme,
+                                    text: profileVm.currentStore?.name ?? '',
+                                    borderColor: AppColors.blue0FF,
+                                    bgColor: AppColors.blueFF,
+                                    textColor: AppColors.primaryBlue,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: Sizer.height(16)),
+                                  child: Divider(
+                                      color: AppColors.neutral4, height: 1),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        // Switch Store
+                        SlideTransition(
+                          position: _switchStoreSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _switchStoreFadeAnimation,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Switch store',
+                                  style: textTheme.text12?.copyWith(
+                                    color: colorScheme.black45,
+                                  ),
+                                ),
+                                YBox(6),
+                                SizedBox(
+                                  height: Sizer.height(200),
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.only(
+                                      top: Sizer.height(16),
+                                    ),
+                                    separatorBuilder: (context, index) =>
+                                        YBox(13),
+                                    itemCount:
+                                        profileVm.userProfile?.store?.length ??
+                                            0,
+                                    itemBuilder: (ctx, i) {
+                                      final store =
+                                          profileVm.userProfile?.store?[i];
+                                      return SwitchValueTile(
+                                        isSelected: store?.current == true,
+                                        title:
+                                            (store?.name ?? '').capitalizeFirst,
+                                        isLoading: ref
+                                            .watch(storeVmodel)
+                                            .busy(store?.id),
+                                        onTap: () async {
+                                          final storeRes = await ref
+                                              .read(storeVmodel)
+                                              .switchStore(
+                                                storeId: store?.id ?? '',
+                                                busyObjectName: store?.id,
                                               );
+
+                                          handleApiResponse(
+                                            response: storeRes,
+                                            onSuccess: () {
+                                              ref
+                                                  .read(userProfileVmodel)
+                                                  .getUserProfile();
+                                              Navigator.pop(context);
                                             },
                                           );
                                         },
-                                      ),
-                                    ),
-                                    HDivider(),
-                                  ],
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
+                                HDivider(),
+                              ],
                             ),
-
-                            // Switch Module
-                            SlideTransition(
-                              position: _switchModuleSlideAnimation,
-                              child: FadeTransition(
-                                opacity: _switchModuleFadeAnimation,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Switch module',
-                                      style: textTheme.text12?.copyWith(
-                                        color: colorScheme.black45,
-                                      ),
-                                    ),
-                                    YBox(6),
-                                    SwitchValueTile(
-                                      title: "Point of Sales",
-                                      isSelected: true,
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    SwitchValueTile(
-                                      title: "Accounting",
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-                                    SwitchValueTile(
-                                      title: "Procurement",
-                                      onTap: () {
-                                        Navigator.pop(context);
-                                      },
-                                    ),
-
-                                    HDivider(),
-                                  ],
-                                ),
-                              ),
-                            ),
-
-                            // Logout Button
-                            SlideTransition(
-                              position: _logoutSlideAnimation,
-                              child: FadeTransition(
-                                opacity: _logoutFadeAnimation,
-                                child: Column(
-                                  children: [
-                                    CustomBtn.withChild(
-                                      isOutline: true,
-                                      height: Sizer.height(40),
-                                      onTap: () {
-                                        ModalWrapper.bottomSheet(
-                                          context: context,
-                                          widget: ConfirmationModal(
-                                            modalConfirmationArg: ModalConfirmationArg(
-                                              iconPath: AppSvgs.infoCircleRed,
-                                              title: "Log out",
-                                              description:
-                                                  "Are you sure you want to log out of this account? Your last changes will be saved.",
-                                              solidBtnText: "Yes, Logout",
-                                              onSolidBtnOnTap: () {
-                                                final ctx =
-                                                    NavKey.appNavKey.currentContext!;
-                                                Navigator.pop(ctx);
-                                                Navigator.pop(ctx);
-                                                ref.read(authVmodel).logout();
-                                              },
-                                              onOutlineBtnOnTap: () {
-                                                Navigator.pop(context);
-                                              },
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          SvgPicture.asset(AppSvgs.logout),
-                                          XBox(8),
-                                          Text(
-                                            'Logout',
-                                            style: textTheme.text16?.copyWith(
-                                              color: AppColors.red22,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    YBox(20),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+
+                        // Switch Module
+                        SlideTransition(
+                          position: _switchModuleSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _switchModuleFadeAnimation,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Switch module',
+                                  style: textTheme.text12?.copyWith(
+                                    color: colorScheme.black45,
+                                  ),
+                                ),
+                                YBox(6),
+                                SwitchValueTile(
+                                  title: "Point of Sales",
+                                  isSelected: true,
+                                  onTap: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                                // SwitchValueTile(
+                                //   title: "Accounting",
+                                //   onTap: () {
+                                //     Navigator.pop(context);
+                                //   },
+                                // ),
+                                // SwitchValueTile(
+                                //   title: "Procurement",
+                                //   onTap: () {
+                                //     Navigator.pop(context);
+                                //   },
+                                // ),
+
+                                HDivider(),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Logout Button
+                        SlideTransition(
+                          position: _logoutSlideAnimation,
+                          child: FadeTransition(
+                            opacity: _logoutFadeAnimation,
+                            child: Column(
+                              children: [
+                                CustomBtn.withChild(
+                                  isOutline: true,
+                                  height: Sizer.height(40),
+                                  onTap: () {
+                                    ModalWrapper.bottomSheet(
+                                      context: context,
+                                      widget: ConfirmationModal(
+                                        modalConfirmationArg:
+                                            ModalConfirmationArg(
+                                          iconPath: AppSvgs.infoCircleRed,
+                                          title: "Log out",
+                                          description:
+                                              "Are you sure you want to log out of this account? Your last changes will be saved.",
+                                          solidBtnText: "Yes, Logout",
+                                          onSolidBtnOnTap: () {
+                                            final ctx = NavKey
+                                                .appNavKey.currentContext!;
+                                            Navigator.pop(ctx);
+                                            Navigator.pop(ctx);
+                                            ref.read(authVmodel).logout();
+                                          },
+                                          onOutlineBtnOnTap: () {
+                                            Navigator.pop(context);
+                                          },
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SvgPicture.asset(AppSvgs.logout),
+                                      XBox(8),
+                                      Text(
+                                        'Logout',
+                                        style: textTheme.text16?.copyWith(
+                                          color: AppColors.red22,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                YBox(20),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),

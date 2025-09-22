@@ -101,7 +101,8 @@ class _CustomersManagementScreenState
                         //       context, RoutePath.newCustomerScreen);
                         //   break;
                         case 'reviews':
-                          // Navigator.pushNamed(context, RoutePath.reviewsScreen);
+                          Navigator.pushNamed(
+                              context, RoutePath.reviewsAndFeedbackScreen);
                           break;
 
                         default:

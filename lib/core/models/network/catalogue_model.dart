@@ -80,9 +80,11 @@ class CatalogueModel {
         media: json["media"] == null
             ? []
             : List<String>.from(json["media"]!.map((x) => x)),
-        attributes: Map.from(json["attributes"]!).map((k, v) =>
-            MapEntry<String, List<String>>(
-                k, List<String>.from(v.map((x) => x)))),
+        attributes: json["attributes"] == null
+            ? {}
+            : Map.from(json["attributes"]).map((k, v) =>
+                MapEntry<String, List<String>>(
+                    k, List<String>.from(v.map((x) => x)))),
         weightPerUnitItem: json["weight_per_unit_item"] == null
             ? null
             : PhysicalDimension.fromJson(json["weight_per_unit_item"]),
@@ -152,7 +154,7 @@ class Category {
 
 class PhysicalDimension {
   final String? unit;
-  final int? value;
+  final String? value;
 
   PhysicalDimension({
     this.unit,
@@ -162,7 +164,8 @@ class PhysicalDimension {
   factory PhysicalDimension.fromJson(Map<String, dynamic> json) =>
       PhysicalDimension(
         unit: json["unit"],
-        value: json["value"],
+        value:
+            json["value"] is String ? json["value"] : json["value"]?.toString(),
       );
 
   Map<String, dynamic> toJson() => {
