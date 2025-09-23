@@ -269,22 +269,13 @@ class _SelectTransferProductsStepState
                                 product.transferItemDetails =
                                     transferItemDetailsFromJson(
                                         json.encode(res.data['data']));
-                              
+
                                 final existingProductIndex = vm.productList
                                     .indexWhere((p) => p.id == product.id);
                                 if (existingProductIndex != -1) {
-                                  vm.productList[existingProductIndex] = vm
-                                      .productList[existingProductIndex]
-                                      .copyWith(
-                                          quantity: (vm
-                                                      .productList[
-                                                          existingProductIndex]
-                                                      .quantity ??
-                                                  0) +
-                                              1);
+                                  return;
                                 } else {
-                                  vm.productList
-                                      .add(product);
+                                  vm.productList.add(product);
                                 }
                               }
                               setState(() {});

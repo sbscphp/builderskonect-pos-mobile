@@ -404,12 +404,12 @@ class WeightClass {
 }
 
 class ProductStats {
-  final String? totalProducts;
+  final dynamic totalProducts;
   final double? totalProductsValue;
-  final String? totalSoldProducts;
-  final int? lowStockProducts;
-  final String? availableProducts;
-  final String? totalSales;
+  final dynamic totalSoldProducts;
+  final dynamic lowStockProducts;
+  final dynamic availableProducts;
+  final dynamic totalSales;
 
   ProductStats({
     this.totalProducts,
