@@ -135,39 +135,41 @@ class ProductModel {
   final String? primaryMediaUrl;
   final List<String>? media;
   final dynamic attributes;
+  final num? ratings;
+  final num? totalReviews;
   int? requestQuantity;
   TransferItemDetails? transferItemDetails;
 
-  ProductModel(
-      {this.id,
-      this.name,
-      this.sku,
-      this.ean,
-      this.code,
-      this.category,
-      this.categoryId,
-      this.subcategory,
-      this.subcategoryId,
-      this.productType,
-      this.productTypeId,
-      this.retailPrice,
-      this.brand,
-      this.costPrice,
-      this.currentPrice,
-      this.metadata,
-      this.dateAdded,
-      this.description,
-      this.tags,
-      this.status,
-      this.quantity,
-      this.measurementUnit,
-      this.dimension,
-      this.weight,
-      this.reorderValue,
-      this.primaryMediaUrl,
-      this.media,
-      this.attributes,
-      this.requestQuantity});
+  ProductModel({
+    this.id,
+    this.name,
+    this.sku,
+    this.ean,
+    this.code,
+    this.category,
+    this.categoryId,
+    this.subcategory,
+    this.subcategoryId,
+    this.productType,
+    this.productTypeId,
+    this.retailPrice,
+    this.brand,
+    this.costPrice,
+    this.currentPrice,
+    this.metadata,
+    this.dateAdded,
+    this.description,
+    this.tags,
+    this.status,
+    this.quantity,
+    this.measurementUnit,
+    this.dimension,
+    this.weight,
+    this.reorderValue,
+    this.primaryMediaUrl,
+    this.media,
+    this.attributes,
+  });
 
   // ProductModel copywith
   ProductModel copyWith({
@@ -199,6 +201,8 @@ class ProductModel {
     String? primaryMediaUrl,
     List<String>? media,
     dynamic attributes,
+    num? ratings,
+    num? totalReviews,
   }) {
     return ProductModel(
       id: id ?? this.id,
@@ -229,6 +233,7 @@ class ProductModel {
       primaryMediaUrl: primaryMediaUrl ?? this.primaryMediaUrl,
       media: media ?? this.media,
       attributes: attributes ?? this.attributes,
+      ratings: ratings ?? this.ratings,
     );
   }
 
@@ -267,6 +272,8 @@ class ProductModel {
             ? []
             : List<String>.from(json["media"]!.map((x) => x)),
         attributes: json["attributes"],
+        ratings: json["ratings"],
+        totalReviews: json["total_reviews"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -298,6 +305,8 @@ class ProductModel {
         "primary_media_url": primaryMediaUrl,
         "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
         "attributes": attributes,
+        "ratings": ratings,
+        "total_reviews": totalReviews,
         "productItem": transferItemDetails?.toJson()
       };
 }

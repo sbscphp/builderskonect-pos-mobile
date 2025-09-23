@@ -97,17 +97,6 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
 
     widget.onProductUpdated(updatedProductStatus);
 
-    // Show success message
-
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(formData.isComplete
-    //         ? 'Product information saved successfully!'
-    //         : 'Product information saved. Please complete all required fields.'),
-    //     backgroundColor: formData.isComplete ? Colors.green : Colors.orange,
-    //   ),
-    // );
-
     // Add a small delay to prevent route lifecycle conflicts with toast
     await Future.delayed(Duration(milliseconds: 100));
     if (mounted) {
@@ -448,9 +437,36 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     maxLines: 3,
                   ),
                   YBox(16),
-                  Text(
-                    "Product Images",
-                    style: textTheme.text14,
+                  RichText(
+                    text: TextSpan(
+                      style: textTheme.text14,
+                      children: [
+                        TextSpan(
+                          text: "Product Images ",
+                        ),
+                        TextSpan(
+                          text: " (max. 3 images)",
+                          style: textTheme.text14?.copyWith(
+                            color: colorScheme.black45,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  YBox(4),
+                  Container(
+                    width: Sizer.width(104),
+                    height: Sizer.height(104),
+                    padding: EdgeInsets.all(Sizer.radius(9)),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: AppColors.neutral5,
+                      ),
+                    ),
+                    child: MyCachedNetworkImage(
+                      imageUrl: AppUtils.dummyImage,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                   YBox(8),
                   InkWell(
