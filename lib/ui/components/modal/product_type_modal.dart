@@ -2,9 +2,12 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class ProductType extends ConsumerStatefulWidget {
-  const ProductType({super.key, this.isCategory = true});
+  const ProductType({
+    super.key,
+    required this.catId,
+  });
 
-  final bool isCategory;
+  final String catId;
 
   @override
   ConsumerState<ProductType> createState() => _ProductTypeState();
@@ -17,15 +20,10 @@ class _ProductTypeState extends ConsumerState<ProductType> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryVmodel).getCategoryType(widget.catId);
+    });
   }
-
-  List<String> productTypeList = [
-    "Wall",
-    "Floor",
-    "Border ",
-    "Decorative",
-  ];
 
   @override
   void dispose() {
@@ -38,7 +36,7 @@ class _ProductTypeState extends ConsumerState<ProductType> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final categoryVm = ref.watch(categoryVmodel);
     return Container(
       height: Sizer.screenHeight * 0.6,
       padding: EdgeInsets.symmetric(
@@ -111,10 +109,8 @@ class _ProductTypeState extends ConsumerState<ProductType> {
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: onboardVm.busy(categoryTypeState),
-              items: widget.isCategory
-                  ? onboardVm.businessCategories
-                  : onboardVm.businessTypes,
+              isBusy: categoryVm.busy(catTypeState),
+              items: categoryVm.categoryTypes,
               loadingBuilder: (context) {
                 return ListView.separated(
                   padding: EdgeInsets.only(
@@ -138,7 +134,7 @@ class _ProductTypeState extends ConsumerState<ProductType> {
               emptyBuilder: (context) {
                 return Center(
                   child: Text(
-                    "No ${widget.isCategory ? 'Category' : 'Type'} found",
+                    "No data found",
                     style: textTheme.text14?.medium.copyWith(
                       color: AppColors.gray500,
                     ),
@@ -156,16 +152,16 @@ class _ProductTypeState extends ConsumerState<ProductType> {
                       bottom: Sizer.height(80),
                     ),
                     shrinkWrap: true,
-                    itemCount: productTypeList.length,
+                    itemCount: categoryVm.categoryTypes.length,
                     separatorBuilder: (_, __) => YBox(24),
                     itemBuilder: (_, i) {
-                      final item = productTypeList[i];
+                      final item = categoryVm.categoryTypes[i];
                       return InkWell(
                         onTap: () {
                           Navigator.pop(context, item);
                         },
                         child: Text(
-                          item,
+                          item.name ?? "N/A",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.text14,

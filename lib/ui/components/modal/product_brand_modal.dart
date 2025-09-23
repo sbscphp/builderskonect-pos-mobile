@@ -17,17 +17,10 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryVmodel).getBrands();
+    });
   }
-
-  List<String> brandList = [
-    "brand 1",
-    "brand 2",
-    "brand 3",
-    "brand 4",
-    "brand 5",
-    "brand 6",
-  ];
 
   @override
   void dispose() {
@@ -40,7 +33,7 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final categoryVm = ref.watch(categoryVmodel);
     return Container(
       height: Sizer.screenHeight * 0.6,
       padding: EdgeInsets.symmetric(
@@ -110,10 +103,8 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: onboardVm.busy(categoryTypeState),
-              items: widget.isCategory
-                  ? onboardVm.businessCategories
-                  : onboardVm.businessTypes,
+              isBusy: categoryVm.busy(brandState),
+              items: categoryVm.brands,
               loadingBuilder: (context) {
                 return ListView.separated(
                   padding: EdgeInsets.only(
@@ -137,7 +128,7 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
               emptyBuilder: (context) {
                 return Center(
                   child: Text(
-                    "No ${widget.isCategory ? 'Category' : 'Type'} found",
+                    "No Brands found",
                     style: textTheme.text14?.medium.copyWith(
                       color: AppColors.gray500,
                     ),
@@ -155,16 +146,16 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
                       bottom: Sizer.height(80),
                     ),
                     shrinkWrap: true,
-                    itemCount: brandList.length,
+                    itemCount: categoryVm.brands.length,
                     separatorBuilder: (_, __) => YBox(24),
                     itemBuilder: (_, i) {
-                      final item = brandList[i];
+                      final item = categoryVm.brands[i];
                       return InkWell(
                         onTap: () {
                           Navigator.pop(context, item);
                         },
                         child: Text(
-                          item,
+                          item.name ?? "N/A",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.text14,

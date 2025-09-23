@@ -23,6 +23,11 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   final tagsC = TextEditingController();
   final descriptionC = TextEditingController();
 
+  BrandModel? selectedBrand;
+  CategoryModel? selectedCategory;
+  CategoryModel? selectedSubCategory;
+  CategoryModel? selectedCategoryType;
+
   @override
   void dispose() {
     productNameC.dispose();
@@ -82,6 +87,9 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                       context: context,
                       widget: ProductBrandModal(),
                     );
+                    if (res is BrandModel) {
+                      brandC.text = res.name ?? '';
+                    }
                   },
                 ),
                 YBox(16),
@@ -97,6 +105,11 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                       context: context,
                       widget: ProductCategoryModal(),
                     );
+
+                    if (res is CategoryModel) {
+                      selectedCategory = res;
+                      categoryC.text = res.name ?? '';
+                    }
                   },
                 ),
                 YBox(16),
@@ -108,10 +121,21 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showSuffixIcon: true,
                   readOnly: true,
                   onTap: () async {
+                    if (selectedCategory == null) {
+                      showWarningToast("Please select category first");
+                      return;
+                    }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
-                      widget: ProductSubCategoryModal(),
+                      widget: ProductSubCategoryModal(
+                        catId: selectedCategory?.id ?? "",
+                      ),
                     );
+
+                    if (res is CategoryModel) {
+                      selectedSubCategory = res;
+                      subCategoryC.text = res.name ?? '';
+                    }
                   },
                 ),
                 YBox(16),
@@ -123,10 +147,21 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showSuffixIcon: true,
                   readOnly: true,
                   onTap: () async {
+                    if (selectedSubCategory == null) {
+                      showWarningToast("Please select sub category first");
+                      return;
+                    }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
-                      widget: ProductType(),
+                      widget: ProductType(
+                        catId: selectedSubCategory?.id ?? "",
+                      ),
                     );
+
+                    if (res is CategoryModel) {
+                      selectedCategoryType = res;
+                      typeC.text = res.name ?? '';
+                    }
                   },
                 ),
                 // YBox(16),

@@ -291,17 +291,15 @@ class _SearchAddProductScreenState
                     AnimatedSize(
                       duration: Duration(milliseconds: 500),
                       child: Builder(builder: (context) {
-                        if (!isSearching ||
-                            !searchF.hasFocus ||
-                            catalogueVm.catalogueProducts.isEmpty) {
-                          return SizedBox.shrink();
-                        }
-
                         if (catalogueVm.busy(getState)) {
                           return SizerLoader(
                             height: Sizer.height(300),
                           );
                         }
+                        if (!isSearching || !searchF.hasFocus) {
+                          return SizedBox.shrink();
+                        }
+
                         return Container(
                           height: Sizer.screenHeight * 0.5,
                           margin: EdgeInsets.only(top: Sizer.height(8)),

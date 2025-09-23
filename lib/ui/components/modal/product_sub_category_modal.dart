@@ -2,9 +2,12 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class ProductSubCategoryModal extends ConsumerStatefulWidget {
-  const ProductSubCategoryModal({super.key, this.isCategory = true});
+  const ProductSubCategoryModal({
+    super.key,
+    required this.catId,
+  });
 
-  final bool isCategory;
+  final String catId;
 
   @override
   ConsumerState<ProductSubCategoryModal> createState() =>
@@ -19,17 +22,10 @@ class _ProductSubCategoryModalState
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryVmodel).getSubCategories(widget.catId);
+    });
   }
-
-  List<String> brandList = [
-    "Floor and Wall Finishes",
-    "Toilets and Bathroom",
-    "Lighting and Electricals",
-    "Doors and Windows",
-    "Homes and Bedroom",
-    "Painting and Decoration",
-  ];
 
   @override
   void dispose() {
@@ -42,7 +38,7 @@ class _ProductSubCategoryModalState
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final categoryVm = ref.watch(categoryVmodel);
     return Container(
       height: Sizer.screenHeight * 0.6,
       padding: EdgeInsets.symmetric(
@@ -115,10 +111,8 @@ class _ProductSubCategoryModalState
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: onboardVm.busy(categoryTypeState),
-              items: widget.isCategory
-                  ? onboardVm.businessCategories
-                  : onboardVm.businessTypes,
+              isBusy: categoryVm.busy(subCategoryState),
+              items: categoryVm.subCategories,
               loadingBuilder: (context) {
                 return ListView.separated(
                   padding: EdgeInsets.only(
@@ -142,7 +136,7 @@ class _ProductSubCategoryModalState
               emptyBuilder: (context) {
                 return Center(
                   child: Text(
-                    "No ${widget.isCategory ? 'Category' : 'Type'} found",
+                    "No data found",
                     style: textTheme.text14?.medium.copyWith(
                       color: AppColors.gray500,
                     ),
@@ -160,16 +154,16 @@ class _ProductSubCategoryModalState
                       bottom: Sizer.height(80),
                     ),
                     shrinkWrap: true,
-                    itemCount: brandList.length,
+                    itemCount: categoryVm.subCategories.length,
                     separatorBuilder: (_, __) => YBox(24),
                     itemBuilder: (_, i) {
-                      final item = brandList[i];
+                      final item = categoryVm.subCategories[i];
                       return InkWell(
                         onTap: () {
                           Navigator.pop(context, item);
                         },
                         child: Text(
-                          item,
+                          item.name ?? "N/A",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.text14,

@@ -18,17 +18,10 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(categoryVmodel).getCategories();
+    });
   }
-
-  List<String> brandList = [
-    "Floor and Wall Finishes",
-    "Toilets and Bathroom",
-    "Lighting and Electricals",
-    "Doors and Windows",
-    "Homes and Bedroom",
-    "Painting and Decoration",
-  ];
 
   @override
   void dispose() {
@@ -41,7 +34,7 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final categoryVm = ref.watch(categoryVmodel);
     return Container(
       height: Sizer.screenHeight * 0.6,
       padding: EdgeInsets.symmetric(
@@ -114,10 +107,8 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: onboardVm.busy(categoryTypeState),
-              items: widget.isCategory
-                  ? onboardVm.businessCategories
-                  : onboardVm.businessTypes,
+              isBusy: categoryVm.busy(categoryState),
+              items: categoryVm.categories,
               loadingBuilder: (context) {
                 return ListView.separated(
                   padding: EdgeInsets.only(
@@ -159,16 +150,16 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
                       bottom: Sizer.height(80),
                     ),
                     shrinkWrap: true,
-                    itemCount: brandList.length,
+                    itemCount: categoryVm.categories.length,
                     separatorBuilder: (_, __) => YBox(24),
                     itemBuilder: (_, i) {
-                      final item = brandList[i];
+                      final item = categoryVm.categories[i];
                       return InkWell(
                         onTap: () {
                           Navigator.pop(context, item);
                         },
                         child: Text(
-                          item,
+                          item.name ?? "N/A",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.text14,

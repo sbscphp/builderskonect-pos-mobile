@@ -18,7 +18,12 @@ const String salesAnalysisStatState = 'salesAnalysisStatState';
 // reviews
 const String vendorReviewsState = 'vendorReviewsState';
 
-//product transfer 
+//product transfer
 const String storeProductState = 'storeProductState';
 const String transferItemState = 'transferItemState';
 
+// Categories
+const String categoryState = 'categoryState';
+const String subCategoryState = 'subCategoryState';
+const String brandState = 'brandState';
+const String catTypeState = 'catTypeState';
