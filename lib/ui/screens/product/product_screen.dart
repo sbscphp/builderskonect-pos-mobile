@@ -383,86 +383,89 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     final loadingProvider = StateProvider<bool>((ref) => false);
     ModalWrapper.bottomSheet(
       context: context,
-      widget: Consumer(builder: (context, ref, child) {
-        final isLoading = ref.watch(loadingProvider);
-        return ConfirmationModal(
-          modalConfirmationArg: ModalConfirmationArg(
-            iconPath: AppSvgs.infoCircleRed,
-            title: "Delete Product",
-            description:
-                "Are you sure you want to delete this product from your product list and inventory? This cannot be undone.",
-            solidBtnText: "Yes, delete",
-            isLoading: isLoading,
-            onSolidBtnOnTap: () async {
-              final prodVm = ref.read(productInventoryVmodel);
-              ref.read(loadingProvider.notifier).state = true;
-              final ctx = NavKey.appNavKey.currentContext!;
-              
-              bool hasNavigated = false;
-              
-              try {
-                final res = await prodVm.deleteProduct(productId: productId);
-                handleApiResponse(
-                  response: res,
-                  onSuccess: () {
-                    // Close the current modal first
-                    if (context.mounted && !hasNavigated) {
-                      Navigator.pop(ctx);
-                      hasNavigated = true;
-                    }
-                    
-                    // Show success modal after a brief delay to prevent navigation conflicts
-                    Future.delayed(const Duration(milliseconds: 100), () {
-                      if (ctx.mounted) {
-                        ModalWrapper.bottomSheet(
-                          context: ctx,
-                          widget: ConfirmationModal(
-                            modalConfirmationArg: ModalConfirmationArg(
-                              iconPath: AppSvgs.checkIcon,
-                              title: "Product Deleted",
-                              description:
-                                  "The product has been deleted \nsuccessfully.",
-                              solidBtnText: "Okay",
-                              onSolidBtnOnTap: () {
-                                final currentCtx = NavKey.appNavKey.currentContext!;
-                                Navigator.pop(currentCtx);
-                              },
-                            ),
-                          ),
-                        );
+      widget: Consumer(
+        builder: (context, ref, child) {
+          final isLoading = ref.watch(loadingProvider);
+          return ConfirmationModal(
+            modalConfirmationArg: ModalConfirmationArg(
+              iconPath: AppSvgs.infoCircleRed,
+              title: "Delete Product",
+              description:
+                  "Are you sure you want to delete this product from your product list and inventory? This cannot be undone.",
+              solidBtnText: "Yes, delete",
+              isLoading: isLoading,
+              onSolidBtnOnTap: () async {
+                final prodVm = ref.read(productInventoryVmodel);
+                ref.read(loadingProvider.notifier).state = true;
+                final ctx = NavKey.appNavKey.currentContext!;
+
+                bool hasNavigated = false;
+
+                try {
+                  final res = await prodVm.deleteProduct(productId: productId);
+                  handleApiResponse(
+                    response: res,
+                    onSuccess: () {
+                      // Close the current modal first
+                      if (context.mounted && !hasNavigated) {
+                        Navigator.pop(ctx);
+                        hasNavigated = true;
                       }
-                    });
-                  },
-                  onError: () {
-                    // Close the modal on error
-                    if (context.mounted && !hasNavigated) {
-                      Navigator.pop(ctx);
-                      hasNavigated = true;
-                    }
-                  },
-                );
-              } catch (e) {
-                // Handle any unexpected errors
-                if (context.mounted && !hasNavigated) {
-                  Navigator.pop(ctx);
-                  hasNavigated = true;
-                }
-              } finally {
-                if (context.mounted) {
-                  ref.read(loadingProvider.notifier).state = false;
-                  // Only pop if we haven't already navigated
-                  if (!hasNavigated) {
+
+                      // Show success modal after a brief delay to prevent navigation conflicts
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (ctx.mounted) {
+                          ModalWrapper.bottomSheet(
+                            context: ctx,
+                            widget: ConfirmationModal(
+                              modalConfirmationArg: ModalConfirmationArg(
+                                iconPath: AppSvgs.checkIcon,
+                                title: "Product Deleted",
+                                description:
+                                    "The product has been deleted \nsuccessfully.",
+                                solidBtnText: "Okay",
+                                onSolidBtnOnTap: () {
+                                  final currentCtx =
+                                      NavKey.appNavKey.currentContext!;
+                                  Navigator.pop(currentCtx);
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                    onError: () {
+                      // Close the modal on error
+                      if (context.mounted && !hasNavigated) {
+                        Navigator.pop(ctx);
+                        hasNavigated = true;
+                      }
+                    },
+                  );
+                } catch (e) {
+                  // Handle any unexpected errors
+                  if (context.mounted && !hasNavigated) {
                     Navigator.pop(ctx);
+                    hasNavigated = true;
+                  }
+                } finally {
+                  if (context.mounted) {
+                    ref.read(loadingProvider.notifier).state = false;
+                    // Only pop if we haven't already navigated
+                    if (!hasNavigated) {
+                      Navigator.pop(ctx);
+                    }
                   }
                 }
-              }
-            },
-            onOutlineBtnOnTap: () {
-              Navigator.pop(context);
-            },
-          ),
-        );
-      }),
+              },
+              onOutlineBtnOnTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        },
+      ),
     );
   }
 }

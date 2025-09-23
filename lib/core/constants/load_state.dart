@@ -15,6 +15,10 @@ const String pauseSalesState = 'pauseSalesState';
 const String topSellingProductsState = 'topSellingProductsState';
 const String salesAnalysisStatState = 'salesAnalysisStatState';
 
+// reviews
+const String vendorReviewsState = 'vendorReviewsState';
+
 //product transfer 
 const String storeProductState = 'storeProductState';
 const String transferItemState = 'transferItemState';
+

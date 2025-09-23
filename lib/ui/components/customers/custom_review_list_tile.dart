@@ -4,18 +4,20 @@ import 'package:flutter_rating/flutter_rating.dart';
 class CustomerReviewListTile extends StatelessWidget {
   const CustomerReviewListTile({
     super.key,
-    required this.productImage,
-    required this.productName,
-    required this.productType,
+    required this.image,
+    required this.title,
+    required this.subTitle,
+    this.subTitle2,
     required this.date,
     this.rating,
     this.leadWidget,
     this.onTap,
   });
 
-  final String productImage;
-  final String productName;
-  final String productType;
+  final String image;
+  final String title;
+  final String subTitle;
+  final String? subTitle2;
   final String date;
   final double? rating;
   final Widget? leadWidget;
@@ -34,7 +36,7 @@ class CustomerReviewListTile extends StatelessWidget {
             height: Sizer.height(26),
             child: leadWidget ??
                 MyCachedNetworkImage(
-                  imageUrl: productImage,
+                  imageUrl: image,
                   fit: BoxFit.cover,
                 ),
           ),
@@ -44,18 +46,28 @@ class CustomerReviewListTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  productName,
+                  title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: textTheme.text14,
                 ),
                 YBox(4),
-                Text(
-                  productType,
+                RichText(
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: textTheme.text12?.copyWith(
-                    color: colorScheme.black45,
+                  text: TextSpan(
+                    style: textTheme.text12?.copyWith(
+                      color: colorScheme.black45,
+                    ),
+                    children: [
+                      TextSpan(text: subTitle),
+                      if (subTitle2 != null)
+                        TextSpan(
+                            text: subTitle2,
+                            style: textTheme.text12?.medium.copyWith(
+                              color: colorScheme.primaryColor,
+                            )),
+                    ],
                   ),
                 ),
               ],
@@ -66,7 +78,7 @@ class CustomerReviewListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               StarRating(
-                rating: 4,
+                rating: rating ?? 0,
                 size: Sizer.radius(15),
                 color: AppColors.yellow6,
                 allowHalfRating: false,

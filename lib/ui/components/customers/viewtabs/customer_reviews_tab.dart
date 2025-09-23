@@ -99,6 +99,25 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
                       message: "Failed to load store sales overview",
                       onPressed: () {},
                     ),
+                  ],
+                ),
+              ),
+              YBox(10),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.only(
+                  top: Sizer.height(14),
+                ),
+                itemCount: 8,
+                separatorBuilder: (_, __) => HDivider(),
+                itemBuilder: (ctx, i) {
+                  return CustomerReviewListTile(
+                    image: "https://picsum.photos/200/300",
+                    title: "Product Name",
+                    subTitle: "Product Type",
+                    date: "2023-01-01",
+                    rating: 4,
                   );
                 },
                 contentBuilder: (context) {

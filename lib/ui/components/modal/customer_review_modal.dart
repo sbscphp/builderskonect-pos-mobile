@@ -2,7 +2,12 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomerReviewModal extends ConsumerStatefulWidget {
-  const CustomerReviewModal({super.key});
+  const CustomerReviewModal({
+    super.key,
+    required this.review,
+  });
+
+  final ReviewsModel review;
 
   @override
   ConsumerState<CustomerReviewModal> createState() =>
@@ -10,6 +15,23 @@ class CustomerReviewModal extends ConsumerStatefulWidget {
 }
 
 class _CustomerReviewModalState extends ConsumerState<CustomerReviewModal> {
+  final respnseC = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      respnseC.text = widget.review.response ?? "";
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    respnseC.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -58,27 +80,30 @@ class _CustomerReviewModalState extends ConsumerState<CustomerReviewModal> {
               borderRadius: BorderRadius.circular(Sizer.radius(4)),
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomerReviewListTile(
-                  productImage: "https://picsum.photos/200/300",
+                  image: "",
                   leadWidget: SvgPicture.asset(
                     AppSvgs.circleAvatar,
                     height: Sizer.height(24),
                   ),
-                  productName: "Adeboyega Boyega",
-                  productType: "Product Type",
-                  date: "2023-01-01",
-                  rating: 4,
-                  onTap: () {
-                    ModalWrapper.bottomSheet(
-                      context: context,
-                      widget: CustomerReviewModal(),
-                    );
-                  },
+                  title: widget.review.customerName ?? "",
+                  subTitle: "Id: ",
+                  subTitle2: widget.review.customerId ?? "N/A",
+                  rating: double.tryParse(
+                    widget.review.ratings ?? "0",
+                  ),
+                  date: widget.review.feedbackDate == null
+                      ? "N/A"
+                      : AppUtils.dayWithSuffixMonthAndYear(
+                          widget.review.feedbackDate ?? DateTime.now(),
+                        ),
                 ),
                 YBox(16),
                 Text(
-                  "A design system for enterprise-level products. Create an efficient and enjoyable work experience.",
+                  widget.review.feedback ?? "",
                   style: textTheme.text16,
                 ),
               ],
@@ -86,18 +111,12 @@ class _CustomerReviewModalState extends ConsumerState<CustomerReviewModal> {
           ),
           YBox(24),
           CustomTextField(
-            // controller: _emailController,
+            controller: respnseC,
             isRequired: false,
             labelText: 'Response:',
-            hintText: 'Enter your email',
+            hintText: 'Write here',
             maxLines: 4,
             showLabelHeader: true,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your email';
-              }
-              return null;
-            },
             onChanged: (value) {
               setState(() {});
             },
