@@ -169,6 +169,8 @@ class ProductModel {
     this.primaryMediaUrl,
     this.media,
     this.attributes,
+    this.ratings,
+    this.totalReviews
   });
 
   // ProductModel copywith
