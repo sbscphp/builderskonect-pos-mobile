@@ -13,3 +13,6 @@ const String draftSalesState = 'draftSalesState';
 const String pauseSalesState = 'pauseSalesState';
 const String topSellingProductsState = 'topSellingProductsState';
 const String salesAnalysisStatState = 'salesAnalysisStatState';
+
+// reviews
+const String vendorReviewsState = 'vendorReviewsState';

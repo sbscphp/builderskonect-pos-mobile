@@ -378,10 +378,22 @@ class AppRouter {
         );
 
       case RoutePath.feedbackReviewDetailsScreen:
-        return TransitionUtils.buildTransition(
-          const FeedbackReviewDetailsScreen(),
-          settings,
-        );
+        if (args is ProductModel) {
+          return TransitionUtils.buildTransition(
+            FeedbackReviewDetailsScreen(product: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.vendorReviewDetailsScreen:
+        if (args is ReviewsModel) {
+          return TransitionUtils.buildTransition(
+            VendorReviewDetailsScreen(review: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Discount
       case RoutePath.discountManagementScreen:

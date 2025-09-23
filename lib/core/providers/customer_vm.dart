@@ -1,7 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 
 class CustomerVm extends BaseVm {
-    //page number
+  //page number
   int pageNumber = 1;
   int? lastPage;
 
@@ -19,20 +19,20 @@ class CustomerVm extends BaseVm {
   List<CustomerData> _walkInCustomerData = [];
   List<CustomerData> get walkInCustomerData => _walkInCustomerData;
 
-  Future<ApiResponse> getCustomerOverview({
-    String? q,
-    CustomType? type,
-    bool paginate = true,
-    String? busyObjectName = getState
-  }) async {
-     if (busyObjectName != paginateState) {
+  Future<ApiResponse> getCustomerOverview(
+      {String? q,
+      CustomType? type,
+      bool paginate = true,
+      String? busyObjectName = getState}) async {
+    if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/customers?page=$pageNumber")
-      ..addQueryParameterIfNotEmpty("q", q ?? '')
-      ..addQueryParameterIfNotEmpty("type", type?.apiValue ?? "")
-      ..addQueryParameterIfNotEmpty("limit", '10')
-      ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/customers?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("type", type?.apiValue ?? "")
+          ..addQueryParameterIfNotEmpty("limit", '30')
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
@@ -43,37 +43,34 @@ class CustomerVm extends BaseVm {
         if (paginate) {
           final customerStats =
               customerStatsFromJson(json.encode(data['data']?['stats']));
-               if (busyObjectName != paginateState) {
-          final customerData = customerDataListFromJson(
-              json.encode(data['data']?['data']?['data']));
-          if (type == null) {
-            _customerStats = customerStats;
-            _customerData = customerData;
-          } else if (type == CustomType.online) {
-            _onlineCustomerStats = customerStats;
-            _onlineCustomerData = customerData;
-          } else if (type == CustomType.offline) {
-            _walkInCustomerStats = customerStats;
-            _walkInCustomerData = customerData;
-          }
+          if (busyObjectName != paginateState) {
+            final customerData = customerDataListFromJson(
+                json.encode(data['data']?['data']?['data']));
+            if (type == null) {
+              _customerStats = customerStats;
+              _customerData = customerData;
+            } else if (type == CustomType.online) {
+              _onlineCustomerStats = customerStats;
+              _onlineCustomerData = customerData;
+            } else if (type == CustomType.offline) {
+              _walkInCustomerStats = customerStats;
+              _walkInCustomerData = customerData;
+            }
             pageNumber++;
-            lastPage =  data['data']?['data']?['last_page'];
-               }else{
-           if (type == null) {
+            lastPage = data['data']?['data']?['last_page'];
+          } else {
+            if (type == null) {
               _customerData.addAll(customerDataListFromJson(
-              json.encode(data['data']?['data']?['data'])));
+                  json.encode(data['data']?['data']?['data'])));
             } else if (type == CustomType.online) {
               _onlineCustomerData.addAll(customerDataListFromJson(
-              json.encode(data['data']?['data']?['data'])));
+                  json.encode(data['data']?['data']?['data'])));
             } else if (type == CustomType.offline) {
               _walkInCustomerData.addAll(customerDataListFromJson(
-              json.encode(data['data']?['data']?['data'])));
+                  json.encode(data['data']?['data']?['data'])));
             }
-          pageNumber++;
-
-               }
-
-               
+            pageNumber++;
+          }
         } else {
           final customerData =
               customerDataListFromJson(json.encode(data['data']));
@@ -127,6 +124,58 @@ class CustomerVm extends BaseVm {
       busyObjectName: viewState,
       onSuccess: (data) {
         _customerDetails = customerDataFromJson(json.encode(data['data']));
+        return apiResponse;
+      },
+    );
+  }
+
+  ReviewsStatModel? _reviewsStats;
+  ReviewsStatModel? get reviewsStats => _reviewsStats;
+  List<ReviewsModel> _customersReviewModel = [];
+  List<ReviewsModel> get customersReviewModel => _customersReviewModel;
+  Future<ApiResponse> customerReviewProduct(
+    String productId, {
+    bool paginate = true,
+  }) async {
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/reviews?product_id=$productId")
+          ..addQueryParameterIfNotEmpty("limit", '30')
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: viewState,
+      busyObjectName: viewState,
+      onSuccess: (data) {
+        _reviewsStats =
+            reviewsStatModelFromJson(json.encode(data['data']?['stats']));
+        _customersReviewModel =
+            reviewsModelFromJson(json.encode(data['data']?['data']?['data']));
+        return apiResponse;
+      },
+    );
+  }
+
+  ReviewsStatModel? _vendorReviewsStats;
+  ReviewsStatModel? get vendorReviewsStats => _vendorReviewsStats;
+  List<ReviewsModel> _vendorReviewModel = [];
+  List<ReviewsModel> get vendorReviewModel => _vendorReviewModel;
+  Future<ApiResponse> vendorReviewProduct({bool paginate = true}) async {
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/reviews")
+      ..addQueryParameterIfNotEmpty("limit", '30')
+      ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: vendorReviewsState,
+      busyObjectName: vendorReviewsState,
+      onSuccess: (data) {
+        _vendorReviewsStats =
+            reviewsStatModelFromJson(json.encode(data['data']?['stats']));
+        _vendorReviewModel =
+            reviewsModelFromJson(json.encode(data['data']?['data']?['data']));
         return apiResponse;
       },
     );

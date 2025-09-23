@@ -7,6 +7,8 @@ class ReviewsFeedbackListTile extends StatelessWidget {
     required this.productImage,
     required this.productName,
     required this.productType,
+    required this.category,
+    required this.productId,
     required this.numOfReviews,
     this.rating,
     this.onTap,
@@ -15,6 +17,8 @@ class ReviewsFeedbackListTile extends StatelessWidget {
   final String productImage;
   final String productName;
   final String productType;
+  final String category;
+  final String productId;
   final String numOfReviews;
   final double? rating;
   final Function()? onTap;
@@ -66,7 +70,7 @@ class ReviewsFeedbackListTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   StarRating(
-                    rating: 4,
+                    rating: rating ?? 0,
                     size: Sizer.radius(15),
                     color: AppColors.yellow6,
                     allowHalfRating: false,
@@ -98,7 +102,7 @@ class ReviewsFeedbackListTile extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: "#2826492",
+                        text: productId,
                         style: textTheme.text12?.medium.copyWith(
                           color: colorScheme.primaryColor,
                         ),
@@ -109,6 +113,8 @@ class ReviewsFeedbackListTile extends StatelessWidget {
               ),
               XBox(30),
               RichText(
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 text: TextSpan(
                   children: [
                     TextSpan(
@@ -118,7 +124,7 @@ class ReviewsFeedbackListTile extends StatelessWidget {
                       ),
                     ),
                     TextSpan(
-                      text: "Building Materials",
+                      text: category,
                       style: textTheme.text12?.medium.copyWith(
                         color: AppColors.neutral11,
                       ),

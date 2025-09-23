@@ -57,15 +57,8 @@ class _ReviewsAndFeedbackScreenState
             ),
           ),
           YBox(16),
-          Expanded(
-            child: IndexedStack(
-              index: indexStack,
-              children: [
-                ProductReviewsTab(),
-                VendorReviewsTab(),
-              ],
-            ),
-          ),
+          if (indexStack == 0) ProductReviewsTab(),
+          if (indexStack == 1) VendorReviewsTab(),
         ],
       ),
     );

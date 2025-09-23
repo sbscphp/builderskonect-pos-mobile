@@ -83,9 +83,9 @@ class CustomerReviewsTabState extends ConsumerState<CustomerReviewsTab> {
                 separatorBuilder: (_, __) => HDivider(),
                 itemBuilder: (ctx, i) {
                   return CustomerReviewListTile(
-                    productImage: "https://picsum.photos/200/300",
-                    productName: "Product Name",
-                    productType: "Product Type",
+                    image: "https://picsum.photos/200/300",
+                    title: "Product Name",
+                    subTitle: "Product Type",
                     date: "2023-01-01",
                     rating: 4,
                   );
