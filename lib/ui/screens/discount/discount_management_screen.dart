@@ -42,7 +42,7 @@ class _DiscountManagementScreenState
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+        if (!vm.busy(paginateState) && vm.pageNumber < (vm.lastPage ?? 1)) {
           vm.getDashboardStats(busyObjectName: paginateState);
         }
       }
