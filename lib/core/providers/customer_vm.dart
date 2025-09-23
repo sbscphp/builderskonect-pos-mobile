@@ -1,7 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 
 class CustomerVm extends BaseVm {
-    //page number
+  //page number
   int pageNumber = 1;
   int? lastPage;
 
@@ -132,20 +132,148 @@ class CustomerVm extends BaseVm {
     );
   }
 
-  // CustomerData? _customerDetails;
-  // CustomerData? get customerDetails => _customerDetails;
-  // Future<ApiResponse> viewCustomerDetails(String id) async {
-  //   return await performApiCall(
-  //     url: "/api/v1/merchants/customers/$id",
-  //     method: apiService.getWithAuth,
-  //     errorObjectName: viewState,
-  //     busyObjectName: viewState,
-  //     onSuccess: (data) {
-  //       _customerDetails = customerDataFromJson(json.encode(data['data']));
-  //       return apiResponse;
-  //     },
-  //   );
-  // }
+  //page number
+  int csReviewpageNumber = 1;
+  int? csReviewlastPage;
+
+  CustomerReviewOverviewModel? _customerReviewOverviewModel;
+
+  List<ReviewsData> _customerReviews = [];
+  List<ReviewsData> get customerReviews => _customerReviews;
+
+  Future<ApiResponse> getCustomerReviewOverview(
+      {required String customerId,
+      String? q,
+      bool paginate = true,
+      String? busyObjectName = getState}) async {
+    if (busyObjectName != paginateState) {
+      csReviewpageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/reviews?page=$csReviewpageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '10')
+          ..addQueryParameterIfNotEmpty("customer_id", customerId)
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
+      onSuccess: (data) {
+        _customerReviewOverviewModel =
+            customerReviewOverviewModelFromJson(json.encode(data['data']));
+        if (busyObjectName != paginateState) {
+          _customerReviews = reviewsDataFromJson(
+              json.encode(_customerReviewOverviewModel?.data?.data));
+          csReviewpageNumber++;
+          csReviewlastPage = _customerReviewOverviewModel?.data?.lastPage;
+        } else {
+          _customerReviews.addAll(reviewsDataFromJson(
+              json.encode(_customerReviewOverviewModel?.data?.data)));
+          csReviewpageNumber++;
+        }
+        return apiResponse;
+      },
+    );
+  }
+
+  //page number
+  int csReturnpageNumber = 1;
+  int? csReturnlastPage;
+
+  List<ReturnDataModel> _customerReturns = [];
+  List<ReturnDataModel> get customerReturns => _customerReturns;
+
+  ReturnStats? _customerReturnStats;
+  ReturnStats? get customerReturnStats => _customerReturnStats;
+
+  Future<ApiResponse> getCustomerReturnsOverview(
+      {required String customerId,
+      String? q,
+      bool paginate = true,
+      String? busyObjectName = getState}) async {
+    if (busyObjectName != paginateState) {
+      csReturnpageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/returns?page=$csReturnpageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '10')
+          ..addQueryParameterIfNotEmpty("customer_id", customerId)
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
+      onSuccess: (data) {
+        if (busyObjectName != paginateState) {
+          _customerReturns =
+              returnDataFromJson(json.encode(data['data']?['data']?['data']));
+          _customerReturnStats =
+              returnStatsFromJson(json.encode(data['data']?['stats']));
+          csReturnpageNumber++;
+          csReturnlastPage = data['data']?['data']?['last_page'];
+        } else {
+          _customerReturns.addAll(
+              returnDataFromJson(json.encode(data['data']?['data']?['data'])));
+          csReturnpageNumber++;
+        }
+        return apiResponse;
+      },
+    );
+  }
+
+  //page number
+  int csOrderpageNumber = 1;
+  int? csOrderlastPage;
+
+  List<SalesOrdersModel> _customerOrders = [];
+  List<SalesOrdersModel> get customerOrders => _customerOrders;
+
+  SalesStats? _customerOrderStats;
+  SalesStats? get customerOrderStats => _customerOrderStats;
+
+  Future<ApiResponse> getCustomerOrderOverview(
+      {required String customerId,
+      String? q,
+      bool paginate = true,
+      String? busyObjectName = getState}) async {
+    if (busyObjectName != paginateState) {
+      csOrderpageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/sales-orders?page=$csOrderpageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '10')
+          ..addQueryParameterIfNotEmpty("customer_id", customerId)
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
+      onSuccess: (data) {
+        if (busyObjectName != paginateState) {
+          _customerOrders = salesOrderDataListFromJson(
+              json.encode(data['data']?['data']?['data']));
+          _customerOrderStats =
+              salesStatsFromJson(json.encode(data['data']?['stats']));
+          csOrderpageNumber++;
+          csOrderlastPage = data['data']?['data']?['last_page'];
+        } else {
+          _customerOrders.addAll(salesOrderDataListFromJson(
+              json.encode(data['data']?['data']?['data'])));
+          csOrderpageNumber++;
+        }
+        return apiResponse;
+      },
+    );
+  }
 }
 
 final customerVmodel = ChangeNotifierProvider((ref) => CustomerVm());
