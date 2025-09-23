@@ -14,3 +14,7 @@ const String draftSalesState = 'draftSalesState';
 const String pauseSalesState = 'pauseSalesState';
 const String topSellingProductsState = 'topSellingProductsState';
 const String salesAnalysisStatState = 'salesAnalysisStatState';
+
+//product transfer 
+const String storeProductState = 'storeProductState';
+const String transferItemState = 'transferItemState';

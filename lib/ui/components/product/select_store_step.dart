@@ -14,13 +14,10 @@ class SelectStoreStep extends ConsumerStatefulWidget {
 }
 
 class _SelectStoreStepState extends ConsumerState<SelectStoreStep> {
-  final storeC = TextEditingController();
   final storeF = FocusNode();
-
 
   @override
   void dispose() {
-    storeC.dispose();
     storeF.dispose();
     super.dispose();
   }
@@ -51,7 +48,7 @@ class _SelectStoreStepState extends ConsumerState<SelectStoreStep> {
               ),
               YBox(16),
               CustomTextField(
-                controller: storeC,
+                controller: vm.storeC,
                 isRequired: false,
                 labelText: 'Send Request To',
                 // optionalText: "(optional)",
@@ -67,7 +64,7 @@ class _SelectStoreStepState extends ConsumerState<SelectStoreStep> {
                   );
                   if (res is StoreModel) {
                     vm.selectedStore = res;
-                    storeC.text = res.name ?? '';
+                    vm.storeC.text = res.name ?? '';
                     setState(() {});
                   }
                 },
@@ -75,7 +72,7 @@ class _SelectStoreStepState extends ConsumerState<SelectStoreStep> {
               YBox(300),
               CustomBtn(
                 text: "Next",
-                online: vm.selectedStore != null && storeC.text.isNotEmpty,
+                online: vm.selectedStore != null,
                 onTap: () {
                   widget.onNext?.call();
                 },

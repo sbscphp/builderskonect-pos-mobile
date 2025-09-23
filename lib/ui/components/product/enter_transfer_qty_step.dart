@@ -55,10 +55,21 @@ class _EnterTransferQtyStepState extends ConsumerState<EnterTransferQtyStep> {
                           subTitle: product.productType ?? '',
                           productImage: product.primaryMediaUrl ?? '',
                           sku: product.sku ?? '',
-                          errText: ((product.requestQuantity ?? 0) > (product.quantity ?? 0)) ? "${product.requestQuantity} cannot be greater than ${product.quantity}" : null,
+                          otherStore: vm.selectedStore?.name ?? '',
+                          otherStock: product.transferItemDetails?.sourceQty
+                              ?.toString(),
+                          yourStock: product.transferItemDetails?.destinyQty
+                              ?.toString(),
                           onChanged: (val) {
+                            if(val.isEmpty) return;
                             //handle qty input here
-                            product.requestQuantity = int.tryParse(val);
+                            if ((product.transferItemDetails?.sourceQty ?? 1) <
+                                int.parse(val)) {
+                              showWarningToast(
+                                  'Request Quantity must be less than available stock');
+                            } else {
+                              product.requestQuantity = int.tryParse(val);
+                            }
                             setState(() {});
                           },
                         );

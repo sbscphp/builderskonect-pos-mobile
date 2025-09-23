@@ -60,7 +60,7 @@ class _StoreModalState extends ConsumerState<StoreModal> {
           YBox(16),
           Expanded(
             child: LoadableContentBuilder(
-              isBusy: vm.isBusy,
+              isBusy: vm.busy(getState),
               items: vm.storeList,
               loadingBuilder: (context) {
                 return ListView.separated(

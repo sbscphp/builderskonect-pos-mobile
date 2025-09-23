@@ -15,7 +15,9 @@ class TransferProductWidget extends StatelessWidget {
       this.onChanged,
       this.enabled = true,
       this.controller,
-      this.errText});
+      this.otherStore,
+      this.otherStock,
+      this.yourStock});
 
   final String productTitle;
   final String productImage;
@@ -27,7 +29,9 @@ class TransferProductWidget extends StatelessWidget {
   final void Function(String)? onChanged;
   final bool enabled;
   final TextEditingController? controller;
-  final String? errText;
+  final String? otherStore;
+  final String? otherStock;
+  final String? yourStock;
 
   @override
   Widget build(BuildContext context) {
@@ -54,18 +58,19 @@ class TransferProductWidget extends StatelessWidget {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: "Mainland Stock: ",
+                            text: "${otherStore ?? ''} Stock: ",
                             style: textTheme.text12?.medium.copyWith(
                               color: AppColors.gray500,
                             ),
                           ),
                           TextSpan(
-                            text: "500",
+                            text: otherStock,
                             style: textTheme.text12?.medium.copyWith(),
                           ),
                         ],
                       ),
                     ),
+                    XBox(14),
                     RichText(
                       text: TextSpan(
                         children: [
@@ -76,7 +81,7 @@ class TransferProductWidget extends StatelessWidget {
                             ),
                           ),
                           TextSpan(
-                            text: "02",
+                            text: yourStock,
                             style: textTheme.text12?.medium.copyWith(),
                           ),
                         ],
@@ -112,11 +117,11 @@ class TransferProductWidget extends StatelessWidget {
                     ))
                   ],
                 ),
-                if (errText != null)
-                  Text(
-                    errText ?? '',
-                    style: textTheme.text12?.copyWith(color: AppColors.red4F),
-                  )
+                // if (errText != null)
+                //   Text(
+                //     errText ?? '',
+                //     style: textTheme.text12?.copyWith(color: AppColors.red4F),
+                //   )
               ],
             ),
           if (onRemove != null)

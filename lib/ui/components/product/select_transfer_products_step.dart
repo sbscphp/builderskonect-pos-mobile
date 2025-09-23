@@ -33,13 +33,16 @@ class _SelectTransferProductsStepState
       isSearching = searchC.text.isNotEmpty && searchF.hasFocus;
       setState(() {});
     });
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    // });
   }
 
   // Search with debounce
   void _searchProducts(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      ref.read(productInventoryVmodel).getInventoryProducts(q: query.trim());
+      ref.read(productTransferVm).fetchProductsByStoreId(q: query.trim());
+      // ref.read(productInventoryVmodel).getInventoryProducts(q: query.trim());
     });
   }
 
@@ -163,7 +166,6 @@ class _SelectTransferProductsStepState
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final inventoryProductVm = ref.watch(productInventoryVmodel);
     final vm = ref.watch(productTransferVm);
 
     return ListView(
@@ -203,6 +205,11 @@ class _SelectTransferProductsStepState
                       )
                     : null,
               ),
+              if (vm.busy(transferItemState))
+                LinearProgressIndicator(
+                  color: AppColors.primaryBlue,
+                  backgroundColor: Colors.transparent,
+                ),
               AnimatedSize(
                 duration: Duration(milliseconds: 500),
                 child: Builder(builder: (context) {
@@ -210,7 +217,7 @@ class _SelectTransferProductsStepState
                     return SizedBox.shrink();
                   }
 
-                  if (inventoryProductVm.busy(getState)) {
+                  if (vm.busy(storeProductState)) {
                     return SizerLoader(
                       height: Sizer.height(300),
                     );
@@ -237,10 +244,10 @@ class _SelectTransferProductsStepState
                         top: Sizer.height(16),
                         bottom: Sizer.height(30),
                       ),
-                      itemCount: inventoryProductVm.inventoryProducts.length,
+                      itemCount: vm.storeProducts.length,
                       separatorBuilder: (_, __) => HDivider(),
                       itemBuilder: (ctx, i) {
-                        final product = inventoryProductVm.inventoryProducts[i];
+                        final product = vm.storeProducts[i];
                         return Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: Sizer.width(16),
@@ -249,23 +256,36 @@ class _SelectTransferProductsStepState
                             productTitle: product.name ?? '',
                             subTitle: product.productType ?? '',
                             productImage: product.primaryMediaUrl ?? '',
-                            sku: product.quantity?.toString() ?? '',
-                            onTap: () {
-                              final existingProductIndex = vm.productList
-                                  .indexWhere((p) => p.id == product.id);
-                              if (existingProductIndex != -1) {
-                                vm.productList[existingProductIndex] = vm
-                                    .productList[existingProductIndex]
-                                    .copyWith(
-                                        quantity: (vm
-                                                    .productList[
-                                                        existingProductIndex]
-                                                    .quantity ??
-                                                0) +
-                                            1);
-                              } else {
-                                vm.productList
-                                    .add(product.copyWith(quantity: 1));
+                            sku: product.sku?.toString() ?? '',
+                            onTap: () async {
+                              final res = await vm.fetchTransferItemDetail(
+                                  product: product);
+
+                              handleApiResponse(
+                                  response: res,
+                                  successMsg: "Product added to Request List");
+
+                              if (!vm.error(transferItemState)) {
+                                product.transferItemDetails =
+                                    transferItemDetailsFromJson(
+                                        json.encode(res.data['data']));
+                              
+                                final existingProductIndex = vm.productList
+                                    .indexWhere((p) => p.id == product.id);
+                                if (existingProductIndex != -1) {
+                                  vm.productList[existingProductIndex] = vm
+                                      .productList[existingProductIndex]
+                                      .copyWith(
+                                          quantity: (vm
+                                                      .productList[
+                                                          existingProductIndex]
+                                                      .quantity ??
+                                                  0) +
+                                              1);
+                                } else {
+                                  vm.productList
+                                      .add(product);
+                                }
                               }
                               setState(() {});
                             },
@@ -329,10 +349,17 @@ class _SelectTransferProductsStepState
                           subTitle: product.productType ?? '',
                           productImage: product.primaryMediaUrl ?? '',
                           sku: product.sku ?? '',
-                          showStock: false, //todo handle when data is available
+                          otherStore: vm.selectedStore?.name ?? '',
+                          otherStock: product.transferItemDetails?.sourceQty
+                              ?.toString(),
+                          yourStock: product.transferItemDetails?.destinyQty
+                              ?.toString(),
                           onRemove: () {
                             vm.productList.removeAt(i);
                             setState(() {});
+                          },
+                          onTap: () {
+                            printty("UI CALL :::>>> ${product.toJson()}");
                           },
                         );
                       },

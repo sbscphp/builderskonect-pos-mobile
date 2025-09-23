@@ -50,6 +50,7 @@ class _OrderStatusState extends State<OrderStatus> {
       case "pending":
       case "not active":
       case "deactivated":
+      case "declined":
         return {
           "bgColor": AppColors.red1,
           "textColor": AppColors.red2D,
@@ -59,6 +60,8 @@ class _OrderStatusState extends State<OrderStatus> {
       case "completed":
       case "available":
       case "active":
+      case "approved":
+      case "received":
         return {
           "bgColor": AppColors.greenED,
           "textColor": AppColors.green1A,

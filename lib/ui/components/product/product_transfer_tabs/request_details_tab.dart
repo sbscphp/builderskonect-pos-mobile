@@ -94,7 +94,7 @@ class _RequestDetailsTabState extends ConsumerState<RequestDetailsTab> {
                     ],
                   ),
                 ),
-                if (1 + 1 == 3)
+                if (vm.transferProduct?.status == "action taken")
                   Column(
                     children: [
                       YBox(16),
@@ -112,22 +112,28 @@ class _RequestDetailsTabState extends ConsumerState<RequestDetailsTab> {
                           children: [
                             ProfileColText(
                               title: "Response From",
-                              subTitle: "Jessica Doe",
+                              subTitle: vm.transferProduct?.updatedBy ?? '',
                             ),
                             YBox(16),
-                            ProfileColText(
-                              title: "Response Date",
-                              subTitle: "24, July, 2025 | 09:00 AM",
-                            ),
-                            YBox(16),
+                            // ProfileColText(
+                            //   title: "Response Date",
+                            //   subTitle: "24, July, 2025 | 09:00 AM",
+                            // ),
+                            // YBox(16),
                             ProfileColText(
                               title: "Appproved",
-                              subTitle: "10",
+                              subTitle: vm
+                                      .transferProduct?.approvedProductsCount
+                                      ?.toString() ??
+                                  "0",
                             ),
                             YBox(16),
                             ProfileColText(
                               title: "Rejected",
-                              subTitle: "200",
+                              subTitle: vm
+                                      .transferProduct?.declinedProductsCount
+                                      ?.toString() ??
+                                  "0",
                             ),
                           ],
                         ),

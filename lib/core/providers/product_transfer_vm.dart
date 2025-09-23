@@ -63,9 +63,61 @@ class ProductTransferVm extends BaseVm {
     notifyListeners();
   }
 
+  final storeC = TextEditingController();
+  InventoryProductModel? _inventoryProductModel;
+  List<ProductModel> _storeProducts = [];
+  List<ProductModel> get storeProducts => _storeProducts;
+
+  //Given that [_selectedStore] is not null fetch Store products by store ID
+  Future<ApiResponse> fetchProductsByStoreId({String? q}) async {
+    _inventoryProductModel = null;
+    _storeProducts.clear();
+    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/inventory-products")
+      ..addQueryParameterIfNotEmpty("q", q ?? '')
+      ..addQueryParameterIfNotEmpty("location_id", _selectedStore?.id ?? '')
+      ..addQueryParameterIfNotEmpty("limit", '50')
+      ..addQueryParameterIfNotEmpty("paginate", '1');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: storeProductState,
+      busyObjectName: storeProductState,
+      onSuccess: (data) {
+        _inventoryProductModel =
+            inventoryProductModelFromJson(json.encode(data['data']));
+        _storeProducts = _inventoryProductModel?.data?.data ?? [];
+
+        return apiResponse;
+      },
+    );
+  }
+
+  //Updates product with Product Item Details
+  Future<ApiResponse> fetchTransferItemDetail({ProductModel? product}) async {
+    UriBuilder uriBuilder = UriBuilder(
+        "/api/v1/merchants/inventory-products/transfers/line-item/details")
+      ..addQueryParameterIfNotEmpty("product_id", product?.id ?? '')
+      ..addQueryParameterIfNotEmpty("location_id", _selectedStore?.id ?? '');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: transferItemState,
+      busyObjectName: transferItemState,
+      onSuccess: (data) {
+        // product?.transferItemDetails =
+        //     transferItemDetailsFromJson(json.encode(data['data']));
+        // printty("AFTER CALL :::>>> ${product?.toJson()}");
+        return apiResponse;
+      },
+    );
+  }
+
   /// List of products in the current transfer order
   List<ProductModel> productList = [];
 
+  TransferProductModel? createRequestModel;
   Future<ApiResponse> createProductTransfer() async {
     final body = {
       "line_items": productList
@@ -81,16 +133,33 @@ class ProductTransferVm extends BaseVm {
       body: body,
       busyObjectName: createState,
       onSuccess: (data) {
-        // getDashboardStats();
+        createRequestModel = transferProductFromJson(json.encode(data['data']));
+        getTransferProducts();
+        _reset();
         return apiResponse;
       },
     );
+  }
+
+  _reset() {
+    productList.clear();
+    _storeProducts.clear();
+    storeC.clear();
+    _selectedStore = null;
+    notifyListeners();
   }
 
   TransferProductModel? _transferProduct;
   TransferProductModel? get transferProduct => _transferProduct;
 
   List<LineItemProduct> lineItems = [];
+  List<LineItemProduct> get approvedItems => lineItems
+      .where((product) =>
+          product.status == "received" || product.status == "approved")
+      .toList();
+  List<LineItemProduct> get rejectedItems =>
+      lineItems.where((product) => product.status == "declined").toList();
+
   Future<ApiResponse> viewTransferProduct(String id) async {
     _transferProduct = null;
     return await performApiCall(
@@ -102,6 +171,30 @@ class ProductTransferVm extends BaseVm {
         _transferProduct = transferProductFromJson(json.encode(data['data']));
         lineItems = lineitemProductListFromJson(
             jsonEncode(_transferProduct?.lineItems?.data));
+        return apiResponse;
+      },
+    );
+  }
+
+  List<LineItemProduct> selectedActionProducts = [];
+
+  Future<ApiResponse> updateTransferProduct(String status,
+      {String? reason}) async {
+    final body = {
+      "reason": reason,
+      "line_item_ids": selectedActionProducts.map((e) => e.id).toList(),
+      "status": status
+    };
+    return await performApiCall(
+      url:
+          "/api/v1/merchants/inventory-products/transfers/${_transferProduct?.id ?? ''}",
+      method: apiService.putWithAuth,
+      errorObjectName: updateState,
+      busyObjectName: updateState,
+      body: body,
+      onSuccess: (data) {
+        selectedActionProducts.clear();
+        viewTransferProduct(_transferProduct?.id ?? '');
         return apiResponse;
       },
     );

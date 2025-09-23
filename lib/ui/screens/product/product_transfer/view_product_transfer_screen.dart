@@ -24,6 +24,7 @@ class _ViewProductTransferScreenState
 
   fetchTransferProduct() async {
     ref.read(productTransferVm).viewTransferProduct(widget.productId);
+    ref.read(productTransferVm).selectedActionProducts.clear();
   }
 
   @override
@@ -37,7 +38,7 @@ class _ViewProductTransferScreenState
         height: Sizer.screenHeight,
         width: Sizer.screenWidth,
         child: BusyOverlay(
-          show: vm.busy(viewState),
+          show: vm.busy(viewState) || vm.busy(updateState),
           child: ListView(
             padding: EdgeInsets.only(
               left: Sizer.width(16),

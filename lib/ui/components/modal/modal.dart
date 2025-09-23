@@ -23,9 +23,8 @@ export 'select_source_modal.dart';
 export 'state_modal.dart';
 export 'store_option_modal.dart';
 export 'unit_modal.dart';
-export 'discount_options_modal.dart';
-export 'search_product_modal.dart';
-
+export 'take_transfer_action_modal.dart';
+export 'transfer_rejection_modal.dart';
 
 
 export 'store_modal.dart';

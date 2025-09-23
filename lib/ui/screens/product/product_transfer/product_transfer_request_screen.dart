@@ -25,6 +25,7 @@ class _ProductTransferRequestScreenState
             // Clear product list and selected Store ID
             ref.read(productTransferVm).productList = [];
             ref.read(productTransferVm).selectedStore = null;
+            ref.read(productTransferVm).storeC.clear();
           } else {
             step--;
             setState(() {});

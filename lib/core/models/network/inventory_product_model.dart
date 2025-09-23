@@ -136,38 +136,38 @@ class ProductModel {
   final List<String>? media;
   final dynamic attributes;
   int? requestQuantity;
+  TransferItemDetails? transferItemDetails;
 
-  ProductModel({
-    this.id,
-    this.name,
-    this.sku,
-    this.ean,
-    this.code,
-    this.category,
-    this.categoryId,
-    this.subcategory,
-    this.subcategoryId,
-    this.productType,
-    this.productTypeId,
-    this.retailPrice,
-    this.brand,
-    this.costPrice,
-    this.currentPrice,
-    this.metadata,
-    this.dateAdded,
-    this.description,
-    this.tags,
-    this.status,
-    this.quantity,
-    this.measurementUnit,
-    this.dimension,
-    this.weight,
-    this.reorderValue,
-    this.primaryMediaUrl,
-    this.media,
-    this.attributes,
-    this.requestQuantity
-  });
+  ProductModel(
+      {this.id,
+      this.name,
+      this.sku,
+      this.ean,
+      this.code,
+      this.category,
+      this.categoryId,
+      this.subcategory,
+      this.subcategoryId,
+      this.productType,
+      this.productTypeId,
+      this.retailPrice,
+      this.brand,
+      this.costPrice,
+      this.currentPrice,
+      this.metadata,
+      this.dateAdded,
+      this.description,
+      this.tags,
+      this.status,
+      this.quantity,
+      this.measurementUnit,
+      this.dimension,
+      this.weight,
+      this.reorderValue,
+      this.primaryMediaUrl,
+      this.media,
+      this.attributes,
+      this.requestQuantity});
 
   // ProductModel copywith
   ProductModel copyWith({
@@ -298,6 +298,7 @@ class ProductModel {
         "primary_media_url": primaryMediaUrl,
         "media": media == null ? [] : List<dynamic>.from(media!.map((x) => x)),
         "attributes": attributes,
+        "productItem": transferItemDetails?.toJson()
       };
 }
 
@@ -424,5 +425,43 @@ class ProductStats {
         "low_stock_products": lowStockProducts,
         "available_products": availableProducts,
         "total_sales": totalSales,
+      };
+}
+
+TransferItemDetails transferItemDetailsFromJson(String str) =>
+    TransferItemDetails.fromJson(json.decode(str));
+
+class TransferItemDetails {
+   String? id;
+   String? name;
+   String? primaryImage;
+   String? sku;
+   int? sourceQty;
+   int? destinyQty;
+
+  TransferItemDetails(
+      {this.id,
+      this.name,
+      this.primaryImage,
+      this.sku,
+      this.sourceQty,
+      this.destinyQty});
+
+  factory TransferItemDetails.fromJson(Map<String, dynamic> json) =>
+      TransferItemDetails(
+          id: json['id'],
+          name: json['name'],
+          primaryImage: json['primary_image'],
+          sku: json['SKU'],
+          sourceQty: json['source_quantity'],
+          destinyQty: json['destination_quantity']);
+
+  toJson() => {
+        "id": id,
+        "name": name,
+        "primary_image": primaryImage,
+        "SKU": sku,
+        "source_quantity": sourceQty,
+        "destination_quantity": destinyQty
       };
 }

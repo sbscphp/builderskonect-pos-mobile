@@ -10,4 +10,5 @@ export 'select_transfer_products_step.dart';
 export 'transfer_product_widget.dart';
 export 'enter_transfer_qty_step.dart';
 export 'product_transfer_tabs/product_transfer_tabs.dart';
+export 'approve_reject_product_item.dart';
 

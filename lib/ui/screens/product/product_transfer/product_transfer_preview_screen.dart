@@ -132,7 +132,7 @@ class _ProductTransferPreviewScreenState
                                             title:
                                                 "Transfer Request Successfully Sent",
                                             description:
-                                                "A Product Code has been generated for this product.#BM 0126374",
+                                                "A Request Code has been generated for this transfer.#${vm.createRequestModel?.reference ?? "000"}",
                                             solidBtnText: "Okay, good",
                                             onSolidBtnOnTap: () {
                                               // Get navigation context safely
@@ -140,6 +140,8 @@ class _ProductTransferPreviewScreenState
                                                   .appNavKey.currentContext;
                                               if (navCtx == null) return;
 
+                                              Navigator.pop(navCtx);
+                                              Navigator.pop(navCtx);
                                               Navigator.pop(navCtx);
                                               Navigator.pop(navCtx);
 
