@@ -230,7 +230,9 @@ class _RequestAttributeVarientTabState
                     ),
                   ],
                 ),
-                onTap: () {},
+                onTap: () {
+                  widget.onNext?.call();
+                },
               ),
             ],
           ),

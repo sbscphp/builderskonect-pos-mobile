@@ -306,8 +306,12 @@ class CustomerVm extends BaseVm {
   ReviewsStatModel? get vendorReviewsStats => _vendorReviewsStats;
   List<ReviewsModel> _vendorReviewModel = [];
   List<ReviewsModel> get vendorReviewModel => _vendorReviewModel;
-  Future<ApiResponse> vendorReviewProduct({bool paginate = true}) async {
+  Future<ApiResponse> vendorReviewProduct({
+    bool paginate = true,
+    String? q,
+  }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/reviews")
+      ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("limit", '30')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
@@ -317,10 +321,45 @@ class CustomerVm extends BaseVm {
       errorObjectName: vendorReviewsState,
       busyObjectName: vendorReviewsState,
       onSuccess: (data) {
-        _vendorReviewsStats =
-            reviewsStatModelFromJson(json.encode(data['data']?['stats']));
-        _vendorReviewModel =
-            reviewsModelFromJson(json.encode(data['data']?['data']?['data']));
+        if (paginate) {
+          _vendorReviewsStats =
+              reviewsStatModelFromJson(json.encode(data['data']?['stats']));
+          _vendorReviewModel =
+              reviewsModelFromJson(json.encode(data['data']?['data']?['data']));
+        } else {
+          _vendorReviewModel = reviewsModelFromJson(json.encode(data['data']));
+        }
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse<ReviewsModel>> viewReview({
+    required int reviewId,
+  }) async {
+    return await performApiCall<ReviewsModel>(
+      url: "/api/v1/merchants/reviews/$reviewId",
+      method: apiService.getWithAuth,
+      errorObjectName: viewState,
+      busyObjectName: viewState,
+      onSuccess: (data) {
+        return ApiResponse(
+            success: true, data: ReviewsModel.fromJson(data["data"]));
+      },
+    );
+  }
+
+  Future<ApiResponse> sendResponse({
+    required int reviewId,
+    required String response,
+  }) async {
+    return await performApiCall(
+      url: "/api/v1/merchants/reviews/$reviewId",
+      method: apiService.putWithAuth,
+      errorObjectName: rendResponse,
+      busyObjectName: rendResponse,
+      body: {"response": response},
+      onSuccess: (data) {
         return apiResponse;
       },
     );

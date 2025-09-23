@@ -32,6 +32,8 @@ class _CustomerReviewModalState extends ConsumerState<CustomerReviewModal> {
     super.dispose();
   }
 
+  bool get hasResonse => widget.review.response != null;
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -122,33 +124,106 @@ class _CustomerReviewModalState extends ConsumerState<CustomerReviewModal> {
             },
           ),
           YBox(16),
-          Row(
-            children: [
-              Expanded(
-                child: CustomBtn.solid(
-                  isOutline: true,
-                  text: "Cancel",
-                  textColor: colorScheme.black85,
-                  onTap: () {},
+          if (!hasResonse)
+            Row(
+              children: [
+                Expanded(
+                  child: CustomBtn.solid(
+                    isOutline: true,
+                    text: "Cancel",
+                    textColor: colorScheme.black85,
+                    onTap: () {},
+                  ),
                 ),
-              ),
-              XBox(16),
-              Expanded(
-                child: CustomBtn.solid(
-                  text: "Save",
-                  onTap: () async {
-                    ModalWrapper.bottomSheet(
-                      context: context,
-                      widget: CustomerReviewRespondModal(),
-                    );
-                  },
+                XBox(16),
+                Expanded(
+                  child: CustomBtn.solid(
+                    text: "Respond",
+                    onTap: () async {
+                      _sendRespond();
+                    },
+                  ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
           HDivider(),
           YBox(30),
         ],
+      ),
+    );
+  }
+
+  _sendRespond() {
+    final loadingProvider = StateProvider<bool>((ref) => false);
+    ModalWrapper.bottomSheet(
+      context: context,
+      widget: Consumer(
+        builder: (context, ref, child) {
+          final isLoading = ref.watch(loadingProvider);
+          return ConfirmationModal(
+            modalConfirmationArg: ModalConfirmationArg(
+              iconPath: AppSvgs.infoCircle,
+              title: "Send Response",
+              description:
+                  "Are you sure you want to send a response to this customer review? This cannot be undone after it is sent.",
+              solidBtnText: "Yes, send",
+              isLoading: isLoading,
+              onSolidBtnOnTap: () async {
+                final customVm = ref.read(customerVmodel);
+                ref.read(loadingProvider.notifier).state = true;
+                final ctx = NavKey.appNavKey.currentContext!;
+
+                try {
+                  final res = await customVm.sendResponse(
+                    reviewId: widget.review.id ?? 0,
+                    response: respnseC.text.trim(),
+                  );
+                  handleApiResponse(
+                    response: res,
+                    showSuccessToast: false,
+                    onSuccess: () {
+                      // Close the current modal first
+                      if (context.mounted) {
+                        Navigator.pop(ctx);
+                      }
+
+                      // Show success modal after a brief delay to prevent navigation conflicts
+                      Future.delayed(const Duration(milliseconds: 100), () {
+                        if (ctx.mounted) {
+                          ModalWrapper.bottomSheet(
+                            context: ctx,
+                            widget: ConfirmationModal(
+                              modalConfirmationArg: ModalConfirmationArg(
+                                iconPath: AppSvgs.checkIcon,
+                                title: "Response Sent",
+                                description:
+                                    "The response has been sent \nsuccessfully.",
+                                solidBtnText: "Okay",
+                                onSolidBtnOnTap: () {
+                                  final currentCtx =
+                                      NavKey.appNavKey.currentContext!;
+                                  Navigator.pop(currentCtx);
+                                },
+                              ),
+                            ),
+                          );
+                        }
+                      });
+                    },
+                  );
+                } finally {
+                  if (context.mounted) {
+                    ref.read(loadingProvider.notifier).state = false;
+                    Navigator.pop(ctx);
+                  }
+                }
+              },
+              onOutlineBtnOnTap: () {
+                Navigator.pop(context);
+              },
+            ),
+          );
+        },
       ),
     );
   }

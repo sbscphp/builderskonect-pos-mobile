@@ -27,3 +27,5 @@ const String categoryState = 'categoryState';
 const String subCategoryState = 'subCategoryState';
 const String brandState = 'brandState';
 const String catTypeState = 'catTypeState';
+const String reviewState = 'reviewState';
+const String rendResponse = 'rendResponse';

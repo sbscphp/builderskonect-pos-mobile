@@ -78,6 +78,7 @@ class _AddProductRequestScreenState
                 2 => RequestAttributeVarientTab(
                     key: const ValueKey('attribute_varient'),
                     onNext: () {
+                      printty("attribute_varient");
                       regSteps = 3;
                       setState(() {});
                     },
