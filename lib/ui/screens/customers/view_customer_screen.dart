@@ -13,7 +13,7 @@ class ViewCustomerScreen extends ConsumerStatefulWidget {
 }
 
 class _ViewCustomerScreenState extends ConsumerState<ViewCustomerScreen> {
-  int indexStack = 0;
+  CustomerDetailsType currentTab = CustomerDetailsType.basicInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -34,65 +34,64 @@ class _ViewCustomerScreenState extends ConsumerState<ViewCustomerScreen> {
                 XBox(20),
                 NotificationTab(
                   text: "Basic information",
-                  isSelected: indexStack == 0,
+                  isSelected: currentTab == CustomerDetailsType.basicInfo,
                   onTap: () {
-                    indexStack = 0;
+                    currentTab = CustomerDetailsType.basicInfo;
                     setState(() {});
                   },
                 ),
                 XBox(6),
                 NotificationTab(
                   text: "Orders",
-                  isSelected: indexStack == 1,
+                  isSelected: currentTab == CustomerDetailsType.orders,
                   onTap: () {
-                    indexStack = 1;
+                    currentTab = CustomerDetailsType.orders;
                     setState(() {});
                   },
                 ),
                 XBox(6),
                 NotificationTab(
                   text: "Returns",
-                  isSelected: indexStack == 2,
+                  isSelected: currentTab == CustomerDetailsType.returns,
                   onTap: () {
-                    indexStack = 2;
+                    currentTab = CustomerDetailsType.returns;
                     setState(() {});
                   },
                 ),
                 XBox(6),
                 NotificationTab(
                   text: "Reviews",
-                  isSelected: indexStack == 3,
+                  isSelected: currentTab == CustomerDetailsType.reviews,
                   onTap: () {
-                    indexStack = 3;
+                    currentTab = CustomerDetailsType.reviews;
                     setState(() {});
                   },
                 ),
-                XBox(6),
-                NotificationTab(
-                  text: "Payment Method",
-                  isSelected: indexStack == 4,
-                  onTap: () {
-                    indexStack = 4;
-                    setState(() {});
-                  },
-                ),
+                // XBox(6),
+                // NotificationTab(
+                //   text: "Payment Method",
+                //   isSelected: indexStack == 4,
+                //   onTap: () {
+                //     indexStack = 4;
+                //     setState(() {});
+                //   },
+                // ),
                 XBox(30),
               ],
             ),
           ),
           YBox(16),
-          Expanded(
-            child: IndexedStack(
-              index: indexStack,
-              children: [
-                BasicInfoTab(customer: widget.customer),
-                CustomerOrdersTab(customer: widget.customer),
-                CustomerReturnsTab(customer: widget.customer),
-                CustomerReviewsTab(customer: widget.customer),
-                CustomersPaymentMethodTab(customer: widget.customer),
-              ],
-            ),
-          ),
+          switch (currentTab) {
+            CustomerDetailsType.basicInfo =>
+              BasicInfoTab(customer: widget.customer),
+            CustomerDetailsType.orders =>
+              CustomerOrdersTab(customer: widget.customer),
+            CustomerDetailsType.returns =>
+              CustomerReturnsTab(customer: widget.customer),
+            CustomerDetailsType.reviews =>
+              CustomerReviewsTab(customer: widget.customer),
+            // CustomerDetailsType.paymentMethods => CustomersPaymentMethodTab(customer: widget.customer),
+          },
         ],
       ),
     );

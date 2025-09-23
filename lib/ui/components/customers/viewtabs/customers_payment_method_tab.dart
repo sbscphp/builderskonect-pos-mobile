@@ -2,12 +2,12 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class CustomersPaymentMethodTab extends ConsumerStatefulWidget {
-  const CustomersPaymentMethodTab({super.key,
+  const CustomersPaymentMethodTab({
+    super.key,
     required this.customer,
   });
 
   final CustomerData customer;
-
 
   @override
   CustomersPaymentMethodTabState createState() =>
@@ -28,80 +28,82 @@ class CustomersPaymentMethodTabState
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    return ListView(
-      padding: EdgeInsets.only(
-        left: Sizer.width(16),
-        right: Sizer.width(16),
-        bottom: Sizer.height(50),
-      ),
-      children: [
-        YBox(16),
-        Container(
-          padding: EdgeInsets.all(Sizer.radius(16)),
-          decoration: BoxDecoration(
-            color: colorScheme.white,
-            borderRadius: BorderRadius.circular(Sizer.radius(4)),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FilterHeader(
-                title: "Payment Methods",
-                subTitle: "View all customer orders with payment methods",
-              ),
-              YBox(16),
-              CustomTextField(
-                controller: searchC,
-                isRequired: false,
-                showLabelHeader: false,
-                hintText: "Search by order ID, name etc",
-                onChanged: (value) {
-                  setState(() {});
-                },
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    InkWell(
-                      onTap: () {},
-                      child: Container(
-                        padding: EdgeInsets.all(Sizer.width(14)),
-                        decoration: BoxDecoration(
-                            border: Border(
-                          left: BorderSide(
-                            color: AppColors.neutral5,
-                            width: 1,
-                          ),
-                        )),
-                        child: SvgPicture.asset(AppSvgs.search),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              YBox(10),
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: EdgeInsets.only(
-                  top: Sizer.height(14),
-                ),
-                itemCount: 8,
-                separatorBuilder: (_, __) => HDivider(),
-                itemBuilder: (ctx, i) {
-                  return CustomerPaymentListTile(
-                    orderId: "#12746398",
-                    amount: "N55,500",
-                    itemCount: "2",
-                    status: "Completed",
-                    date: DateTime.now(),
-                    method: "Transfer, Credit note",
-                  );
-                },
-              ),
-            ],
-          ),
+    return Expanded(
+      child: ListView(
+        padding: EdgeInsets.only(
+          left: Sizer.width(16),
+          right: Sizer.width(16),
+          bottom: Sizer.height(50),
         ),
-      ],
+        children: [
+          YBox(16),
+          Container(
+            padding: EdgeInsets.all(Sizer.radius(16)),
+            decoration: BoxDecoration(
+              color: colorScheme.white,
+              borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FilterHeader(
+                  title: "Payment Methods",
+                  subTitle: "View all customer orders with payment methods",
+                ),
+                YBox(16),
+                CustomTextField(
+                  controller: searchC,
+                  isRequired: false,
+                  showLabelHeader: false,
+                  hintText: "Search by order ID, name etc",
+                  onChanged: (value) {
+                    setState(() {});
+                  },
+                  suffixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () {},
+                        child: Container(
+                          padding: EdgeInsets.all(Sizer.width(14)),
+                          decoration: BoxDecoration(
+                              border: Border(
+                            left: BorderSide(
+                              color: AppColors.neutral5,
+                              width: 1,
+                            ),
+                          )),
+                          child: SvgPicture.asset(AppSvgs.search),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                YBox(10),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    top: Sizer.height(14),
+                  ),
+                  itemCount: 8,
+                  separatorBuilder: (_, __) => HDivider(),
+                  itemBuilder: (ctx, i) {
+                    return CustomerPaymentListTile(
+                      orderId: "#12746398",
+                      amount: "N55,500",
+                      itemCount: "2",
+                      status: "Completed",
+                      date: DateTime.now(),
+                      method: "Transfer, Credit note",
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
