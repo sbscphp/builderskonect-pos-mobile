@@ -21,3 +21,5 @@ export 'theme_view_model.dart';
 export 'user_profile_vm.dart'; 
 export 'vendor_profile_vm.dart';
 export 'discount_vm.dart';
+
+export 'product_transfer_vm.dart';

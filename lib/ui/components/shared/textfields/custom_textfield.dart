@@ -117,7 +117,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   ),
                 TextSpan(
                   text: widget.labelText,
-                  style: textTheme.text14,
+                  style: textTheme.text14
+                      ?.copyWith(fontWeight: widget.labelFontWeight),
                 ),
                 WidgetSpan(child: SizedBox(width: 4)),
                 TextSpan(

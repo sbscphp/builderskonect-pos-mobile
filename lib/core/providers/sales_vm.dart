@@ -12,6 +12,8 @@ class SalesVm extends BaseVm {
 
   Future<ApiResponse> getSalesOverview({
     String? q,
+    String? dateFilter,
+    String? status,
     String? salesType,
     String? stateObjectName,
     String? customerId,
@@ -24,6 +26,8 @@ class SalesVm extends BaseVm {
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
       ..addQueryParameterIfNotEmpty("sales_type", salesType ?? '')
+      ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
+      ..addQueryParameterIfNotEmpty("status", status ?? '')
       ..addQueryParameterIfNotEmpty("limit", '10')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 

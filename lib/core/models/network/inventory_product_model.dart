@@ -137,6 +137,8 @@ class ProductModel {
   final dynamic attributes;
   final num? ratings;
   final num? totalReviews;
+  int? requestQuantity;
+  TransferItemDetails? transferItemDetails;
 
   ProductModel({
     this.id,
@@ -168,7 +170,7 @@ class ProductModel {
     this.media,
     this.attributes,
     this.ratings,
-    this.totalReviews,
+    this.totalReviews
   });
 
   // ProductModel copywith
@@ -307,6 +309,7 @@ class ProductModel {
         "attributes": attributes,
         "ratings": ratings,
         "total_reviews": totalReviews,
+        "productItem": transferItemDetails?.toJson()
       };
 }
 
@@ -433,5 +436,43 @@ class ProductStats {
         "low_stock_products": lowStockProducts,
         "available_products": availableProducts,
         "total_sales": totalSales,
+      };
+}
+
+TransferItemDetails transferItemDetailsFromJson(String str) =>
+    TransferItemDetails.fromJson(json.decode(str));
+
+class TransferItemDetails {
+   String? id;
+   String? name;
+   String? primaryImage;
+   String? sku;
+   int? sourceQty;
+   int? destinyQty;
+
+  TransferItemDetails(
+      {this.id,
+      this.name,
+      this.primaryImage,
+      this.sku,
+      this.sourceQty,
+      this.destinyQty});
+
+  factory TransferItemDetails.fromJson(Map<String, dynamic> json) =>
+      TransferItemDetails(
+          id: json['id'],
+          name: json['name'],
+          primaryImage: json['primary_image'],
+          sku: json['SKU'],
+          sourceQty: json['source_quantity'],
+          destinyQty: json['destination_quantity']);
+
+  toJson() => {
+        "id": id,
+        "name": name,
+        "primary_image": primaryImage,
+        "SKU": sku,
+        "source_quantity": sourceQty,
+        "destination_quantity": destinyQty
       };
 }

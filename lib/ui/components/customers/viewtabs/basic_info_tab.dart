@@ -29,7 +29,7 @@ class _BasicInfoTabState extends ConsumerState<BasicInfoTab> {
     // final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final customerVm = ref.watch(customerVmodel);
-    printty("customerVm.customerDetails ${customerVm.customerDetails}");
+    printty("customerVm.customerDetails ${customerVm.customerDetails?.toJson().toString()}");
     return Container(
       margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
       padding: EdgeInsets.symmetric(

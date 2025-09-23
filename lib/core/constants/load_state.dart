@@ -7,6 +7,7 @@ const String updateState = 'updateState';
 const String deleteState = 'deleteState';
 const String searchState = 'searchState';
 const String viewState = 'viewState';
+const String filterState = 'filterState';
 
 // slaes
 const String draftSalesState = 'draftSalesState';
@@ -16,3 +17,8 @@ const String salesAnalysisStatState = 'salesAnalysisStatState';
 
 // reviews
 const String vendorReviewsState = 'vendorReviewsState';
+
+//product transfer 
+const String storeProductState = 'storeProductState';
+const String transferItemState = 'transferItemState';
+

@@ -8,6 +8,10 @@ SalesOrdersModel salesOrdersModelFromJson(String str) =>
 String salesOrdersModelToJson(SalesOrdersModel data) =>
     json.encode(data.toJson());
 
+List<SalesOrdersModel> salesOrderDataListFromJson(String str) =>
+    List<SalesOrdersModel>.from(
+        json.decode(str).map((x) => SalesOrdersModel.fromJson(x)));
+
 class SalesOrdersModel {
   final String? id;
   final String? orderNumber;

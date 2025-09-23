@@ -162,9 +162,11 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                                   context: context,
                                   widget:
                                       Consumer(builder: (context, ref, child) {
-                                    final isLoading = ref.watch(loadingProvider);
+                                    final isLoading =
+                                        ref.watch(loadingProvider);
                                     return ConfirmationModal(
-                                      modalConfirmationArg: ModalConfirmationArg(
+                                      modalConfirmationArg:
+                                          ModalConfirmationArg(
                                         iconPath: AppSvgs.infoCircleRed,
                                         title: "Cancel Subscription",
                                         description:
@@ -180,13 +182,16 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                                           try {
                                             await ref
                                                 .read(subscriptionVModel)
-                                                .cancelSubscription(subscriptionVm
-                                                    .subscriptionHistory[0].id!);
+                                                .cancelSubscription(
+                                                    subscriptionVm
+                                                        .subscriptionHistory[0]
+                                                        .id!);
                                           } finally {
                                             // Check if the widget is still mounted before using ref
                                             if (context.mounted) {
                                               ref
-                                                  .read(loadingProvider.notifier)
+                                                  .read(
+                                                      loadingProvider.notifier)
                                                   .state = false;
                                             }
                                           }
@@ -211,30 +216,35 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                         subTitle:
                             "This shows the vendors billing history overtime",
                         onFilter: () {
-                           ModalWrapper.bottomSheet(
-                          context: context,
-                          widget: FilterDataModal(
-                            selectorGroups: [
-                              SelectorGroup(
-                                key: "status",
-                                title: "Status",
-                                options: [
-                                  "All status",
-                                  "Active",
-                                  "Expired",
-                                  "Cancelled",
+                          ModalWrapper.bottomSheet(
+                              context: context,
+                              widget: FilterDataModal(
+                                selectorGroups: [
+                                  SelectorGroup(
+                                    key: "status",
+                                    title: "Status",
+                                    options: [
+                                      "All status",
+                                      "Active",
+                                      "Expired",
+                                      "Cancelled",
+                                    ],
+                                    selectedValue: "All status",
+                                  ),
                                 ],
-                                // selectedValue: "Completed",
-                              ),
-                            ],
-                            onFilter: (filterData) {
-                              printty("Filter applied: $filterData");
-                            },
-                            onReset: () {
-                              printty("Filters reset");
-                              // Handle reset action here
-                            },
-                          ));
+                                onFilter: (filterData) {
+                                  // printty("Filter applied: $filterData");
+                                  subscriptionVm.getSubcriptionHistory(
+                                      dateFilter: filterData["date_filter"],
+                                      status: filterData["selectorGroups"]
+                                                  ["status"] ==
+                                              "All status"
+                                          ? ''
+                                          : (filterData["selectorGroups"]
+                                                  ["status"] as String)
+                                              .toLowerCase());
+                                },
+                              ));
                         },
                       ),
                       YBox(16),

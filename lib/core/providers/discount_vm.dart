@@ -13,7 +13,7 @@ class DiscountVm extends BaseVm {
   List<DiscountModel> get discounts => _discounts;
 
   Future<ApiResponse> getDashboardStats(
-      {String q = '', String? busyObjectName = firstState}) async {
+      {String q = '', String? busyObjectName = firstState,String? dateFilter,String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -21,6 +21,9 @@ class DiscountVm extends BaseVm {
         UriBuilder("/api/v1/merchants/discounts?page=$pageNumber")
           ..addQueryParameterIfNotEmpty("paginate", "1")
           ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("limit", "10")
+          ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
+          ..addQueryParameterIfNotEmpty("status", status ?? '')
           ..addQueryParameterIfNotEmpty('q', q);
 
     return await performApiCall(

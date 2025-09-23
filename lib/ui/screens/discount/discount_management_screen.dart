@@ -42,7 +42,7 @@ class _DiscountManagementScreenState
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
-        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+        if (!vm.busy(paginateState) && vm.pageNumber < (vm.lastPage ?? 1)) {
           vm.getDashboardStats(busyObjectName: paginateState);
         }
       }
@@ -267,17 +267,31 @@ class _DiscountManagementScreenState
                                             ],
                                             selectedValue: "All",
                                           ),
-                                          SelectorGroup(
-                                            key: "type",
-                                            title: "Loyalty Type",
-                                            selectedValue: "All",
-                                            options: [
-                                              "All",
-                                              "Discount",
-                                              "Coupon",
-                                            ],
-                                          ),
+                                          //type no longer available
+                                          // SelectorGroup(
+                                          //   key: "type",
+                                          //   title: "Loyalty Type",
+                                          //   selectedValue: "All",
+                                          //   options: [
+                                          //     "All",
+                                          //     "Discount",
+                                          //     "Coupon",
+                                          //   ],
+                                          // ),
                                         ],
+                                        onFilter: (data) async {
+                                          await discountViewModel
+                                              .getDashboardStats(
+                                                  busyObjectName: firstState,
+                                                  dateFilter:
+                                                      data["date_filter"],
+                                                  status:
+                                                      data["selectorGroups"]["status"] == "All"
+                                                          ? ''
+                                                          : (data["selectorGroups"]["status"]
+                                                                  as String)
+                                                              .toLowerCase());
+                                        },
                                       ),
                                     );
                                   },
