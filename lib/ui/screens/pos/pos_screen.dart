@@ -326,27 +326,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                   ModalWrapper.bottomSheet(
                                       context: context,
                                       widget: FilterDataModal(
-                                        modalHeight: Sizer.screenHeight * .5,
-                                        selectorGroups: [
-                                          SelectorGroup(
-                                            key: "stores",
-                                            title: "Stores",
-                                            options: [
-                                              "All Stores",
-                                              // "Processing",
-                                              // "Cancelled",
-                                              // "Completed"
-                                            ],
-                                            selectedValue: "All Stores",
-                                          ),
-                                        ],
+                                        modalHeight: Sizer.screenHeight * .4,
                                         onFilter: (filterData) {
-                                          printty(
-                                              "Filter applied: $filterData");
-                                        },
-                                        onReset: () {
-                                          printty("Filters reset");
-                                          // Handle reset action here
+                                          // printty(
+                                          //     "Filter applied: $filterData");
+                                          dashVm.getRevenueAndTraffic(
+                                              dateFilter:
+                                                  filterData["date_filter"]);
                                         },
                                       ));
                                 },
@@ -386,37 +372,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     ModalWrapper.bottomSheet(
                                         context: context,
                                         widget: FilterDataModal(
-                                          selectorGroups: [
-                                            SelectorGroup(
-                                              key: "stores",
-                                              title: "Stores",
-                                              options: [
-                                                "All Stores",
-                                                // "Processing",
-                                                // "Cancelled",
-                                                // "Completed"
-                                              ],
-                                              selectedValue: "All Stores",
-                                            ),
-                                            SelectorGroup(
-                                              key: "type",
-                                              title: "Customer Tpe",
-                                              options: [
-                                                "All customers",
-                                                "Walk-in customers",
-                                                "Online customers",
-                                                // "Completed"
-                                              ],
-                                              selectedValue: "All Stores",
-                                            ),
-                                          ],
+                                          modalHeight: Sizer.screenHeight * .4,
                                           onFilter: (filterData) {
-                                            printty(
-                                                "Filter applied: $filterData");
-                                          },
-                                          onReset: () {
-                                            printty("Filters reset");
-                                            // Handle reset action here
+                                            // printty(
+                                            //     "Filter applied: $filterData");
+                                            dashVm.getRevenueAndTraffic(
+                                                dateFilter:
+                                                    filterData["date_filter"]);
                                           },
                                         ));
                                   },

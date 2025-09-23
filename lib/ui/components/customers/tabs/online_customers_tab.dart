@@ -134,13 +134,9 @@ class _OnlineCustomersTabState extends ConsumerState<OnlineCustomersTab> {
                         widget: FilterDataModal(
                           modalHeight: Sizer.screenHeight * 0.4,
                           onFilter: (filterData) {
-                            printty("Filter applied: $filterData");
-                            // staffViewModel.getDashboardStats();
+                            customerVm.getCustomerOverview(type: CustomType.online,dateFilter: filterData["date_filter"]);
                           },
-                          onReset: () {
-                            printty("Filters reset");
-                            // Handle reset action here
-                          },
+                         
                         ));
                   },
                 ),

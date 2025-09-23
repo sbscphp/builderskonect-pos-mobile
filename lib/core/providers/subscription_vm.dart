@@ -77,11 +77,13 @@ class SubscriptionVm extends BaseVm {
   Future<ApiResponse> getSubcriptionHistory({
     String? q,
     String? dateFilter,
+    String? status,
     String? sortBy,
   }) async {
     UriBuilder uri = UriBuilder("/api/v1/merchants/subscriptions")
       ..addQueryParameterIfNotEmpty("q", q ?? "")
       ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? "")
+      ..addQueryParameterIfNotEmpty("status", status ?? "")
       ..addQueryParameterIfNotEmpty("sort_by", sortBy ?? "");
 
     return await performApiCall(

@@ -8,6 +8,7 @@ class ProfileColText extends StatelessWidget {
     this.subTitle,
     this.subTitleWidget,
     this.onCopy,
+    this.subtitleColor,
   });
 
   final String title;
@@ -15,6 +16,7 @@ class ProfileColText extends StatelessWidget {
   final String? subTitle;
   final Widget? subTitleWidget;
   final Function()? onCopy;
+  final Color? subtitleColor;
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +62,7 @@ class ProfileColText extends StatelessWidget {
                     maxLines: 3,
                     overflow: TextOverflow.ellipsis,
                     style: textTheme.text14?.medium.copyWith(
-                      color: AppColors.black23,
+                      color: subtitleColor ?? AppColors.black23,
                     ),
                   ),
             ),

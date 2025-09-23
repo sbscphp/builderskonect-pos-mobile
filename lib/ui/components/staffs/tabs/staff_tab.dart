@@ -88,30 +88,34 @@ class _StaffTabState extends ConsumerState<StaffTab> {
             title: "Staff List",
             subTitle: "See all staff created",
             onFilter: () async {
-                                    ModalWrapper.bottomSheet(
-                          context: context,
-                          widget: FilterDataModal(
-                            selectorGroups: [
-                              SelectorGroup(
-                                key: "status",
-                                title: "Status",
-                                options: [
-                                  "All",
-                                  "Active",
-                                  "Deactivated",
-                                ],
-                                selectedValue: staffStatus,
-                              ),
-                            ],
-                            onFilter: (filterData) {
-                              printty("Filter applied: $filterData");
-                              staffViewModel.getDashboardStats();
-                            },
-                            onReset: () {
-                              printty("Filters reset");
-                              // Handle reset action here
-                            },
-                          ));
+              ModalWrapper.bottomSheet(
+                  context: context,
+                  widget: FilterDataModal(
+                    selectorGroups: [
+                      SelectorGroup(
+                        key: "status",
+                        title: "Status",
+                        options: [
+                          "All",
+                          "Active",
+                          "Deactivated",
+                        ],
+                        selectedValue: staffStatus,
+                      ),
+                    ],
+                    onFilter: (data) {
+                      staffViewModel.getDashboardStats(
+                          dateFilter: data["date_filter"],
+                          status: data["selectorGroups"]["status"] == "All"
+                              ? ''
+                              : (data["selectorGroups"]["status"] as String)
+                                  .toLowerCase());
+                    },
+                    onReset: () {
+                      printty("Filters reset");
+                      // Handle reset action here
+                    },
+                  ));
             },
           ),
           YBox(16),

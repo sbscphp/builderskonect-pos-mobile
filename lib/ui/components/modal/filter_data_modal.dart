@@ -120,6 +120,10 @@ class _FilterDataModalState extends ConsumerState<FilterDataModal> {
       filterData['endDate'] = endDate;
     }
 
+    if (selectedDate != null && endDate != null) {
+      filterData['date_filter'] = "${selectedDate.toString().split(" ").first.toString()}|${endDate.toString().split(" ").first.toString()}";
+    }
+
     // Handle legacy single selector
     if (selectedSelectorValue != null) {
       filterData['selectedOption'] = selectedSelectorValue;

@@ -24,12 +24,14 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
     });
   }
 
+
   @override
   void dispose() {
     searchC.dispose();
     _scrollController.dispose();
     super.dispose();
   }
+
 
   _scrollListener() {
     final vm = ref.watch(customerVmodel);
@@ -132,25 +134,25 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                     ModalWrapper.bottomSheet(
                         context: context,
                         widget: FilterDataModal(
-                          selectorGroups: [
-                            SelectorGroup(
-                              key: "channel",
-                              title: "Channel",
-                              options: [
-                                "All",
-                                "Online",
-                                "Walk-in",
-                              ],
-                              // selectedValue: staffStatus,
-                            ),
-                          ],
-                          onFilter: (filterData) {
-                            printty("Filter applied: $filterData");
-                            // staffViewModel.getDashboardStats();
-                          },
-                          onReset: () {
-                            printty("Filters reset");
-                            // Handle reset action here
+                          modalHeight: Sizer.screenHeight * 0.4,
+                          // selectorGroups: [
+                          //   SelectorGroup(
+                          //     key: "channel",
+                          //     title: "Channel",
+                          //     options: [
+                          //       "All",
+                          //       "Online",
+                          //       "Walk-in",
+                          //     ],
+                          //     selectedValue: "All",
+                          //   ),
+                          // ],
+                          onFilter: (data) {
+                            customerVm.getCustomerOverview(
+                                // type:  data["selectorGroups"]["channel"] == "All"
+                                // ? null
+                                // : data["selectorGroups"]["channel"] == "Online" ? CustomType.online : CustomType.offline,
+                                dateFilter: data["date_filter"]);
                           },
                         ));
                   },

@@ -36,46 +36,57 @@ class _ProductOverviewWidgetState extends ConsumerState<ProductOverviewWidget> {
 
     return OverviewWidget(
       onFilterTap: () {
+        // ModalWrapper.bottomSheet(
+        //     context: context,
+        //     widget: FilterDataModal(
+        //       title: "Filter Products",
+        //       subtitle: "Filter products by multiple criteria",
+        //       dateTitle: "Product Added Date",
+        //       selectorGroups: [
+        //         SelectorGroup(
+        //           key: "stock_status",
+        //           title: "Stock Status",
+        //           options: ["All", "In Stock", "Out of Stock", "Low Stock"],
+        //           selectedValue: "All",
+        //         ),
+        //         SelectorGroup(
+        //           key: "category",
+        //           title: "Product Category",
+        //           options: [
+        //             "Electronics",
+        //             "Clothing",
+        //             "Home & Garden",
+        //             "Sports",
+        //             "Books"
+        //           ],
+        //         ),
+        //       ],
+        //       showPriceRange: false,
+        //       priceRangeTitle: "Product Price Range",
+        //       priceFromLabel: "Min Price",
+        //       priceToLabel: "Max Price",
+        //       onFilter: (filterData) {
+        //         printty("Filter applied: $filterData");
+        //         // Handle the filter data here
+        //         // filterData will contain:
+        //         // - startDate, endDate (if date selected)
+        //         // - selectorGroups: Map<String, String> with selected values
+        //         // - priceFrom, priceTo (if price range entered)
+        //       },
+        //       onReset: () {
+        //         printty("Filters reset");
+        //         // Handle reset action here
+        //       },
+        //     ));
         ModalWrapper.bottomSheet(
             context: context,
             widget: FilterDataModal(
-              title: "Filter Products",
-              subtitle: "Filter products by multiple criteria",
-              dateTitle: "Product Added Date",
-              selectorGroups: [
-                SelectorGroup(
-                  key: "stock_status",
-                  title: "Stock Status",
-                  options: ["All", "In Stock", "Out of Stock", "Low Stock"],
-                  selectedValue: "All",
-                ),
-                SelectorGroup(
-                  key: "category",
-                  title: "Product Category",
-                  options: [
-                    "Electronics",
-                    "Clothing",
-                    "Home & Garden",
-                    "Sports",
-                    "Books"
-                  ],
-                ),
-              ],
-              showPriceRange: false,
-              priceRangeTitle: "Product Price Range",
-              priceFromLabel: "Min Price",
-              priceToLabel: "Max Price",
+              modalHeight: Sizer.screenHeight * .4,
               onFilter: (filterData) {
-                printty("Filter applied: $filterData");
-                // Handle the filter data here
-                // filterData will contain:
-                // - startDate, endDate (if date selected)
-                // - selectorGroups: Map<String, String> with selected values
-                // - priceFrom, priceTo (if price range entered)
-              },
-              onReset: () {
-                printty("Filters reset");
-                // Handle reset action here
+                // printty(
+                //     "Filter applied: $filterData");
+                dashVm.getProductOverview(
+                    dateFilter: filterData["date_filter"]);
               },
             ));
       },
