@@ -17,6 +17,10 @@ class _AddProductRequestScreenState
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(productInventoryVmodel).clearControllers();
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -27,6 +31,19 @@ class _AddProductRequestScreenState
     return Scaffold(
       appBar: CustomAppbar(
         title: "Request to Add Product",
+        onBack: () {
+          if (regSteps == 1) {
+            Navigator.pop(context);
+
+            // Clear product list and selected Store ID
+            // ref.read(productTransferVm).productList = [];
+            // ref.read(productTransferVm).selectedStore = null;
+            // ref.read(productTransferVm).storeC.clear();
+          } else {
+            regSteps--;
+            setState(() {});
+          }
+        },
       ),
       body: Column(
         children: [

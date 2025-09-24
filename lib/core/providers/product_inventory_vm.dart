@@ -12,7 +12,9 @@ class ProductInventoryVm extends BaseVm {
   Future<ApiResponse> getInventoryProducts(
       {String? q,
       bool productReview = false,
-      String? busyObjectName = getState,String? dateFilter,String? status}) async {
+      String? busyObjectName = getState,
+      String? dateFilter,
+      String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -130,6 +132,191 @@ class ProductInventoryVm extends BaseVm {
     required ProductCatalogueParams params,
   }) async {
     final body = params.toJson();
+
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products",
+      method: apiService.postWithAuth,
+      errorObjectName: getState,
+      busyObjectName: getState,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  final productNameC = TextEditingController();
+  final brandC = TextEditingController();
+  final categoryC = TextEditingController();
+  final subCategoryC = TextEditingController();
+  final typeC = TextEditingController();
+  final tagsC = TextEditingController();
+  final descriptionC = TextEditingController();
+
+  BrandModel? selectedBrand;
+  CategoryModel? selectedCategory;
+  CategoryModel? selectedSubCategory;
+  CategoryModel? selectedCategoryType;
+
+  clearControllers() {
+    productNameC.clear();
+    brandC.clear();
+    categoryC.clear();
+    subCategoryC.clear();
+    typeC.clear();
+    tagsC.clear();
+    descriptionC.clear();
+
+    notifyListeners();
+  }
+
+  List<ProductAttributeModel> productAttributes = [];
+  List<ProductAttributeModel> selectedAttributeList = [];
+  bool? hasVariant;
+
+  updateUI() {
+    notifyListeners();
+  }
+
+  Future<ApiResponse> getProductAttributes() async {
+    UriBuilder uriBuilder = UriBuilder("/api/v1/shared/inventory-attributes")
+      ..addQueryParameterIfNotEmpty("paginate", '0')
+      ..addQueryParameterIfNotEmpty(
+          "category_id", selectedCategoryType?.id ?? '');
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: getState,
+      busyObjectName: getState,
+      onSuccess: (data) {
+        productAttributes =
+            productAttributeModelFromJson(json.encode(data['data']));
+        return apiResponse;
+      },
+    );
+  }
+
+//Inventory Form
+  final sellingUnitC = TextEditingController();
+  final stockQtyC = TextEditingController();
+  final qtyPerSellUnitC = TextEditingController();
+  final minOrderQty = TextEditingController();
+  final measurementC = TextEditingController();
+  final dimensionC = TextEditingController();
+  final weightPerSellUnitC = TextEditingController();
+  final weightPerUnitItemC = TextEditingController();
+  final reorderLevelC = TextEditingController();
+  final skuC = TextEditingController();
+  //pricing form
+  final costPricePerUnitC = TextEditingController();
+  final sellingPricePerUnitC = TextEditingController();
+  final discountPriceC = TextEditingController();
+
+  //shipping classification form
+  final shippingWeightTypeC = TextEditingController();
+  final shippingClassC = TextEditingController();
+
+  //parcel dimension form
+  final lengthC = TextEditingController();
+  final widthC = TextEditingController();
+  final heigthC = TextEditingController();
+
+    //parcel measurement var
+  String lengthUnit = '-';
+  String widthUnit = '-';
+  String heightUnit = '-';
+
+
+
+  Future<ApiResponse> createMultipleVariation() async {
+    final body = {
+      "product_creation_format": "multiple",
+      "name": productNameC.text,
+      // "code": "{{$randomUUID}}",
+      "category_id": selectedCategory?.id,
+      "subcategory_id": selectedSubCategory?.id,
+      "product_type_id": selectedCategoryType?.id,
+      "brand": selectedBrand?.name,
+      "description": descriptionC.text,
+      "tags": tagsC.text,
+      "shipping_classes": ["light", "hazardous"],
+      "media": {"product_specification": "", "product_additional_document": ""},
+      // "variants" : [
+      //     {
+      //         "SKU": "{{$randomUUID}}",
+      //         "physical_measurement_unit": {
+      //             "unit": "Area",
+      //             "value": 13
+      //         },
+      //         "physical_dimension": {
+      //             "unit": "Area",
+      //             "value": 231
+      //         },
+      //         "weight_per_unit_item": {
+      //             "unit": "kg",
+      //             "value": 321
+      //         },
+      //         "media": {
+      //             "cover_image_url": "{{$randomImageUrl}}",
+      //             "product_image_url": "{{$randomImageUrl}}"
+      //         },
+      //         "quantity_per_selling_unit": 3,
+      //         "weight": {
+      //             "unit": "kg",
+      //             "value": 321
+      //         },
+      //         "selling_unit": "Each",
+      //         "unit_retail_price": 33500,
+      //         "unit_cost_price": 30000,
+      //         "current_price": 330000,
+      //         "reorder_value": 2,
+      //         "minimum_order_quantity": 3,
+      //         "quantity": 15,
+      //         "metadata": {
+      //             "attributes": {
+      //                 "Brand Tier": ["Local Brand"]
+      //             }
+      //         }
+      //     },
+      //     {
+      //         "SKU": "{{$randomUUID}}",
+      //         "physical_measurement_unit": {
+      //             "unit": "Area",
+      //             "value": 12
+      //         },
+      //         "physical_dimension": {
+      //             "unit": "Area",
+      //             "value": 21
+      //         },
+      //         "weight_per_unit_item": {
+      //             "unit": "kg",
+      //             "value": 301
+      //         },
+      //         "media": {
+      //             "cover_image_url": "{{$randomImageUrl}}",
+      //             "product_image_url": "{{$randomImageUrl}}"
+      //         },
+      //         "quantity_per_selling_unit": 3,
+      //         "weight": {
+      //             "unit": "kg",
+      //             "value": 301
+      //         },
+      //         "selling_unit": "Piece",
+      //         "unit_retail_price": 33500,
+      //         "unit_cost_price": 30000,
+      //         "current_price": 330000,
+      //         "reorder_value": 2,
+      //         "minimum_order_quantity": 3,
+      //         "quantity": 15,
+      //         "metadata": {
+      //             "attributes": {
+      //                 "Brand Tier": ["Local Brand"]
+      //             }
+      //         }
+      //     }
+      // ]
+    };
 
     return await performApiCall(
       url: "/api/v1/merchants/inventory-products",

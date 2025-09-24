@@ -15,34 +15,12 @@ class RequestBasicInfo extends ConsumerStatefulWidget {
 
 class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   final _formKey = GlobalKey<FormState>();
-  final productNameC = TextEditingController();
-  final brandC = TextEditingController();
-  final categoryC = TextEditingController();
-  final subCategoryC = TextEditingController();
-  final typeC = TextEditingController();
-  final tagsC = TextEditingController();
-  final descriptionC = TextEditingController();
-
-  BrandModel? selectedBrand;
-  CategoryModel? selectedCategory;
-  CategoryModel? selectedSubCategory;
-  CategoryModel? selectedCategoryType;
-
-  @override
-  void dispose() {
-    productNameC.dispose();
-    brandC.dispose();
-    categoryC.dispose();
-    subCategoryC.dispose();
-    typeC.dispose();
-    descriptionC.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(productInventoryVmodel);
     return ListView(
       padding: EdgeInsets.only(
         left: Sizer.width(16),
@@ -69,14 +47,15 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: productNameC,
+                  controller: vm.productNameC,
                   labelText: 'Product Name',
                   hintText: 'Enter product name',
                   showLabelHeader: true,
+                  validator: Validators.required(),
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: brandC,
+                  controller: vm.brandC,
                   labelText: 'Brand',
                   hintText: 'Select brand',
                   showLabelHeader: true,
@@ -88,13 +67,14 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                       widget: ProductBrandModal(),
                     );
                     if (res is BrandModel) {
-                      brandC.text = res.name ?? '';
+                      vm.selectedBrand = res;
+                      vm.brandC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: categoryC,
+                  controller: vm.categoryC,
                   labelText: 'Product Category',
                   hintText: 'Select product category',
                   showLabelHeader: true,
@@ -107,60 +87,61 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     );
 
                     if (res is CategoryModel) {
-                      selectedCategory = res;
-                      categoryC.text = res.name ?? '';
+                      vm.selectedCategory = res;
+                      vm.categoryC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: subCategoryC,
+                  controller: vm.subCategoryC,
                   labelText: 'Sub Product Category',
                   hintText: 'Select sub product category',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
                   onTap: () async {
-                    if (selectedCategory == null) {
+                    if (vm.selectedCategory == null) {
                       showWarningToast("Please select category first");
                       return;
                     }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductSubCategoryModal(
-                        catId: selectedCategory?.id ?? "",
+                        catId: vm.selectedCategory?.id ?? "",
                       ),
                     );
 
                     if (res is CategoryModel) {
-                      selectedSubCategory = res;
-                      subCategoryC.text = res.name ?? '';
+                      vm.selectedSubCategory = res;
+                      vm.subCategoryC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: typeC,
+                  controller: vm.typeC,
                   labelText: 'Product Type',
                   hintText: 'Select product type',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
                   onTap: () async {
-                    if (selectedSubCategory == null) {
+                    if (vm.selectedSubCategory == null) {
                       showWarningToast("Please select sub category first");
                       return;
                     }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductType(
-                        catId: selectedSubCategory?.id ?? "",
+                        catId: vm.selectedSubCategory?.id ?? "",
                       ),
                     );
 
                     if (res is CategoryModel) {
-                      selectedCategoryType = res;
-                      typeC.text = res.name ?? '';
+                      vm.selectedCategoryType = res;
+                      vm.typeC.text = res.name ?? '';
+                      vm.getProductAttributes();
                     }
                   },
                 ),
@@ -203,10 +184,11 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 // ),
                 YBox(16),
                 CustomTextField(
-                  controller: tagsC,
+                  controller: vm.tagsC,
                   labelText: 'Tags',
-                  hintText: 'Enter tags',
+                  hintText: 'Enter tags, e.g Cement, tiles, home interior',
                   showLabelHeader: true,
+                  validator: Validators.required(),
                 ),
 
                 Text(
@@ -220,15 +202,36 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 CustomTextField(
                   labelText: 'Description',
                   hintText: 'Enter description',
+                  controller: vm.descriptionC,
                   maxLines: 3,
                   showLabelHeader: true,
+                  validator: Validators.required(),
                 ),
 
                 YBox(32),
                 CustomBtn.solid(
                   text: "Next",
                   onTap: () {
-                    widget.onNext?.call();
+                    if (_formKey.currentState?.validate() == true) {
+                      if (vm.selectedBrand == null) {
+                        showWarningToast('Select Product Brand');
+                        return;
+                      }
+                      if (vm.selectedCategory == null) {
+                        showWarningToast('Select Product Category');
+                        return;
+                      }
+                      if (vm.selectedSubCategory == null) {
+                        showWarningToast('Select Product Subcategory');
+                        return;
+                      }
+                      if (vm.selectedCategoryType == null) {
+                        showWarningToast('Select Product Type');
+                        return;
+                      }
+
+                      widget.onNext?.call();
+                    }
                   },
                 ),
               ],

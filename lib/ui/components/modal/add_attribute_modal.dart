@@ -20,16 +20,6 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
     WidgetsBinding.instance.addPostFrameCallback((_) {});
   }
 
-  List<String> attributeList = [
-    "size",
-    "Colour",
-    "Texture",
-    "Shape",
-    "Finish",
-  ];
-
-  List<String> selectedAttributeList = [];
-
   @override
   void dispose() {
     searchC.dispose();
@@ -41,7 +31,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final vm = ref.watch(productInventoryVmodel);
+    // attributeList = vm.productAttributes.map((e) => e.attribute ?? 'N/A').toList();
     return Container(
       height: Sizer.screenHeight * 0.7,
       padding: EdgeInsets.symmetric(
@@ -123,8 +114,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
             children: [
               InkWell(
                 onTap: () {
-                  if (selectedAttributeList.isNotEmpty) {
-                    selectedAttributeList.clear();
+                  if (vm.selectedAttributeList.isNotEmpty) {
+                    vm.selectedAttributeList.clear();
                   }
                   setState(() {});
                 },
@@ -138,12 +129,12 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
               XBox(24),
               InkWell(
                 onTap: () {
-                  if (selectedAttributeList.isNotEmpty) {
-                    selectedAttributeList.clear();
+                  if (vm.selectedAttributeList.isNotEmpty) {
+                    vm.selectedAttributeList.clear();
                   } else {
-                    selectedAttributeList.addAll(attributeList);
+                    vm.selectedAttributeList.addAll(vm.productAttributes);
                   }
-                  setState(() {});
+                  vm.updateUI();
                 },
                 child: Text(
                   "Select all",
@@ -162,27 +153,27 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                 bottom: Sizer.height(80),
               ),
               shrinkWrap: true,
-              itemCount: attributeList.length,
+              itemCount: vm.productAttributes.length,
               separatorBuilder: (_, __) => YBox(24),
               itemBuilder: (_, i) {
-                final item = attributeList[i];
+                final item = vm.productAttributes[i];
                 return InkWell(
                   onTap: () {
-                    if (selectedAttributeList.contains(item)) {
-                      selectedAttributeList.remove(item);
+                    if (vm.selectedAttributeList.contains(item)) {
+                      vm.selectedAttributeList.remove(item);
                     } else {
-                      selectedAttributeList.add(item);
+                      vm.selectedAttributeList.add(item);
                     }
-                    setState(() {});
+                    vm.updateUI();
                   },
                   child: Row(
                     children: [
                       CustomCheckbox(
-                        isSelected: selectedAttributeList.contains(item),
+                        isSelected: vm.selectedAttributeList.contains(item),
                       ),
                       XBox(8),
                       Text(
-                        item,
+                        item.attribute ?? '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.text14,
@@ -195,11 +186,11 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
           ),
           YBox(32),
           CustomBtn.solid(
-            online: selectedAttributeList.isNotEmpty,
+            online: vm.selectedAttributeList.isNotEmpty,
             text: "Save",
             onTap: () {
-              if (selectedAttributeList.isNotEmpty) {
-                Navigator.pop(context, selectedAttributeList);
+              if (vm.selectedAttributeList.isNotEmpty) {
+                Navigator.pop(context, vm.selectedAttributeList);
               }
             },
           ),
