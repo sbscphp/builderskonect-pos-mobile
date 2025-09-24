@@ -1,6 +1,7 @@
 export 'add_attribute_modal.dart';
 export 'business_category_type_modal.dart';
 export 'city_modal.dart';
+export 'configure_variant_modal.dart';
 export 'confirmation_modal.dart';
 export 'customer_review_modal.dart';
 export 'customer_review_respond_modal.dart';
@@ -21,10 +22,8 @@ export 'select_customer_modal.dart';
 export 'select_reason_modal.dart';
 export 'select_source_modal.dart';
 export 'state_modal.dart';
+export 'store_modal.dart';
 export 'store_option_modal.dart';
-export 'unit_modal.dart';
 export 'take_transfer_action_modal.dart';
 export 'transfer_rejection_modal.dart';
-
-
-export 'store_modal.dart';
+export 'unit_modal.dart';

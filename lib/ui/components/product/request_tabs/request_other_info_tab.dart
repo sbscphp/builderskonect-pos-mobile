@@ -17,19 +17,104 @@ class RequestOtherInfoTab extends ConsumerStatefulWidget {
 }
 
 class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
-  // final _formKey = GlobalKey<FormState>();
-  final productNameC = TextEditingController();
-  final brandC = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final shippingWeightTypeC = TextEditingController();
+  final shippingClassC = TextEditingController();
+
+  //parcel dimension form
+  final lengthC = TextEditingController();
+  final widthC = TextEditingController();
+  final heightC = TextEditingController();
 
   File? _docFile;
   String? _docUrl;
 
   @override
   void dispose() {
-    productNameC.dispose();
-    brandC.dispose();
+    shippingWeightTypeC.dispose();
+    shippingClassC.dispose();
+
+    lengthC.dispose();
+    widthC.dispose();
+    heightC.dispose();
 
     super.dispose();
+  }
+
+  void _handleSubmit() async {
+    try {
+      final vm = ref.read(productInventoryVmodel);
+
+      // Get current variation params
+      final currentParams = vm.variationParams;
+
+      if (currentParams == null) {
+        showWarningToast('Please complete the previous steps first');
+        return;
+      }
+
+      // Collect shipping classes from the form
+      final shippingClasses = <String>[];
+      if (shippingWeightTypeC.text.trim().isNotEmpty) {
+        shippingClasses.add(shippingWeightTypeC.text.trim());
+      }
+      // if (shippingClassC.text.trim().isNotEmpty) {
+      //   shippingClasses.add(shippingClassC.text.trim());
+      // }
+
+      // Update the media with document URL if available
+      final updatedMedia = currentParams.media?.copyWith(
+            productSpecification:
+                currentParams.media?.productSpecification ?? '',
+            productAdditionalDocument:
+                _docUrl ?? currentParams.media?.productAdditionalDocument ?? '',
+          ) ??
+          ProductVarientMedia(
+            productSpecification: '',
+            productAdditionalDocument: _docUrl ?? '',
+          );
+
+      // Update variants with parcel dimensions if they exist
+      final updatedVariants = currentParams.variants?.map((variant) {
+        // Create updated physical dimension with parcel dimensions
+        final updatedDimension = UnitValue(
+          unit: lengthC.text.isNotEmpty
+              ? lengthC.text
+              : variant.physicalDimension.unit,
+          value: int.tryParse(widthC.text) ?? variant.physicalDimension.value,
+        );
+
+        return variant.copyWith(
+          physicalDimension: updatedDimension,
+        );
+      }).toList();
+
+      // Create updated variation params with shipping classes and updated media
+      final updatedParams = currentParams.copyWith(
+        shippingClasses: shippingClasses,
+        media: updatedMedia,
+        variants: updatedVariants,
+      );
+
+      // Set the updated variation parameters
+      vm.setVariationParams(updatedParams);
+
+      // Call the API to create multiple variations
+      final response = await vm.createMultipleVariation();
+
+      if (response.success) {
+        // Show success message
+        showSuccessToastMessage(
+            response.message ?? 'Product created successfully!');
+        // Navigate back or to success page
+        Navigator.of(context).pop();
+      } else {
+        // Show error message
+        showWarningToast(response.message ?? 'Failed to create product');
+      }
+    } catch (e) {
+      showWarningToast('Error: ${e.toString()}');
+    }
   }
 
   @override
@@ -98,7 +183,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
               ),
               HDivider(),
               CustomTextField(
-                controller: vm.shippingWeightTypeC,
+                controller: shippingWeightTypeC,
                 labelText: 'Shipping weight type',
                 hintText: 'Select type',
                 showLabelHeader: true,
@@ -113,7 +198,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                           .map((e) => ModalOption(
                               title: e,
                               onTap: () {
-                                vm.shippingWeightTypeC.text = e;
+                                shippingWeightTypeC.text = e;
                                 Navigator.pop(context);
                               }))
                           .toList(),
@@ -123,7 +208,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
               ),
               YBox(16),
               CustomTextField(
-                controller: vm.shippingClassC,
+                controller: shippingClassC,
                 labelText: 'Shipping class',
                 hintText: 'Select class',
                 showLabelHeader: true,
@@ -143,7 +228,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                           .map((e) => ModalOption(
                               title: e,
                               onTap: () {
-                                vm.shippingClassC.text = e;
+                                shippingClassC.text = e;
                                 Navigator.pop(context);
                               }))
                           .toList(),
@@ -183,7 +268,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
               ),
               YBox(16),
               CustomTextField(
-                controller: vm.lengthC,
+                controller: lengthC,
                 labelText: 'Length',
                 hintText: 'Enter value',
                 showLabelHeader: true,
@@ -202,9 +287,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  vm.lengthUnit =
-                                      e.split(' (')[1].split(')')[0];
-                                  vm.updateUI();
+                                  lengthC.text = e.split(' (')[1].split(')')[0];
                                   Navigator.pop(context);
                                 }))
                             .toList(),
@@ -215,7 +298,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     decoration: BoxDecoration(color: AppColors.gray100),
                     padding: EdgeInsets.all(12),
                     child: Text(
-                      vm.lengthUnit,
+                      lengthC.text,
                       style: textTheme.text12,
                     ),
                   ),
@@ -224,7 +307,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
               ),
               YBox(16),
               CustomTextField(
-                controller: vm.widthC,
+                controller: widthC,
                 labelText: 'Width',
                 hintText: 'Enter value',
                 showLabelHeader: true,
@@ -243,8 +326,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  vm.widthUnit = e.split(' (')[1].split(')')[0];
-                                  vm.updateUI();
+                                  widthC.text = e.split(' (')[1].split(')')[0];
                                   Navigator.pop(context);
                                 }))
                             .toList(),
@@ -255,7 +337,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     decoration: BoxDecoration(color: AppColors.gray100),
                     padding: EdgeInsets.all(12),
                     child: Text(
-                      vm.widthUnit,
+                      widthC.text,
                       style: textTheme.text12,
                     ),
                   ),
@@ -264,7 +346,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
               ),
               YBox(16),
               CustomTextField(
-                controller: vm.heigthC,
+                controller: heightC,
                 labelText: 'Height',
                 hintText: 'Enter value',
                 showLabelHeader: true,
@@ -283,9 +365,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  vm.heightUnit =
-                                      e.split(' (')[1].split(')')[0];
-                                  vm.updateUI();
+                                  heightC.text = e.split(' (')[1].split(')')[0];
                                   Navigator.pop(context);
                                 }))
                             .toList(),
@@ -296,43 +376,64 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     decoration: BoxDecoration(color: AppColors.gray100),
                     padding: EdgeInsets.all(12),
                     child: Text(
-                      vm.heightUnit,
+                      heightC.text,
                       style: textTheme.text12,
                     ),
                   ),
                 ),
                 // readOnly: true,
               ),
+              YBox(16),
+              vm.busy(createState)
+                  ? BtnLoadState()
+                  : Row(
+                      children: [
+                        Expanded(
+                          child: CustomBtn.solid(
+                            onTap: () {
+                              widget.onPrevious?.call();
+                            },
+                            text: "Back",
+                            textColor: Colors.black,
+                            onlineColor: Colors.transparent,
+                            outlineColor: Colors.grey,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 24,
+                        ),
+                        Expanded(
+                          child: CustomBtn.solid(
+                            // onTap: _handleSubmit,
+                            onTap: () {
+                              ModalWrapper.bottomSheet(
+                                context: context,
+                                widget: ConfirmationModal(
+                                  modalConfirmationArg: ModalConfirmationArg(
+                                    iconPath: AppSvgs.infoCircle,
+                                    title: "Submit Request",
+                                    description:
+                                        "Are you sure you want to submit this product to be added to your inventory? Kindly check that all information is correctly filled.",
+                                    solidBtnText: "Yes Submit",
+                                    onSolidBtnOnTap: () {
+                                      Navigator.pop(context);
+                                      _handleSubmit();
+                                    },
+                                    onOutlineBtnOnTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ),
+                              );
+                            },
+                            text: "Submit",
+                          ),
+                        )
+                      ],
+                    )
             ],
           ),
         ),
-        YBox(16),
-        Row(
-          children: [
-            Expanded(
-              child: CustomBtn.solid(
-                onTap: () {
-                  widget.onPrevious?.call();
-                },
-                text: "Back",
-                textColor: Colors.black,
-                onlineColor: Colors.transparent,
-                outlineColor: Colors.grey,
-              ),
-            ),
-            SizedBox(
-              width: 24,
-            ),
-            Expanded(
-              child: CustomBtn.solid(
-                onTap: () {
-                  // widget.onNext?.call();
-                },
-                text: "Submit",
-              ),
-            )
-          ],
-        )
       ],
     );
   }

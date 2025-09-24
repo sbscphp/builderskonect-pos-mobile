@@ -16,6 +16,31 @@ class RequestBasicInfo extends ConsumerStatefulWidget {
 class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   final _formKey = GlobalKey<FormState>();
 
+  final productNameC = TextEditingController();
+  final brandC = TextEditingController();
+  final categoryC = TextEditingController();
+  final subCategoryC = TextEditingController();
+  final typeC = TextEditingController();
+  final tagsC = TextEditingController();
+  final descriptionC = TextEditingController();
+
+  BrandModel? selectedBrand;
+  CategoryModel? selectedCategory;
+  CategoryModel? selectedSubCategory;
+  CategoryModel? selectedCategoryType;
+
+  @override
+  void dispose() {
+    productNameC.dispose();
+    brandC.dispose();
+    categoryC.dispose();
+    subCategoryC.dispose();
+    typeC.dispose();
+    tagsC.dispose();
+    descriptionC.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -47,7 +72,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.productNameC,
+                  controller: productNameC,
                   labelText: 'Product Name',
                   hintText: 'Enter product name',
                   showLabelHeader: true,
@@ -55,31 +80,33 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.brandC,
+                  controller: brandC,
                   labelText: 'Brand',
                   hintText: 'Select brand',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductBrandModal(),
                     );
                     if (res is BrandModel) {
-                      vm.selectedBrand = res;
-                      vm.brandC.text = res.name ?? '';
+                      selectedBrand = res;
+                      brandC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.categoryC,
+                  controller: categoryC,
                   labelText: 'Product Category',
                   hintText: 'Select product category',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
@@ -87,61 +114,62 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     );
 
                     if (res is CategoryModel) {
-                      vm.selectedCategory = res;
-                      vm.categoryC.text = res.name ?? '';
+                      selectedCategory = res;
+                      categoryC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.subCategoryC,
+                  controller: subCategoryC,
                   labelText: 'Sub Product Category',
                   hintText: 'Select sub product category',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
-                    if (vm.selectedCategory == null) {
+                    if (selectedCategory == null) {
                       showWarningToast("Please select category first");
                       return;
                     }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductSubCategoryModal(
-                        catId: vm.selectedCategory?.id ?? "",
+                        catId: selectedCategory?.id ?? "",
                       ),
                     );
 
                     if (res is CategoryModel) {
-                      vm.selectedSubCategory = res;
-                      vm.subCategoryC.text = res.name ?? '';
+                      selectedSubCategory = res;
+                      subCategoryC.text = res.name ?? '';
                     }
                   },
                 ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.typeC,
+                  controller: typeC,
                   labelText: 'Product Type',
                   hintText: 'Select product type',
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
                   onTap: () async {
-                    if (vm.selectedSubCategory == null) {
+                    if (selectedSubCategory == null) {
                       showWarningToast("Please select sub category first");
                       return;
                     }
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductType(
-                        catId: vm.selectedSubCategory?.id ?? "",
+                        catId: selectedSubCategory?.id ?? "",
                       ),
                     );
 
                     if (res is CategoryModel) {
-                      vm.selectedCategoryType = res;
-                      vm.typeC.text = res.name ?? '';
-                      vm.getProductAttributes();
+                      selectedCategoryType = res;
+                      typeC.text = res.name ?? '';
+                      vm.getProductAttributes(res.id ?? "");
                     }
                   },
                 ),
@@ -184,7 +212,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 // ),
                 YBox(16),
                 CustomTextField(
-                  controller: vm.tagsC,
+                  controller: tagsC,
                   labelText: 'Tags',
                   hintText: 'Enter tags, e.g Cement, tiles, home interior',
                   showLabelHeader: true,
@@ -202,10 +230,10 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 CustomTextField(
                   labelText: 'Description',
                   hintText: 'Enter description',
-                  controller: vm.descriptionC,
+                  controller: descriptionC,
                   maxLines: 3,
                   showLabelHeader: true,
-                  validator: Validators.required(),
+                  isRequired: false,
                 ),
 
                 YBox(32),
@@ -213,23 +241,17 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   text: "Next",
                   onTap: () {
                     if (_formKey.currentState?.validate() == true) {
-                      if (vm.selectedBrand == null) {
-                        showWarningToast('Select Product Brand');
-                        return;
-                      }
-                      if (vm.selectedCategory == null) {
-                        showWarningToast('Select Product Category');
-                        return;
-                      }
-                      if (vm.selectedSubCategory == null) {
-                        showWarningToast('Select Product Subcategory');
-                        return;
-                      }
-                      if (vm.selectedCategoryType == null) {
-                        showWarningToast('Select Product Type');
-                        return;
-                      }
-
+                      vm.setVariationParams(
+                        ProductVariationParams(
+                          name: productNameC.text,
+                          categoryId: selectedCategory?.id ?? "",
+                          subcategoryId: selectedSubCategory?.id ?? "",
+                          productTypeId: selectedCategoryType?.id ?? "",
+                          brand: selectedBrand?.id?.toString() ?? "",
+                          description: descriptionC.text,
+                          tags: tagsC.text.trim(),
+                        ),
+                      );
                       widget.onNext?.call();
                     }
                   },
