@@ -59,7 +59,7 @@ class _MultipleVariantsSectionState
     if (widget.configureVariantArg == null) {
       return SizedBox.shrink();
     }
-
+    final textTheme = Theme.of(context).textTheme;
     final numVariants = widget.configureVariantArg!.numOfVariants;
     final selectedVariantList = widget.configureVariantArg!.selectedVariantList;
 
@@ -88,6 +88,42 @@ class _MultipleVariantsSectionState
 
               // Pricing Information Section for this variant
               _buildVariantPricingSection(variantIndex),
+
+              Row(
+                children: [
+                  Expanded(
+                      child: CustomBtn(
+                    height: Sizer.height(42),
+                    outlineColor: Colors.grey,
+                    isOutline: true,
+                    onTap: () {},
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          AppSvgs.trash,
+                          height: Sizer.height(14),
+                        ),
+                        XBox(8),
+                        Text(
+                          "Remove",
+                          style: textTheme.text14?.copyWith(
+                            color: AppColors.red22,
+                          ),
+                        )
+                      ],
+                    ),
+                  )),
+                  XBox(10),
+                  Expanded(
+                    child: CustomBtn.solid(
+                      height: Sizer.height(42),
+                      onTap: () {},
+                      text: "Add Variant",
+                    ),
+                  )
+                ],
+              )
             ],
           ),
         );

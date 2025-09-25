@@ -116,6 +116,22 @@ class _InventoryInformationSectionState
                       YBox(16),
                       _buildImageUploadSection(),
                       YBox(16),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CustomCheckbox(
+                            isSelected: false,
+                          ),
+                          XBox(8),
+                          Text(
+                            "Apply inventory details to all variants",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: textTheme.text16,
+                          ),
+                        ],
+                      ),
+                      YBox(16),
                     ],
                   ),
           ),

@@ -101,6 +101,31 @@ class PricingInformationSection extends ConsumerWidget {
                           FilteringTextInputFormatter.digitsOnly,
                         ],
                       ),
+                      YBox(16),
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(
+                              top: 4,
+                            ),
+                            child: CustomCheckbox(
+                              isSelected: false,
+                            ),
+                          ),
+                          XBox(8),
+                          Expanded(
+                            child: Text(
+                              "Apply pricing information to other variants. (Information applied can be edited to specific variants)",
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.text14,
+                            ),
+                          ),
+                        ],
+                      ),
+                      YBox(48),
                     ],
                   ),
           ),
