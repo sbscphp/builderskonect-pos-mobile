@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:io';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 import 'package:flutter/services.dart';
@@ -36,6 +38,13 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   String? selectedSellingUnit;
   String? selectedSubUnit;
   SubOption? selectedSubOption;
+  List<String> productTags = [];
+
+  // Image upload state
+  late List<File> _imageFiles;
+  late List<String> _uploadedUrls;
+  bool loadingImages = false;
+  bool _uploadsComplete = false;
 
   late ProductCatalogueWithStatus currentProductStatus;
 
@@ -43,6 +52,8 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
   void initState() {
     super.initState();
     currentProductStatus = widget.productWithStatus;
+    _imageFiles = [];
+    _uploadedUrls = [];
     _initializeFormData();
   }
 
@@ -62,13 +73,122 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
       costPriceC.text = formData.costPrice?.toString() ?? '';
       sellingPriceC.text = formData.sellingPrice?.toString() ?? '';
       discountPriceC.text = formData.discountPrice?.toString() ?? '';
-      productTagsC.text = formData.tags ?? '';
+      // Initialize tags from comma-separated string
+      if (formData.tags != null && formData.tags!.isNotEmpty) {
+        productTags = formData.tags!
+            .split(',')
+            .map((tag) => tag.trim())
+            .where((tag) => tag.isNotEmpty)
+            .toList();
+      }
+
+      // Initialize images from media
+      if (formData.media != null) {
+        _uploadedUrls.clear();
+        if (formData.media!.coverImageUrl != null) {
+          _uploadedUrls.add(formData.media!.coverImageUrl!);
+        }
+        if (formData.media!.productImageUrl != null &&
+            formData.media!.productImageUrl!.isNotEmpty) {
+          final additionalUrls = formData.media!.productImageUrl!
+              .split(',')
+              .map((url) => url.trim())
+              .where((url) => url.isNotEmpty)
+              .toList();
+          _uploadedUrls.addAll(additionalUrls);
+        }
+        if (_uploadedUrls.isNotEmpty) {
+          _uploadsComplete = true;
+        }
+      }
+
       skuC.text = formData.sku ?? '';
       productDescriptionC.text = formData.description ?? '';
     }
   }
 
+  Future<void> _pickImages() async {
+    setState(() {
+      loadingImages = true;
+    });
+
+    try {
+      // Reset progress tracking for any previous uploads
+      ref.read(fileUploadVm).resetProgress();
+
+      final pickedFiles = await ImageAndDocUtils.pickMultipleImage();
+
+      if (pickedFiles.isNotEmpty) {
+        // Limit to maximum 3 images total
+        final remainingSlots = 3 - (_imageFiles.length);
+        final filesToAdd = pickedFiles.take(remainingSlots).toList();
+
+        // Crop each image individually
+        List<File> croppedFiles = [];
+        for (File file in filesToAdd) {
+          File? croppedFile = await ImageAndDocUtils.cropImage(image: file);
+          if (croppedFile != null) {
+            croppedFiles.add(croppedFile);
+          } else {
+            croppedFiles.add(file); // Use original if cropping fails
+          }
+        }
+
+        setState(() {
+          loadingImages = false;
+          _imageFiles.addAll(croppedFiles);
+        });
+
+        // Upload all new images
+        final r = await ref.read(fileUploadVm).uploadFile(file: croppedFiles);
+        if (r.success && r.data != null && r.data!.isNotEmpty) {
+          final urls = r.data!
+              .map((data) => data.url)
+              .where((url) => url != null)
+              .cast<String>()
+              .toList();
+
+          setState(() {
+            _uploadedUrls.addAll(urls);
+            _uploadsComplete = true;
+          });
+
+          printty("Images uploaded successfully: ${urls.join(', ')}");
+        }
+      }
+    } catch (e) {
+      showWarningToast(e.toString());
+    } finally {
+      setState(() {
+        loadingImages = false;
+      });
+    }
+  }
+
+  void _removeImage(int index) {
+    setState(() {
+      _imageFiles.removeAt(index);
+      _uploadedUrls.removeAt(index);
+      if (_imageFiles.isEmpty) {
+        _uploadsComplete = false;
+      }
+    });
+  }
+
   Future<void> _saveProductData() async {
+    // Create media object if images are uploaded
+    InventoryMedia? media;
+    if (_uploadedUrls.isNotEmpty) {
+      final coverImageUrl = _uploadedUrls.first;
+      final productImageUrl =
+          _uploadedUrls.length > 1 ? _uploadedUrls.skip(1).join(',') : null;
+
+      media = InventoryMedia(
+        coverImageUrl: coverImageUrl,
+        productImageUrl: productImageUrl,
+      );
+    }
+
     final formData = ProductFormData(
       sellingUnit: selectedSellingUnit,
       subUnit: selectedSubUnit,
@@ -80,10 +200,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
       costPrice: costPriceC.text.trim(),
       sellingPrice: sellingPriceC.text.trim(),
       discountPrice: discountPriceC.text.trim(),
-      tags: productTagsC.text.isNotEmpty ? productTagsC.text : null,
+      tags: productTags.isNotEmpty ? productTags.join(',') : null,
       sku: skuC.text.isNotEmpty ? skuC.text : null,
       description:
           productDescriptionC.text.isNotEmpty ? productDescriptionC.text : null,
+      media: media,
     );
 
     final updatedProductStatus = currentProductStatus.copyWith(
@@ -406,18 +527,19 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     ),
                   ),
                   YBox(16),
-                  CustomTextField(
-                    controller: productTagsC,
-                    labelText: 'Product Tags',
+                  TagInputWidget(
+                    labelText: 'Tags',
                     hintText: 'Enter product tags',
                     showLabelHeader: true,
                     isRequired: false,
-                  ),
-                  Text(
-                    "This will help customers find your product in the marketplace.",
-                    style: textTheme.text14?.copyWith(
-                      color: colorScheme.black45,
-                    ),
+                    initialTags: productTags,
+                    onTagsChanged: (newTags) {
+                      setState(() {
+                        productTags = newTags;
+                      });
+                    },
+                    helperText:
+                        "This will help customers find your product in the marketplace.",
                   ),
                   YBox(16),
                   CustomTextField(
@@ -454,35 +576,144 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                     ),
                   ),
                   YBox(4),
-                  Container(
-                    width: Sizer.width(104),
-                    height: Sizer.height(104),
-                    padding: EdgeInsets.all(Sizer.radius(9)),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.neutral5,
+                  // Display uploaded images
+                  if (_imageFiles.isNotEmpty || _uploadedUrls.isNotEmpty) ...[
+                    SizedBox(
+                      height: Sizer.height(104),
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _imageFiles.isNotEmpty
+                            ? _imageFiles.length
+                            : _uploadedUrls.length,
+                        itemBuilder: (context, index) {
+                          final bool hasLocalFile = index < _imageFiles.length;
+                          final bool hasUploadedUrl =
+                              index < _uploadedUrls.length;
+
+                          return Container(
+                            width: Sizer.width(104),
+                            height: Sizer.height(104),
+                            margin: EdgeInsets.only(right: Sizer.width(8)),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: AppColors.neutral5,
+                              ),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: hasLocalFile
+                                      ? Image.file(
+                                          _imageFiles[index],
+                                          width: Sizer.width(104),
+                                          height: Sizer.height(104),
+                                          fit: BoxFit.cover,
+                                        )
+                                      : hasUploadedUrl
+                                          ? MyCachedNetworkImage(
+                                              imageUrl: _uploadedUrls[index],
+                                              width: Sizer.width(104),
+                                              height: Sizer.height(104),
+                                              fit: BoxFit.cover,
+                                            )
+                                          : Container(
+                                              width: Sizer.width(104),
+                                              height: Sizer.height(104),
+                                              color: AppColors.neutral3,
+                                              child: Icon(
+                                                Icons.image,
+                                                color: AppColors.neutral5,
+                                              ),
+                                            ),
+                                ),
+                                Positioned(
+                                  top: 4,
+                                  right: 4,
+                                  child: GestureDetector(
+                                    onTap: () => _removeImage(index),
+                                    child: Container(
+                                      width: 20,
+                                      height: 20,
+                                      decoration: BoxDecoration(
+                                        color: AppColors.red2D,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Icon(
+                                        Icons.close,
+                                        size: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                if (index == 0)
+                                  Positioned(
+                                    bottom: 4,
+                                    left: 4,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primaryBlue,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        "Cover",
+                                        style: textTheme.text12?.copyWith(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
-                    child: MyCachedNetworkImage(
-                      imageUrl: AppUtils.dummyImage,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  YBox(8),
+                    YBox(8),
+                  ],
+                  // Upload button
                   InkWell(
-                    onTap: () {},
-                    child: SizedBox(
+                    // onTap: (_imageFiles.length + _uploadedUrls.length) >= 3
+                    //     ? null
+                    //     : _pickImages,
+                    onTap: () {
+                      printty("_imageFiles.length ${_imageFiles.length}");
+                      if ((_imageFiles.length) >= 3) {
+                        showWarningToast("Maximum 3 images allowed");
+                        return;
+                      }
+                      _pickImages();
+                    },
+                    child: Container(
                       height: Sizer.height(104),
                       width: Sizer.screenWidth,
-                      child: SvgPicture.asset(
-                        AppSvgs.uploadImg,
-                        fit: BoxFit.cover,
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: AppColors.neutral3,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
+                      child: loadingImages
+                          ? Center(
+                              child: CircularProgressIndicator(
+                                color: AppColors.primaryBlue,
+                              ),
+                            )
+                          : SvgPicture.asset(
+                              AppSvgs.uploadImg,
+                            ),
                     ),
                   ),
                   YBox(4),
                   Text(
-                    "Recommended file size is less than 2MB. JEPG, PNG formats only",
+                    "Recommended file size is less than 2MB. JPEG, PNG formats only",
                     style: textTheme.text14?.copyWith(
                       color: colorScheme.black45,
                     ),
@@ -518,6 +749,11 @@ class _AddProductScreenState extends ConsumerState<AddProductScreen> {
                             text: "Save",
                             onTap: () async {
                               if (formKey.currentState!.validate()) {
+                                if (_imageFiles.isEmpty) {
+                                  showWarningToast(
+                                      "Please upload at least one image");
+                                  return;
+                                }
                                 await _saveProductData();
                               }
                             }),

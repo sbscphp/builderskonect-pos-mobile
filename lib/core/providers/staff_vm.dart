@@ -15,7 +15,9 @@ class StaffVm extends BaseVm {
   Future<ApiResponse> getDashboardStats(
       {String q = '',
       bool isFirst = true,
-      String? busyObjectName = firstState,String? dateFilter,String? status}) async {
+      String? busyObjectName = firstState,
+      String? dateFilter,
+      String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -127,7 +129,7 @@ class StaffVm extends BaseVm {
     final appAccess = _applicationAccess.firstWhereOrNull(
       (element) => element.tag?.toLowerCase() == roleTag.toLowerCase(),
     );
-    return appAccess?.access ?? false;
+    return appAccess?.access ?? true;
   }
 
   bool get hasAccessToDashboardOverview =>

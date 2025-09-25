@@ -10,6 +10,11 @@ class PricingInformationSection extends ConsumerWidget {
     required this.discountPriceC,
     required this.isViewPricingInformation,
     required this.onTogglePricingInfo,
+    this.productHasVariant = false,
+    this.variantIndex,
+    this.onApplyToAllVariants,
+    this.isApplyToAllEnabled = true,
+    this.appliedFromVariant,
   });
 
   final TextEditingController costPricePerUnitC;
@@ -17,6 +22,11 @@ class PricingInformationSection extends ConsumerWidget {
   final TextEditingController discountPriceC;
   final bool isViewPricingInformation;
   final VoidCallback onTogglePricingInfo;
+  final bool productHasVariant;
+  final int? variantIndex;
+  final Function(int)? onApplyToAllVariants;
+  final bool isApplyToAllEnabled;
+  final int? appliedFromVariant;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -102,29 +112,46 @@ class PricingInformationSection extends ConsumerWidget {
                         ],
                       ),
                       YBox(16),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 4,
-                            ),
-                            child: CustomCheckbox(
-                              isSelected: false,
-                            ),
+                      // Show bulk apply checkbox only for variants
+                      if (productHasVariant && variantIndex != null)
+                        InkWell(
+                          onTap: isApplyToAllEnabled &&
+                                  onApplyToAllVariants != null
+                              ? () {
+                                  onApplyToAllVariants!(variantIndex!);
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: 4,
+                                ),
+                                child: CustomCheckbox(
+                                  isSelected:
+                                      appliedFromVariant == variantIndex,
+                                ),
+                              ),
+                              XBox(8),
+                              Expanded(
+                                child: Text(
+                                  appliedFromVariant == variantIndex
+                                      ? "Pricing information applied to all variants. (Information applied can be edited to specific variants)"
+                                      : "Apply pricing information to other variants. (Information applied can be edited to specific variants)",
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.text14?.copyWith(
+                                    color: isApplyToAllEnabled
+                                        ? null
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          XBox(8),
-                          Expanded(
-                            child: Text(
-                              "Apply pricing information to other variants. (Information applied can be edited to specific variants)",
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.text14,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
                       YBox(48),
                     ],
                   ),

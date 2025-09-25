@@ -73,9 +73,9 @@ class _RequestAttributeVarientTabState
   File? _coverImageFile;
   String? _coverImageUrl;
 
-  // Additional product images (for single product)
-  File? _additionalImageFile;
-  String? _additionalImageUrl;
+  // Additional product images (for single product) - now supports multiple
+  final List<File> _additionalImageFiles = [];
+  final List<String> _additionalImageUrls = [];
 
   // Images for each variant
   // Map<variantIndex, Map<imageType, File>>
@@ -89,6 +89,14 @@ class _RequestAttributeVarientTabState
   // Load states for each variant
   // Map<variantIndex, Map<imageType, bool>>
   Map<int, Map<String, bool>> variantImageLoadStates = {};
+
+  // Bulk application tracking
+  int? inventoryAppliedFromVariant;
+  int? pricingAppliedFromVariant;
+
+  // Validation tracking
+  Map<int, Map<String, String>> variantValidationErrors = {};
+  Set<String> usedVariantCombinations = {};
 
   // Method to ensure we have the right number of controllers
   void _ensureControllers(int requiredCount) {
@@ -282,20 +290,57 @@ class _RequestAttributeVarientTabState
       // Reset progress tracking for any previous uploads
       ref.read(fileUploadVm).resetProgress();
 
+      // Try multiple image selection first
+      try {
+        final pickedFiles = await ImageAndDocUtils.pickMultipleImage();
+
+        if (pickedFiles.isNotEmpty) {
+          final newFiles = pickedFiles;
+
+          // For variants, we'll store the first image as the main additional image
+          // and combine all URLs with pipe separator for storage
+          variantImages[variantIndex]?['additional'] = newFiles.first;
+          setState(() {});
+
+          // Upload all selected images
+          final r = await ref.read(fileUploadVm).uploadFile(file: newFiles);
+          if (r.success && r.data != null && r.data!.isNotEmpty) {
+            final urls = r.data!
+                .map((data) => data.url)
+                .where((url) => url != null)
+                .cast<String>()
+                .toList();
+            if (urls.isNotEmpty) {
+              // Store multiple URLs as pipe-separated string
+              variantImageUrls[variantIndex]?['additional'] = urls.join('|');
+              printty(
+                  "variant $variantIndex additional images upload complete: ${urls.join(', ')}");
+            }
+          }
+          return;
+        }
+      } catch (e) {
+        printty(
+            "Multiple image selection failed, falling back to single image: $e");
+      }
+
+      // Fallback to single image selection
       final pickedFile = await ImageAndDocUtils.pickImage(enableCropping: true);
 
       if (pickedFile != null) {
         variantImages[variantIndex]?['additional'] = File(pickedFile.path);
         setState(() {});
-      }
 
-      final imageFile = variantImages[variantIndex]?['additional'];
-      if (imageFile != null) {
-        final r = await ref.read(fileUploadVm).uploadFile(file: [imageFile]);
-        if (r.success && r.data != null && r.data!.isNotEmpty) {
-          printty(
-              "variant $variantIndex additional upload complete ${r.data!.first.url}");
-          variantImageUrls[variantIndex]?['additional'] = r.data!.first.url;
+        final imageFile = variantImages[variantIndex]?['additional'];
+        if (imageFile != null) {
+          final r = await ref.read(fileUploadVm).uploadFile(file: [imageFile]);
+          if (r.success && r.data != null && r.data!.isNotEmpty) {
+            final url = r.data!.first.url;
+            if (url != null) {
+              variantImageUrls[variantIndex]?['additional'] = url;
+              printty("variant $variantIndex additional upload complete $url");
+            }
+          }
         }
       }
     } catch (e) {
@@ -319,6 +364,327 @@ class _RequestAttributeVarientTabState
       variantImages[variantIndex]?['additional'] = null;
       variantImageUrls[variantIndex]?['additional'] = null;
     });
+  }
+
+  // Variant management methods
+  void _addVariant() {
+    if (_configureVariantArg != null) {
+      final newNumVariants = _configureVariantArg!.numOfVariants + 1;
+      _configureVariantArg = ConfigureVariantArg(
+        selectedVariantList: _configureVariantArg!.selectedVariantList,
+        numOfVariants: newNumVariants,
+      );
+      _ensureVariantControllers();
+      setState(() {});
+    }
+  }
+
+  void _removeVariant(int variantIndex) {
+    if (_configureVariantArg != null &&
+        _configureVariantArg!.numOfVariants > 1) {
+      final newNumVariants = _configureVariantArg!.numOfVariants - 1;
+
+      // Clean up controllers and state for removed variant
+      _cleanupVariantData(variantIndex, newNumVariants);
+
+      _configureVariantArg = ConfigureVariantArg(
+        selectedVariantList: _configureVariantArg!.selectedVariantList,
+        numOfVariants: newNumVariants,
+      );
+
+      // Reset bulk application if it was from the removed variant
+      if (inventoryAppliedFromVariant == variantIndex) {
+        inventoryAppliedFromVariant = null;
+      }
+      if (pricingAppliedFromVariant == variantIndex) {
+        pricingAppliedFromVariant = null;
+      }
+
+      setState(() {});
+    }
+  }
+
+  void _cleanupVariantData(int removedIndex, int newNumVariants) {
+    // Shift data for variants after the removed one
+    for (int i = removedIndex; i < newNumVariants; i++) {
+      final nextIndex = i + 1;
+
+      // Move controllers
+      if (variantAttributeControllers.containsKey(nextIndex)) {
+        variantAttributeControllers[i] =
+            variantAttributeControllers[nextIndex]!;
+        variantAttributeControllers.remove(nextIndex);
+      }
+
+      if (variantInventoryControllers.containsKey(nextIndex)) {
+        variantInventoryControllers[i] =
+            variantInventoryControllers[nextIndex]!;
+        variantInventoryControllers.remove(nextIndex);
+      }
+
+      if (variantPricingControllers.containsKey(nextIndex)) {
+        variantPricingControllers[i] = variantPricingControllers[nextIndex]!;
+        variantPricingControllers.remove(nextIndex);
+      }
+
+      // Move images and states
+      if (variantImages.containsKey(nextIndex)) {
+        variantImages[i] = variantImages[nextIndex]!;
+        variantImages.remove(nextIndex);
+      }
+
+      if (variantImageUrls.containsKey(nextIndex)) {
+        variantImageUrls[i] = variantImageUrls[nextIndex]!;
+        variantImageUrls.remove(nextIndex);
+      }
+
+      if (variantImageLoadStates.containsKey(nextIndex)) {
+        variantImageLoadStates[i] = variantImageLoadStates[nextIndex]!;
+        variantImageLoadStates.remove(nextIndex);
+      }
+    }
+
+    // Remove any remaining data for indices >= newNumVariants
+    final keysToRemove = <int>[];
+    for (final key in variantAttributeControllers.keys) {
+      if (key >= newNumVariants) keysToRemove.add(key);
+    }
+    for (final key in keysToRemove) {
+      variantAttributeControllers.remove(key);
+      variantInventoryControllers.remove(key);
+      variantPricingControllers.remove(key);
+      variantImages.remove(key);
+      variantImageUrls.remove(key);
+      variantImageLoadStates.remove(key);
+    }
+
+    // Adjust visibility lists
+    if (isViewVariantInfo.length > newNumVariants) {
+      isViewVariantInfo.removeRange(newNumVariants, isViewVariantInfo.length);
+    }
+    if (isViewVariantInventoryInfo.length > newNumVariants) {
+      isViewVariantInventoryInfo.removeRange(
+          newNumVariants, isViewVariantInventoryInfo.length);
+    }
+    if (isViewVariantPricingInfo.length > newNumVariants) {
+      isViewVariantPricingInfo.removeRange(
+          newNumVariants, isViewVariantPricingInfo.length);
+    }
+  }
+
+  // Bulk application methods
+  void _applyInventoryToAll(int sourceVariantIndex) {
+    final sourceControllers = variantInventoryControllers[sourceVariantIndex];
+    final sourceImageUrls = variantImageUrls[sourceVariantIndex];
+
+    if (sourceControllers == null || sourceImageUrls == null) return;
+
+    final numVariants = _configureVariantArg?.numOfVariants ?? 0;
+
+    for (int i = 0; i < numVariants; i++) {
+      if (i == sourceVariantIndex) continue; // Skip source variant
+
+      final targetControllers = variantInventoryControllers[i];
+      final targetImageUrls = variantImageUrls[i];
+
+      if (targetControllers != null && targetImageUrls != null) {
+        // Copy all inventory field values
+        targetControllers['sellingUnit']?.text =
+            sourceControllers['sellingUnit']?.text ?? '';
+        targetControllers['stockQty']?.text =
+            sourceControllers['stockQty']?.text ?? '';
+        targetControllers['qtyPerSellUnit']?.text =
+            sourceControllers['qtyPerSellUnit']?.text ?? '';
+        targetControllers['minOrderQty']?.text =
+            sourceControllers['minOrderQty']?.text ?? '';
+        targetControllers['measurement']?.text =
+            sourceControllers['measurement']?.text ?? '';
+        targetControllers['dimension']?.text =
+            sourceControllers['dimension']?.text ?? '';
+        targetControllers['weightPerSellUnit']?.text =
+            sourceControllers['weightPerSellUnit']?.text ?? '';
+        targetControllers['weightPerUnitItem']?.text =
+            sourceControllers['weightPerUnitItem']?.text ?? '';
+        targetControllers['reorderLevel']?.text =
+            sourceControllers['reorderLevel']?.text ?? '';
+        // Note: SKU is intentionally not copied to maintain uniqueness
+
+        // Copy image URLs
+        targetImageUrls['cover'] = sourceImageUrls['cover'];
+        targetImageUrls['additional'] = sourceImageUrls['additional'];
+      }
+    }
+
+    setState(() {
+      inventoryAppliedFromVariant = sourceVariantIndex;
+    });
+  }
+
+  void _applyPricingToAll(int sourceVariantIndex) {
+    final sourceControllers = variantPricingControllers[sourceVariantIndex];
+
+    if (sourceControllers == null) return;
+
+    final numVariants = _configureVariantArg?.numOfVariants ?? 0;
+
+    for (int i = 0; i < numVariants; i++) {
+      if (i == sourceVariantIndex) continue; // Skip source variant
+
+      final targetControllers = variantPricingControllers[i];
+
+      if (targetControllers != null) {
+        // Copy all pricing field values
+        targetControllers['costPricePerUnit']?.text =
+            sourceControllers['costPricePerUnit']?.text ?? '';
+        targetControllers['sellingPricePerUnit']?.text =
+            sourceControllers['sellingPricePerUnit']?.text ?? '';
+        targetControllers['discountPrice']?.text =
+            sourceControllers['discountPrice']?.text ?? '';
+      }
+    }
+
+    setState(() {
+      pricingAppliedFromVariant = sourceVariantIndex;
+    });
+  }
+
+  // Validation methods
+  String _generateVariantCombination(
+      int variantIndex, List<ProductAttributeModel> selectedVariantList) {
+    final controllers = variantAttributeControllers[variantIndex] ?? [];
+    final values = <String>[];
+
+    for (int i = 0;
+        i < selectedVariantList.length && i < controllers.length;
+        i++) {
+      final value = controllers[i].text.trim();
+      values.add('${selectedVariantList[i].attribute}:$value');
+    }
+
+    return values.join('|');
+  }
+
+  bool _validateVariantCombinations() {
+    if (_configureVariantArg == null) return true;
+
+    final numVariants = _configureVariantArg!.numOfVariants;
+    final selectedVariantList = _configureVariantArg!.selectedVariantList;
+    final combinations = <String>{};
+
+    for (int i = 0; i < numVariants; i++) {
+      final combination = _generateVariantCombination(i, selectedVariantList);
+
+      // Check if combination is empty (no values selected)
+      if (combination.split('|').every((part) => part.split(':')[1].isEmpty)) {
+        variantValidationErrors[i] = {
+          'combination': 'Please select values for all variant attributes'
+        };
+        return false;
+      }
+
+      // Check for duplicates
+      if (combinations.contains(combination)) {
+        variantValidationErrors[i] = {
+          'combination': 'This variant combination already exists'
+        };
+        return false;
+      }
+
+      combinations.add(combination);
+    }
+
+    // Clear validation errors if all combinations are valid
+    variantValidationErrors.clear();
+    usedVariantCombinations = combinations;
+    return true;
+  }
+
+  bool _validateRequiredFields() {
+    bool isValid = true;
+    variantValidationErrors.clear();
+
+    if (productHasVariant && _configureVariantArg != null) {
+      final numVariants = _configureVariantArg!.numOfVariants;
+
+      for (int i = 0; i < numVariants; i++) {
+        final inventoryControllers = variantInventoryControllers[i];
+        final pricingControllers = variantPricingControllers[i];
+        final errors = <String, String>{};
+
+        if (inventoryControllers != null) {
+          // Check required inventory fields
+          if (inventoryControllers['stockQty']?.text.trim().isEmpty == true) {
+            errors['stockQty'] = 'Stock quantity is required';
+            isValid = false;
+          }
+          if (inventoryControllers['sellingUnit']?.text.trim().isEmpty ==
+              true) {
+            errors['sellingUnit'] = 'Selling unit is required';
+            isValid = false;
+          }
+        }
+
+        if (pricingControllers != null) {
+          // Check required pricing fields
+          if (pricingControllers['sellingPricePerUnit']?.text.trim().isEmpty ==
+              true) {
+            errors['sellingPricePerUnit'] = 'Selling price is required';
+            isValid = false;
+          }
+          if (pricingControllers['costPricePerUnit']?.text.trim().isEmpty ==
+              true) {
+            errors['costPricePerUnit'] = 'Cost price is required';
+            isValid = false;
+          }
+        }
+
+        if (errors.isNotEmpty) {
+          variantValidationErrors[i] = errors;
+        }
+      }
+    } else {
+      // Validate single product fields
+      final errors = <String, String>{};
+
+      if (stockQtyC.text.trim().isEmpty) {
+        errors['stockQty'] = 'Stock quantity is required';
+        isValid = false;
+      }
+      if (sellingUnitC.text.trim().isEmpty) {
+        errors['sellingUnit'] = 'Selling unit is required';
+        isValid = false;
+      }
+      if (sellingPricePerUnitC.text.trim().isEmpty) {
+        errors['sellingPricePerUnit'] = 'Selling price is required';
+        isValid = false;
+      }
+      if (costPricePerUnitC.text.trim().isEmpty) {
+        errors['costPricePerUnit'] = 'Cost price is required';
+        isValid = false;
+      }
+
+      if (errors.isNotEmpty) {
+        variantValidationErrors[0] = errors;
+      }
+    }
+
+    return isValid;
+  }
+
+  void _showValidationErrors() {
+    if (variantValidationErrors.isEmpty) return;
+
+    final firstErrorVariant = variantValidationErrors.keys.first;
+    final firstError = variantValidationErrors[firstErrorVariant]!.values.first;
+
+    String message = 'Validation Error:\n';
+    if (productHasVariant && _configureVariantArg != null) {
+      message += 'Variant ${firstErrorVariant + 1}: $firstError';
+    } else {
+      message += firstError;
+    }
+
+    showWarningToast(message);
   }
 
   @override
@@ -453,6 +819,17 @@ class _RequestAttributeVarientTabState
                 onPickVariantAdditionalImage: _pickVariantAdditionalImage,
                 onRemoveVariantCoverImage: _removeVariantCoverImage,
                 onRemoveVariantAdditionalImage: _removeVariantAdditionalImage,
+                onAddVariant: _addVariant,
+                onRemoveVariant: _removeVariant,
+                onApplyInventoryToAll: _applyInventoryToAll,
+                onApplyPricingToAll: _applyPricingToAll,
+                onConfigureVariantChanged: (arg) {
+                  _configureVariantArg = arg;
+                  _ensureVariantControllers();
+                  setState(() {});
+                },
+                inventoryAppliedFromVariant: inventoryAppliedFromVariant,
+                pricingAppliedFromVariant: pricingAppliedFromVariant,
               ),
             // else
             //   // Show single variant section if no variants configured
@@ -498,7 +875,9 @@ class _RequestAttributeVarientTabState
                         setState(() {});
                       },
                       coverImageFile: _coverImageFile,
-                      additionalImageFile: _additionalImageFile,
+                      additionalImageFile: _additionalImageFiles.isNotEmpty
+                          ? _additionalImageFiles.first
+                          : null,
                       loadCoverImage: loadCoverImage,
                       loadAdditionalImages: loadAdditionalImages,
                       onPickCoverImage: _pickCoverImage,
@@ -511,8 +890,8 @@ class _RequestAttributeVarientTabState
                       },
                       onRemoveAdditionalImage: () {
                         setState(() {
-                          _additionalImageFile = null;
-                          _additionalImageUrl = null;
+                          _additionalImageFiles.clear();
+                          _additionalImageUrls.clear();
                         });
                       },
                     ),
@@ -566,6 +945,20 @@ class _RequestAttributeVarientTabState
 
   void _handleNext() {
     try {
+      // Validate required fields
+      if (!_validateRequiredFields()) {
+        _showValidationErrors();
+        return;
+      }
+
+      // Validate variant combinations if using variants
+      if (productHasVariant && _configureVariantArg != null) {
+        if (!_validateVariantCombinations()) {
+          _showValidationErrors();
+          return;
+        }
+      }
+
       final productInventoryVm = ref.read(productInventoryVmodel);
 
       if (productHasVariant && _configureVariantArg != null) {
@@ -592,7 +985,7 @@ class _RequestAttributeVarientTabState
     // Create media object for the main product
     final media = ProductVarientMedia(
       productSpecification: _coverImageUrl ?? '',
-      productAdditionalDocument: _additionalImageUrl ?? '',
+      productAdditionalDocument: _additionalImageUrls.join('|'),
     );
 
     // Collect common attributes (excluding variant attributes)
@@ -615,13 +1008,22 @@ class _RequestAttributeVarientTabState
 
     // Create variants list
     final variants = <Variant>[];
+    printty("Creating variants for $numVariants variants");
+
     for (int variantIndex = 0; variantIndex < numVariants; variantIndex++) {
+      printty("Processing variant $variantIndex");
       final variant = _createVariantFromIndex(
           variantIndex, selectedVariantList, commonAttributeMap);
       if (variant != null) {
         variants.add(variant);
+        printty(
+            "Successfully created variant $variantIndex with SKU: ${variant.sku}");
+      } else {
+        printty("Failed to create variant $variantIndex - missing data");
       }
     }
+
+    printty("Total variants created: ${variants.length}");
 
     if (variants.isEmpty) {
       showWarningToast(
@@ -653,7 +1055,7 @@ class _RequestAttributeVarientTabState
     // Create media object
     final media = ProductVarientMedia(
       productSpecification: _coverImageUrl ?? '',
-      productAdditionalDocument: _additionalImageUrl ?? '',
+      productAdditionalDocument: _additionalImageUrls.join('|'),
     );
 
     // Create variant metadata with selected attributes
@@ -676,7 +1078,7 @@ class _RequestAttributeVarientTabState
     // Create variant media
     final variantMedia = VariantMedia(
       coverImageUrl: _coverImageUrl ?? '',
-      productImageUrl: _additionalImageUrl ?? '',
+      productImageUrl: _additionalImageUrls.join('|'),
     );
 
     // Parse numeric values with defaults
@@ -759,10 +1161,18 @@ class _RequestAttributeVarientTabState
     final attributeControllers = variantAttributeControllers[variantIndex];
     final imageUrls = variantImageUrls[variantIndex];
 
+    printty("Creating variant $variantIndex:");
+    printty("  - inventoryControllers: ${inventoryControllers != null}");
+    printty("  - pricingControllers: ${pricingControllers != null}");
+    printty("  - attributeControllers: ${attributeControllers != null}");
+    printty("  - imageUrls: ${imageUrls != null}");
+
     if (inventoryControllers == null ||
         pricingControllers == null ||
         attributeControllers == null ||
         imageUrls == null) {
+      printty(
+          "Variant $variantIndex creation failed - missing controllers/data");
       return null;
     }
 
@@ -908,17 +1318,17 @@ class _RequestAttributeVarientTabState
       final pickedFile = await ImageAndDocUtils.pickImage(enableCropping: true);
 
       if (pickedFile != null) {
-        _additionalImageFile = File(pickedFile.path);
+        final newFile = File(pickedFile.path);
+        _additionalImageFiles.add(newFile);
         setState(() {});
-      }
 
-      if (_additionalImageFile != null) {
-        final r = await ref
-            .read(fileUploadVm)
-            .uploadFile(file: [_additionalImageFile!]);
+        final r = await ref.read(fileUploadVm).uploadFile(file: [newFile]);
         if (r.success && r.data != null && r.data!.isNotEmpty) {
-          printty("upload complete ${r.data!.first.url}");
-          _additionalImageUrl = r.data!.first.url;
+          final url = r.data!.first.url;
+          if (url != null) {
+            _additionalImageUrls.add(url);
+            printty("additional image upload complete $url");
+          }
         }
       }
     } catch (e) {

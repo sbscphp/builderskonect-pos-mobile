@@ -117,6 +117,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     "Your request to add this product has been submitted. You will be notified once this has been approved.",
                 solidBtnText: "Okay, good",
                 onSolidBtnOnTap: () {
+                  ref.read(productInventoryVmodel).getInventoryProducts();
                   vm.setSelectedAttributeList([]);
                   Navigator.pop(ctx);
                   Navigator.pop(ctx);

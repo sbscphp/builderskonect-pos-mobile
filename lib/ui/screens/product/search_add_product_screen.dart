@@ -54,7 +54,7 @@ class _SearchAddProductScreenState
       (p) => p.catalogueModel.id == updatedProduct.catalogueModel.id,
     );
 
-    if (index != -1) {
+    if (index != -1 && mounted) {
       setState(() {
         productCatalogues[index] = updatedProduct;
       });
@@ -69,9 +69,11 @@ class _SearchAddProductScreenState
   void _createProductsFromCatalogue() async {
     if (!_areAllProductsComplete || isCreatingProducts) return;
 
-    setState(() {
-      isCreatingProducts = true;
-    });
+    if (mounted) {
+      setState(() {
+        isCreatingProducts = true;
+      });
+    }
 
     try {
       // Validate all products before creating
@@ -111,6 +113,7 @@ class _SearchAddProductScreenState
         //     backgroundColor: Colors.green,
         //   ),
         // );
+        ref.read(productInventoryVmodel).getInventoryProducts();
         Navigator.pop(context);
         showSuccessToastMessage(
             '${products.length} product(s) created successfully!');
@@ -502,18 +505,17 @@ class _SearchAddProductScreenState
                                                 DismissDirection.endToStart) {
                                               // Delete action (swipe left)
                                               return await ModalWrapper
-                                                  .bottomSheet(
+                                                  .bottomSheet<bool>(
                                                 context: context,
                                                 widget: ConfirmationModal(
                                                   modalConfirmationArg:
                                                       ModalConfirmationArg(
-                                                    iconPath:
-                                                        AppSvgs.infoCircleRed,
+                                                    iconPath: AppSvgs.trash,
                                                     title:
                                                         "Remove ${product.catalogueModel.name}",
                                                     description:
                                                         "Are you sure you want to remove ${product.catalogueModel.name} from your product list?",
-                                                    solidBtnText: "Yes Remove",
+                                                    solidBtnText: "Yes, Remove",
                                                     onSolidBtnOnTap: () {
                                                       Navigator.pop(
                                                           context, true);
@@ -532,6 +534,18 @@ class _SearchAddProductScreenState
                                               return false; // Don't dismiss, just perform action
                                             }
                                             return false;
+                                          },
+                                          onDismissed: (direction) {
+                                            if (direction ==
+                                                DismissDirection.endToStart) {
+                                              // Remove the product from the list
+                                              if (mounted) {
+                                                setState(() {
+                                                  productCatalogues
+                                                      .remove(product);
+                                                });
+                                              }
+                                            }
                                           },
                                           background: _buildSwipeBackground(
                                               isLeftSwipe: true),
@@ -611,53 +625,45 @@ class _SearchAddProductScreenState
   }
 
   Widget _buildSwipeBackground({required bool isLeftSwipe}) {
-    return Container(
-      alignment: isLeftSwipe ? Alignment.centerLeft : Alignment.centerRight,
-      padding: EdgeInsets.symmetric(horizontal: Sizer.width(20)),
-      // decoration: BoxDecoration(
-      //   gradient: LinearGradient(
-      //     colors: [
-      //       Colors.red.withValues(alpha: 0.8),
-      //       Colors.red,
-      //     ],
-      //     begin: isLeftSwipe ? Alignment.centerLeft : Alignment.centerRight,
-      //     end: isLeftSwipe ? Alignment.centerRight : Alignment.centerLeft,
-      //   ),
-      // ),
-      child: Row(
-        mainAxisAlignment:
-            isLeftSwipe ? MainAxisAlignment.start : MainAxisAlignment.end,
-        children: [
-          InkWell(
-            child: Container(
-              // height: Sizer.height(46),
-              // width: Sizer.width(60),
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizer.width(16),
-                vertical: Sizer.height(10),
-              ),
-              color: AppColors.dayBreakBlue,
-              child: SvgPicture.asset(
-                AppSvgs.edit,
-                height: Sizer.height(24),
-              ),
+    if (isLeftSwipe) {
+      // Edit action (swipe right) - Blue background with edit icon
+      return Container(
+        alignment: Alignment.centerLeft,
+        decoration: BoxDecoration(
+          color: AppColors.dayBreakBlue,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: Sizer.width(20)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SvgPicture.asset(
+              AppSvgs.edit,
+              height: Sizer.height(24),
+              colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
-          ),
-          InkWell(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizer.width(16),
-                vertical: Sizer.height(10),
-              ),
-              color: AppColors.red2D,
-              child: SvgPicture.asset(
-                AppSvgs.deleteWhite,
-              ),
+          ],
+        ),
+      );
+    } else {
+      // Delete action (swipe left) - Red background with trash icon
+      return Container(
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: Colors.red,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: Sizer.width(20)),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            SvgPicture.asset(
+              AppSvgs.trash,
+              height: Sizer.height(24),
+              colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcIn),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    }
   }
 
   // Handle edit action when swiping right

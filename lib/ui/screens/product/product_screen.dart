@@ -20,9 +20,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      ref
-          .read(productInventoryVmodel)
-          .getInventoryProducts(productReview: true);
+      ref.read(productInventoryVmodel).getInventoryProducts();
       _scrollListener();
     });
   }

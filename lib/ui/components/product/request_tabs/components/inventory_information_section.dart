@@ -29,6 +29,11 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     required this.onPickAdditionalImage,
     required this.onRemoveCoverImage,
     required this.onRemoveAdditionalImage,
+    this.productHasVariant = false,
+    this.variantIndex,
+    this.onApplyToAllVariants,
+    this.isApplyToAllEnabled = true,
+    this.appliedFromVariant,
   });
 
   final TextEditingController sellingUnitC;
@@ -51,6 +56,11 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final VoidCallback onPickAdditionalImage;
   final VoidCallback onRemoveCoverImage;
   final VoidCallback onRemoveAdditionalImage;
+  final bool productHasVariant;
+  final int? variantIndex;
+  final Function(int)? onApplyToAllVariants;
+  final bool isApplyToAllEnabled;
+  final int? appliedFromVariant;
 
   @override
   ConsumerState<InventoryInformationSection> createState() =>
@@ -116,21 +126,43 @@ class _InventoryInformationSectionState
                       YBox(16),
                       _buildImageUploadSection(),
                       YBox(16),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CustomCheckbox(
-                            isSelected: false,
+                      // Show bulk apply checkbox only for variants
+                      if (widget.productHasVariant &&
+                          widget.variantIndex != null)
+                        InkWell(
+                          onTap: widget.isApplyToAllEnabled &&
+                                  widget.onApplyToAllVariants != null
+                              ? () {
+                                  widget.onApplyToAllVariants!(
+                                      widget.variantIndex!);
+                                }
+                              : null,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CustomCheckbox(
+                                isSelected: widget.appliedFromVariant ==
+                                    widget.variantIndex,
+                              ),
+                              XBox(8),
+                              Expanded(
+                                child: Text(
+                                  widget.appliedFromVariant ==
+                                          widget.variantIndex
+                                      ? "Inventory details applied to all variants"
+                                      : "Apply inventory details to all variants",
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.text14?.copyWith(
+                                    color: widget.isApplyToAllEnabled
+                                        ? null
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          XBox(8),
-                          Text(
-                            "Apply inventory details to all variants",
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.text16,
-                          ),
-                        ],
-                      ),
+                        ),
                       YBox(16),
                     ],
                   ),
@@ -182,16 +214,16 @@ class _InventoryInformationSectionState
             FilteringTextInputFormatter.digitsOnly,
           ],
         ),
-        YBox(16),
-        CustomTextField(
-          controller: widget.measurementC,
-          labelText: 'Measurement',
-          hintText: 'Select unit measurement',
-          isRequired: false,
-          showLabelHeader: true,
-          showSuffixIcon: true,
-          readOnly: true,
-        ),
+        // YBox(16),
+        // CustomTextField(
+        //   controller: widget.measurementC,
+        //   labelText: 'Measurement',
+        //   hintText: 'Select unit measurement',
+        //   isRequired: false,
+        //   showLabelHeader: true,
+        //   showSuffixIcon: true,
+        //   readOnly: true,
+        // ),
         YBox(16),
         CustomTextField(
           controller: widget.dimensionC,

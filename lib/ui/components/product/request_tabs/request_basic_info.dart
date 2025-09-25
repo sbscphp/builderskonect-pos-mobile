@@ -28,6 +28,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   CategoryModel? selectedCategory;
   CategoryModel? selectedSubCategory;
   CategoryModel? selectedCategoryType;
+  List<String> tags = [];
 
   @override
   void dispose() {
@@ -43,7 +44,6 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
     final vm = ref.watch(productInventoryVmodel);
     return ListView(
@@ -224,19 +224,25 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 //   ),
                 // ),
                 YBox(16),
-                CustomTextField(
-                  controller: tagsC,
+                TagInputWidget(
                   labelText: 'Tags',
                   hintText: 'Enter tags, e.g Cement, tiles, home interior',
                   showLabelHeader: true,
-                  validator: Validators.required(),
-                ),
-
-                Text(
-                  "This will help customers find your product in the marketplace.",
-                  style: textTheme.text14?.copyWith(
-                    color: colorScheme.black45,
-                  ),
+                  isRequired: true,
+                  initialTags: tags,
+                  onTagsChanged: (newTags) {
+                    setState(() {
+                      tags = newTags;
+                    });
+                  },
+                  validator: (value) {
+                    if (tags.isEmpty) {
+                      return 'Please add at least one tag';
+                    }
+                    return null;
+                  },
+                  helperText:
+                      "This will help customers find your product in the marketplace.",
                 ),
                 YBox(16),
 
@@ -262,7 +268,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                           productTypeId: selectedCategoryType?.id ?? "",
                           brand: selectedBrand?.id?.toString() ?? "",
                           description: descriptionC.text,
-                          tags: tagsC.text.trim(),
+                          tags: tags.join(','),
                         ),
                       );
                       widget.onNext?.call();

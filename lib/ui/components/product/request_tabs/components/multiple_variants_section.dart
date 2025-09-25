@@ -26,6 +26,13 @@ class MultipleVariantsSection extends ConsumerStatefulWidget {
     required this.onPickVariantAdditionalImage,
     required this.onRemoveVariantCoverImage,
     required this.onRemoveVariantAdditionalImage,
+    required this.onAddVariant,
+    required this.onRemoveVariant,
+    required this.onApplyInventoryToAll,
+    required this.onApplyPricingToAll,
+    required this.onConfigureVariantChanged,
+    this.inventoryAppliedFromVariant,
+    this.pricingAppliedFromVariant,
   });
 
   final ConfigureVariantArg? configureVariantArg;
@@ -46,6 +53,13 @@ class MultipleVariantsSection extends ConsumerStatefulWidget {
   final Function(int) onPickVariantAdditionalImage;
   final Function(int) onRemoveVariantCoverImage;
   final Function(int) onRemoveVariantAdditionalImage;
+  final VoidCallback onAddVariant;
+  final Function(int) onRemoveVariant;
+  final Function(int) onApplyInventoryToAll;
+  final Function(int) onApplyPricingToAll;
+  final Function(ConfigureVariantArg?) onConfigureVariantChanged;
+  final int? inventoryAppliedFromVariant;
+  final int? pricingAppliedFromVariant;
 
   @override
   ConsumerState<MultipleVariantsSection> createState() =>
@@ -96,32 +110,46 @@ class _MultipleVariantsSectionState
                     height: Sizer.height(42),
                     outlineColor: Colors.grey,
                     isOutline: true,
-                    onTap: () {},
+                    online: numVariants > 1, // Disable if only one variant
+                    onTap: numVariants > 1
+                        ? () {
+                            widget.onRemoveVariant(variantIndex);
+                          }
+                        : null,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset(
                           AppSvgs.trash,
                           height: Sizer.height(14),
+                          colorFilter: ColorFilter.mode(
+                            numVariants > 1 ? AppColors.red22 : Colors.grey,
+                            BlendMode.srcIn,
+                          ),
                         ),
                         XBox(8),
                         Text(
                           "Remove",
                           style: textTheme.text14?.copyWith(
-                            color: AppColors.red22,
+                            color:
+                                numVariants > 1 ? AppColors.red22 : Colors.grey,
                           ),
                         )
                       ],
                     ),
                   )),
                   XBox(10),
-                  Expanded(
-                    child: CustomBtn.solid(
-                      height: Sizer.height(42),
-                      onTap: () {},
-                      text: "Add Variant",
-                    ),
-                  )
+                  // Only show Add Variant button on the last variant
+                  if (variantIndex == numVariants - 1)
+                    Expanded(
+                      child: CustomBtn.solid(
+                        height: Sizer.height(42),
+                        onTap: widget.onAddVariant,
+                        text: "Add Variant",
+                      ),
+                    )
+                  else
+                    Expanded(child: SizedBox()), // Empty space for alignment
                 ],
               )
             ],
@@ -213,6 +241,12 @@ class _MultipleVariantsSectionState
       onRemoveCoverImage: () => widget.onRemoveVariantCoverImage(variantIndex),
       onRemoveAdditionalImage: () =>
           widget.onRemoveVariantAdditionalImage(variantIndex),
+      productHasVariant: true,
+      variantIndex: variantIndex,
+      onApplyToAllVariants: widget.onApplyInventoryToAll,
+      isApplyToAllEnabled: widget.inventoryAppliedFromVariant == null ||
+          widget.inventoryAppliedFromVariant == variantIndex,
+      appliedFromVariant: widget.inventoryAppliedFromVariant,
     );
   }
 
@@ -234,6 +268,12 @@ class _MultipleVariantsSectionState
       isViewPricingInformation: isExpanded,
       onTogglePricingInfo: () =>
           widget.onToggleVariantPricingInfo(variantIndex),
+      productHasVariant: true,
+      variantIndex: variantIndex,
+      onApplyToAllVariants: widget.onApplyPricingToAll,
+      isApplyToAllEnabled: widget.pricingAppliedFromVariant == null ||
+          widget.pricingAppliedFromVariant == variantIndex,
+      appliedFromVariant: widget.pricingAppliedFromVariant,
     );
   }
 
