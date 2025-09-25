@@ -116,6 +116,12 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     if (res is CategoryModel) {
                       selectedCategory = res;
                       categoryC.text = res.name ?? '';
+
+                      // Clear sub category and type
+                      selectedSubCategory = null;
+                      subCategoryC.clear();
+                      selectedCategoryType = null;
+                      typeC.clear();
                     }
                   },
                 ),
@@ -143,6 +149,13 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     if (res is CategoryModel) {
                       selectedSubCategory = res;
                       subCategoryC.text = res.name ?? '';
+
+                      // Set type to null
+                      selectedCategoryType = null;
+                      typeC.clear();
+
+                      // Fetch attributes
+                      vm.getProductAttributes(res.id ?? "");
                     }
                   },
                 ),
@@ -154,6 +167,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     if (selectedSubCategory == null) {
                       showWarningToast("Please select sub category first");
@@ -169,7 +183,6 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     if (res is CategoryModel) {
                       selectedCategoryType = res;
                       typeC.text = res.name ?? '';
-                      vm.getProductAttributes(res.id ?? "");
                     }
                   },
                 ),

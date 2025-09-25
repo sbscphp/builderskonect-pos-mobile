@@ -42,6 +42,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
   }
 
   void _handleSubmit() async {
+    final ctx = NavKey.appNavKey.currentContext!;
     try {
       final vm = ref.read(productInventoryVmodel);
 
@@ -104,10 +105,27 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
 
       if (response.success) {
         // Show success message
-        showSuccessToastMessage(
-            response.message ?? 'Product created successfully!');
-        // Navigate back or to success page
-        Navigator.of(context).pop();
+        if (context.mounted) {
+          ModalWrapper.bottomSheet(
+            context: ctx,
+            canDismiss: false,
+            widget: ConfirmationModal(
+              modalConfirmationArg: ModalConfirmationArg(
+                iconPath: AppSvgs.checkIcon,
+                title: "Request Submitted Successfully",
+                description:
+                    "Your request to add this product has been submitted. You will be notified once this has been approved.",
+                solidBtnText: "Okay, good",
+                onSolidBtnOnTap: () {
+                  vm.setSelectedAttributeList([]);
+                  Navigator.pop(ctx);
+                  Navigator.pop(ctx);
+                  Navigator.pop(ctx);
+                },
+              ),
+            ),
+          );
+        }
       } else {
         // Show error message
         showWarningToast(response.message ?? 'Failed to create product');
@@ -190,7 +208,12 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                 showSuffixIcon: true,
                 readOnly: true,
                 onTap: () async {
-                  final options = ["Light", "Standard", 'Heavy', 'Oversized'];
+                  final options = [
+                    "Light weight",
+                    "Standard weight",
+                    'Heavy duty',
+                    'Extra heavy duty'
+                  ];
                   final res = await ModalWrapper.bottomSheet(
                     context: context,
                     widget: StoreOptionModal(
@@ -216,10 +239,14 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                 readOnly: true,
                 onTap: () async {
                   final options = [
-                    "Fragile",
-                    "Harzardous",
-                    'Liquid',
-                    'Special handling'
+                    "light",
+                    "standard",
+                    'heavy',
+                    'oversized',
+                    'hazardous',
+                    'fragile',
+                    'liquid',
+                    'special_handling',
                   ];
                   final res = await ModalWrapper.bottomSheet(
                     context: context,

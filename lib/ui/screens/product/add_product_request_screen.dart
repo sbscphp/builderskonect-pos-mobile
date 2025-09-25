@@ -28,11 +28,13 @@ class _AddProductRequestScreenState
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(productInventoryVmodel);
     return Scaffold(
       appBar: CustomAppbar(
         title: "Request to Add Product",
         onBack: () {
           if (regSteps == 1) {
+            vm.setSelectedAttributeList([]);
             Navigator.pop(context);
 
             // Clear product list and selected Store ID

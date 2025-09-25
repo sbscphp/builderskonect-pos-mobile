@@ -2,9 +2,9 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class AddAttributeModal extends ConsumerStatefulWidget {
-  const AddAttributeModal({super.key, this.isCategory = true});
+  const AddAttributeModal({super.key, this.selectedAttributeList});
 
-  final bool isCategory;
+  final List<ProductAttributeModel>? selectedAttributeList;
 
   @override
   ConsumerState<AddAttributeModal> createState() => _AddAttributeModalState();
@@ -14,10 +14,17 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 
+  List<ProductAttributeModel> selectedAttributeList = [];
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.selectedAttributeList != null) {
+        selectedAttributeList = widget.selectedAttributeList ?? [];
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -114,8 +121,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
             children: [
               InkWell(
                 onTap: () {
-                  if (vm.selectedAttributeList.isNotEmpty) {
-                    vm.selectedAttributeList.clear();
+                  if (selectedAttributeList.isNotEmpty) {
+                    selectedAttributeList.clear();
                   }
                   setState(() {});
                 },
@@ -129,12 +136,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
               XBox(24),
               InkWell(
                 onTap: () {
-                  if (vm.selectedAttributeList.isNotEmpty) {
-                    vm.selectedAttributeList.clear();
-                  } else {
-                    vm.selectedAttributeList.addAll(vm.productAttributes);
-                  }
-                  vm.updateUI();
+                  selectedAttributeList.addAll(vm.productAttributes);
+                  vm.reBuildUI();
                 },
                 child: Text(
                   "Select all",
@@ -159,17 +162,17 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                 final item = vm.productAttributes[i];
                 return InkWell(
                   onTap: () {
-                    if (vm.selectedAttributeList.contains(item)) {
-                      vm.selectedAttributeList.remove(item);
+                    if (selectedAttributeList.contains(item)) {
+                      selectedAttributeList.remove(item);
                     } else {
-                      vm.selectedAttributeList.add(item);
+                      selectedAttributeList.add(item);
                     }
-                    vm.updateUI();
+                    vm.reBuildUI();
                   },
                   child: Row(
                     children: [
                       CustomCheckbox(
-                        isSelected: vm.selectedAttributeList.contains(item),
+                        isSelected: selectedAttributeList.contains(item),
                       ),
                       XBox(8),
                       Text(
@@ -184,14 +187,13 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
               },
             ),
           ),
-          YBox(32),
+          YBox(10),
           CustomBtn.solid(
-            online: vm.selectedAttributeList.isNotEmpty,
+            online: selectedAttributeList.isNotEmpty,
             text: "Save",
             onTap: () {
-              if (vm.selectedAttributeList.isNotEmpty) {
-                Navigator.pop(context, vm.selectedAttributeList);
-              }
+              vm.setSelectedAttributeList(selectedAttributeList);
+              Navigator.pop(context, selectedAttributeList);
             },
           ),
           YBox(30),

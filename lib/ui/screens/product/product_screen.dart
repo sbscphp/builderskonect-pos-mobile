@@ -55,73 +55,72 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     final productVm = ref.watch(productInventoryVmodel);
     final staffRef = ref.watch(staffVm);
     return Scaffold(
-        key: _scaffoldKey,
-        drawer: const CustomDrawer(),
-        appBar: CustomAppbar(
-          title: "Products and Inventory",
-          trailingWidget: !staffRef.hasAccessToProductOverview
-              ? null
-              : InkWell(
-                  onTap: () {
-                    showMenu(
-                      context: context,
-                      position: RelativeRect.fromLTRB(100, 100, 0, 0),
-                      items: [
-                        PopupMenuItem(
-                          value: 'add_product',
-                          child: Text('Add Product', style: textTheme.text14),
-                        ),
-                        PopupMenuItem(
-                          value: 'view_inventory',
-                          child:
-                              Text('View Inventory', style: textTheme.text14),
-                        ),
-                        PopupMenuItem(
-                          value: 'product_transfer',
-                          child:
-                              Text('Product Transfer', style: textTheme.text14),
-                        ),
-                      ],
-                    ).then((value) {
-                      if (value != null) {
-                        printty('Selected: $value');
-                        switch (value) {
-                          case 'add_product':
-                            Navigator.pushNamed(
-                                context, RoutePath.searchAddProductScreen);
-                            break;
-                          case 'view_inventory':
-                            Navigator.pushNamed(
-                                context, RoutePath.inventoryScreen);
-                            break;
-                          case 'product_transfer':
-                            Navigator.pushNamed(
-                                context, RoutePath.productTransferScreen);
-                            break;
-                          default:
-                            break;
-                        }
+      key: _scaffoldKey,
+      drawer: const CustomDrawer(),
+      appBar: CustomAppbar(
+        title: "Products and Inventory",
+        trailingWidget: !staffRef.hasAccessToProductOverview
+            ? null
+            : InkWell(
+                onTap: () {
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: [
+                      PopupMenuItem(
+                        value: 'add_product',
+                        child: Text('Add Product', style: textTheme.text14),
+                      ),
+                      PopupMenuItem(
+                        value: 'view_inventory',
+                        child: Text('View Inventory', style: textTheme.text14),
+                      ),
+                      PopupMenuItem(
+                        value: 'product_transfer',
+                        child:
+                            Text('Product Transfer', style: textTheme.text14),
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value != null) {
+                      printty('Selected: $value');
+                      switch (value) {
+                        case 'add_product':
+                          Navigator.pushNamed(
+                              context, RoutePath.searchAddProductScreen);
+                          break;
+                        case 'view_inventory':
+                          Navigator.pushNamed(
+                              context, RoutePath.inventoryScreen);
+                          break;
+                        case 'product_transfer':
+                          Navigator.pushNamed(
+                              context, RoutePath.productTransferScreen);
+                          break;
+                        default:
+                          break;
                       }
-                    });
-                  },
-                  child: SvgPicture.asset(
-                    AppSvgs.circleMenu,
-                    height: Sizer.height(32),
-                  ),
+                    }
+                  });
+                },
+                child: SvgPicture.asset(
+                  AppSvgs.circleMenu,
+                  height: Sizer.height(32),
                 ),
-          leadingWidget: CustomCircleAvatar(
-            avatarUrl: ref.read(authVmodel).user?.avatar,
-            onTap: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-          ),
+              ),
+        leadingWidget: CustomCircleAvatar(
+          avatarUrl: ref.read(authVmodel).user?.avatar,
+          onTap: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
         ),
-        body: !staffRef.hasAccessToProductOverview
-            ? RequestAccessWidget(
-                isLoading: staffRef.busy(RowParams.product),
-                onRequestAccess: () async {
-                  final res = await staffRef
-                      .requestApplicationAccess(RowParams.product);
+      ),
+      body: !staffRef.hasAccessToProductOverview
+          ? RequestAccessWidget(
+              isLoading: staffRef.busy(RowParams.product),
+              onRequestAccess: () async {
+                final res =
+                    await staffRef.requestApplicationAccess(RowParams.product);
 
                 handleApiResponse(response: res);
               },
@@ -335,10 +334,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                             );
                                           },
                                         ),
-                                        ModalOption(
-                                          title: "Edit product details",
-                                          onTap: () {},
-                                        ),
+                                        // ModalOption(
+                                        //   title: "Edit product details",
+                                        //   onTap: () {},
+                                        // ),
                                         ModalOption(
                                           title: "Delete product",
                                           textColor: AppColors.red2D,

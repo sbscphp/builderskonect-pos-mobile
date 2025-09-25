@@ -23,7 +23,7 @@ class ConfigureVariantModal extends ConsumerStatefulWidget {
 
 class _ConfigureVariantModalState extends ConsumerState<ConfigureVariantModal> {
   List<ProductAttributeModel> selectedVariantList = [];
-  int numOfVariants = 2;
+  int numOfVariants = 1;
   @override
   void initState() {
     super.initState();
@@ -45,6 +45,7 @@ class _ConfigureVariantModalState extends ConsumerState<ConfigureVariantModal> {
     final vm = ref.watch(productInventoryVmodel);
 
     return Container(
+      height: Sizer.screenHeight * 0.7,
       padding: EdgeInsets.symmetric(
         horizontal: Sizer.width(16),
       ),
@@ -112,125 +113,136 @@ class _ConfigureVariantModalState extends ConsumerState<ConfigureVariantModal> {
               ),
             ],
           ),
-          YBox(30),
-          Wrap(
-            spacing: Sizer.width(16),
-            runSpacing: Sizer.height(24),
-            children: vm.productAttributes.map((item) {
-              return InkWell(
-                onTap: () {
-                  if (selectedVariantList.contains(item)) {
-                    selectedVariantList.remove(item);
-                  } else {
-                    selectedVariantList.add(item);
-                  }
-                  vm.updateUI();
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Sizer.width(12),
-                    vertical: Sizer.height(8),
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: colorScheme.text6,
-                    ),
-                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CustomCheckbox(
-                        isSelected: selectedVariantList.contains(item),
-                      ),
-                      XBox(8),
-                      Text(
-                        item.attribute ?? '',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: textTheme.text14,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-          YBox(40),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  "Number of Variants",
-                  style: textTheme.text16?.medium,
-                ),
+          YBox(10),
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.only(
+                top: Sizer.height(20),
+                bottom: Sizer.height(40),
               ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      if (numOfVariants > 2) {
-                        numOfVariants--;
-                        setState(() {});
-                      }
-                    },
-                    child: SvgPicture.asset(
-                      AppSvgs.borderMinus,
-                      height: Sizer.height(32),
-                    ),
-                  ),
-                  XBox(10),
-                  Container(
-                    height: Sizer.height(32),
-                    width: Sizer.width(40),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: AppColors.neutral5,
-                      ),
-                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                    ),
-                    child: Center(
-                      child: Text(
-                        numOfVariants.toString(),
-                        style: textTheme.text14?.medium.copyWith(
-                          color: colorScheme.black25,
+              children: [
+                Wrap(
+                  spacing: Sizer.width(16),
+                  runSpacing: Sizer.height(24),
+                  children: vm.selectedAttributeList.map((item) {
+                    return InkWell(
+                      onTap: () {
+                        if (selectedVariantList.contains(item)) {
+                          selectedVariantList.remove(item);
+                        } else {
+                          selectedVariantList.add(item);
+                        }
+                        vm.reBuildUI();
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Sizer.width(12),
+                          vertical: Sizer.height(8),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: colorScheme.text6,
+                          ),
+                          borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomCheckbox(
+                              isSelected: selectedVariantList.contains(item),
+                            ),
+                            XBox(8),
+                            Text(
+                              item.attribute ?? '',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: textTheme.text14,
+                            ),
+                          ],
                         ),
                       ),
+                    );
+                  }).toList(),
+                ),
+                YBox(50),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Number of Variants",
+                        style: textTheme.text16?.medium,
+                      ),
                     ),
-                  ),
-                  XBox(10),
-                  InkWell(
-                    onTap: () {
-                      numOfVariants++;
-                      setState(() {});
-                    },
-                    child: SvgPicture.asset(
-                      AppSvgs.borderPlus,
-                      height: Sizer.height(32),
-                    ),
-                  ),
-                ],
-              )
-            ],
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            if (numOfVariants > 1) {
+                              numOfVariants--;
+                              setState(() {});
+                            }
+                          },
+                          child: SvgPicture.asset(
+                            AppSvgs.borderMinus,
+                            height: Sizer.height(32),
+                          ),
+                        ),
+                        XBox(10),
+                        Container(
+                          height: Sizer.height(32),
+                          width: Sizer.width(40),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: AppColors.neutral5,
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(Sizer.radius(4)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              numOfVariants.toString(),
+                              style: textTheme.text14?.medium.copyWith(
+                                color: colorScheme.black25,
+                              ),
+                            ),
+                          ),
+                        ),
+                        XBox(10),
+                        InkWell(
+                          onTap: () {
+                            numOfVariants++;
+                            setState(() {});
+                          },
+                          child: SvgPicture.asset(
+                            AppSvgs.borderPlus,
+                            height: Sizer.height(32),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+                YBox(32),
+                CustomBtn.solid(
+                  online: selectedVariantList.isNotEmpty,
+                  text: "Save",
+                  onTap: () {
+                    if (selectedVariantList.isNotEmpty) {
+                      Navigator.pop(
+                        context,
+                        ConfigureVariantArg(
+                          selectedVariantList: selectedVariantList,
+                          numOfVariants: numOfVariants,
+                        ),
+                      );
+                    }
+                  },
+                ),
+                YBox(30),
+              ],
+            ),
           ),
-          YBox(32),
-          CustomBtn.solid(
-            online: selectedVariantList.isNotEmpty,
-            text: "Save",
-            onTap: () {
-              if (selectedVariantList.isNotEmpty) {
-                Navigator.pop(
-                  context,
-                  ConfigureVariantArg(
-                    selectedVariantList: selectedVariantList,
-                    numOfVariants: numOfVariants,
-                  ),
-                );
-              }
-            },
-          ),
-          YBox(30),
         ],
       ),
     );

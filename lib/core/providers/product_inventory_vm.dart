@@ -145,44 +145,14 @@ class ProductInventoryVm extends BaseVm {
     );
   }
 
-  // final productNameC = TextEditingController();
-  // final brandC = TextEditingController();
-  // final categoryC = TextEditingController();
-  // final subCategoryC = TextEditingController();
-  // final typeC = TextEditingController();
-  // final tagsC = TextEditingController();
-  // final descriptionC = TextEditingController();
-
-  // BrandModel? selectedBrand;
-  // CategoryModel? selectedCategory;
-  // CategoryModel? selectedSubCategory;
-  // CategoryModel? selectedCategoryType;
-
-  // clearControllers() {
-  //   productNameC.clear();
-  //   brandC.clear();
-  //   categoryC.clear();
-  //   subCategoryC.clear();
-  //   typeC.clear();
-  //   tagsC.clear();
-  //   descriptionC.clear();
-
-  //   notifyListeners();
-  // }
-
-  List<ProductAttributeModel> productAttributes = [];
-  List<ProductAttributeModel> selectedAttributeList = [];
-
-  // Media handling fields
-  String? coverImageUrl;
-  // String? productImageUrl;
-  List<String> additionalImageUrls = [];
-
-  // Attribute values for variant generation
-  Map<String, String> selectedAttributeValues = {};
-
-  updateUI() {
-    notifyListeners();
+  List<ProductAttributeModel> _productAttributes = [];
+  List<ProductAttributeModel> get productAttributes => _productAttributes;
+  List<ProductAttributeModel> _selectedAttributeList = [];
+  List<ProductAttributeModel> get selectedAttributeList =>
+      _selectedAttributeList;
+  setSelectedAttributeList(List<ProductAttributeModel> val) {
+    _selectedAttributeList = val;
+    reBuildUI();
   }
 
   Future<ApiResponse> getProductAttributes(String catTypeId) async {
@@ -196,44 +166,13 @@ class ProductInventoryVm extends BaseVm {
       errorObjectName: getState,
       busyObjectName: getState,
       onSuccess: (data) {
-        productAttributes =
+        _productAttributes =
             productAttributeModelFromJson(json.encode(data['data']));
         return apiResponse;
       },
     );
   }
 
-// //Inventory Form
-//   final sellingUnitC = TextEditingController();
-//   final stockQtyC = TextEditingController();
-//   final qtyPerSellUnitC = TextEditingController();
-//   final minOrderQty = TextEditingController();
-//   final measurementC = TextEditingController();
-//   final dimensionC = TextEditingController();
-//   final weightPerSellUnitC = TextEditingController();
-//   final weightPerUnitItemC = TextEditingController();
-//   final reorderLevelC = TextEditingController();
-//   final skuC = TextEditingController();
-//   //pricing form
-//   final costPricePerUnitC = TextEditingController();
-//   final sellingPricePerUnitC = TextEditingController();
-//   final discountPriceC = TextEditingController();
-
-//   //shipping classification form
-//   final shippingWeightTypeC = TextEditingController();
-//   final shippingClassC = TextEditingController();
-
-//   //parcel dimension form
-//   final lengthC = TextEditingController();
-//   final widthC = TextEditingController();
-//   final heigthC = TextEditingController();
-
-//   //parcel measurement var
-//   String lengthUnit = '-';
-//   String widthUnit = '-';
-//   String heightUnit = '-';
-  /// Holds the current product variation parameters
-  ///
   ProductVariationParams? _variationParams;
   ProductVariationParams? get variationParams => _variationParams;
   void setVariationParams(ProductVariationParams? params) {
@@ -275,14 +214,6 @@ class ProductInventoryVm extends BaseVm {
         return apiResponse;
       },
     );
-  }
-
-  // Create individual variant data structure
-
-  // Update attribute value
-  void updateAttributeValue(String attributeName, String value) {
-    selectedAttributeValues[attributeName] = value;
-    notifyListeners();
   }
 }
 
