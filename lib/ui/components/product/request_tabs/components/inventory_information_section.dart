@@ -22,7 +22,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     required this.isViewInventoryInformation,
     required this.onToggleInventoryInfo,
     required this.coverImageFile,
-    required this.additionalImageFile,
+    required this.additionalImageFiles,
     required this.loadCoverImage,
     required this.loadAdditionalImages,
     required this.onPickCoverImage,
@@ -34,6 +34,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     this.onApplyToAllVariants,
     this.isApplyToAllEnabled = true,
     this.appliedFromVariant,
+    this.onRemoveAdditionalImageAt,
   });
 
   final TextEditingController sellingUnitC;
@@ -49,7 +50,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final bool isViewInventoryInformation;
   final VoidCallback onToggleInventoryInfo;
   final File? coverImageFile;
-  final File? additionalImageFile;
+  final List<File> additionalImageFiles;
   final bool loadCoverImage;
   final bool loadAdditionalImages;
   final VoidCallback onPickCoverImage;
@@ -61,6 +62,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final Function(int)? onApplyToAllVariants;
   final bool isApplyToAllEnabled;
   final int? appliedFromVariant;
+  final Function(int)? onRemoveAdditionalImageAt;
 
   @override
   ConsumerState<InventoryInformationSection> createState() =>
@@ -308,12 +310,9 @@ class _InventoryInformationSectionState
           onTap: widget.onPickAdditionalImage,
         ),
         YBox(16),
-        if (widget.additionalImageFile != null) ...[
+        if (widget.additionalImageFiles.isNotEmpty) ...[
           YBox(8),
-          _buildImagePreview(
-            widget.additionalImageFile!,
-            widget.onRemoveAdditionalImage,
-          ),
+          _buildMultipleImagePreviews(),
         ],
       ],
     );
@@ -356,6 +355,61 @@ class _InventoryInformationSectionState
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildMultipleImagePreviews() {
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: widget.additionalImageFiles.asMap().entries.map((entry) {
+        final index = entry.key;
+        final imageFile = entry.value;
+        return Stack(
+          children: [
+            Container(
+              height: 100,
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.file(
+                  imageFile,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              top: -8,
+              right: -8,
+              child: IconButton(
+                onPressed: () {
+                  if (widget.onRemoveAdditionalImageAt != null) {
+                    widget.onRemoveAdditionalImageAt!(index);
+                  } else {
+                    // Fallback to remove all if specific index removal not available
+                    widget.onRemoveAdditionalImage();
+                  }
+                },
+                icon: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      }).toList(),
     );
   }
 }

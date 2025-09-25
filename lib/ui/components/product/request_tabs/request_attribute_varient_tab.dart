@@ -295,15 +295,24 @@ class _RequestAttributeVarientTabState
         final pickedFiles = await ImageAndDocUtils.pickMultipleImage();
 
         if (pickedFiles.isNotEmpty) {
-          final newFiles = pickedFiles;
+          // Crop each image individually
+          List<File> croppedFiles = [];
+          for (File file in pickedFiles) {
+            File? croppedFile = await ImageAndDocUtils.cropImage(image: file);
+            if (croppedFile != null) {
+              croppedFiles.add(croppedFile);
+            } else {
+              croppedFiles.add(file); // Use original if cropping fails
+            }
+          }
 
           // For variants, we'll store the first image as the main additional image
           // and combine all URLs with pipe separator for storage
-          variantImages[variantIndex]?['additional'] = newFiles.first;
+          variantImages[variantIndex]?['additional'] = croppedFiles.first;
           setState(() {});
 
           // Upload all selected images
-          final r = await ref.read(fileUploadVm).uploadFile(file: newFiles);
+          final r = await ref.read(fileUploadVm).uploadFile(file: croppedFiles);
           if (r.success && r.data != null && r.data!.isNotEmpty) {
             final urls = r.data!
                 .map((data) => data.url)
@@ -324,7 +333,7 @@ class _RequestAttributeVarientTabState
             "Multiple image selection failed, falling back to single image: $e");
       }
 
-      // Fallback to single image selection
+      // Fallback to single image selection with cropping
       final pickedFile = await ImageAndDocUtils.pickImage(enableCropping: true);
 
       if (pickedFile != null) {
@@ -875,9 +884,7 @@ class _RequestAttributeVarientTabState
                         setState(() {});
                       },
                       coverImageFile: _coverImageFile,
-                      additionalImageFile: _additionalImageFiles.isNotEmpty
-                          ? _additionalImageFiles.first
-                          : null,
+                      additionalImageFiles: _additionalImageFiles,
                       loadCoverImage: loadCoverImage,
                       loadAdditionalImages: loadAdditionalImages,
                       onPickCoverImage: _pickCoverImage,
@@ -892,6 +899,16 @@ class _RequestAttributeVarientTabState
                         setState(() {
                           _additionalImageFiles.clear();
                           _additionalImageUrls.clear();
+                        });
+                      },
+                      onRemoveAdditionalImageAt: (index) {
+                        setState(() {
+                          if (index < _additionalImageFiles.length) {
+                            _additionalImageFiles.removeAt(index);
+                          }
+                          if (index < _additionalImageUrls.length) {
+                            _additionalImageUrls.removeAt(index);
+                          }
                         });
                       },
                     ),
@@ -1315,6 +1332,46 @@ class _RequestAttributeVarientTabState
       // Reset progress tracking for any previous uploads
       ref.read(fileUploadVm).resetProgress();
 
+      // Try multiple image selection first
+      try {
+        final pickedFiles = await ImageAndDocUtils.pickMultipleImage();
+
+        if (pickedFiles.isNotEmpty) {
+          // Crop each image individually
+          List<File> croppedFiles = [];
+          for (File file in pickedFiles) {
+            File? croppedFile = await ImageAndDocUtils.cropImage(image: file);
+            if (croppedFile != null) {
+              croppedFiles.add(croppedFile);
+            } else {
+              croppedFiles.add(file); // Use original if cropping fails
+            }
+          }
+
+          _additionalImageFiles.addAll(croppedFiles);
+          setState(() {});
+
+          // Upload all selected images
+          final r = await ref.read(fileUploadVm).uploadFile(file: croppedFiles);
+          if (r.success && r.data != null && r.data!.isNotEmpty) {
+            final urls = r.data!
+                .map((data) => data.url)
+                .where((url) => url != null)
+                .cast<String>()
+                .toList();
+            if (urls.isNotEmpty) {
+              _additionalImageUrls.addAll(urls);
+              printty("additional images upload complete: ${urls.join(', ')}");
+            }
+          }
+          return;
+        }
+      } catch (e) {
+        printty(
+            "Multiple image selection failed, falling back to single image: $e");
+      }
+
+      // Fallback to single image selection with cropping
       final pickedFile = await ImageAndDocUtils.pickImage(enableCropping: true);
 
       if (pickedFile != null) {

@@ -232,7 +232,8 @@ class _MultipleVariantsSectionState
       onToggleInventoryInfo: () =>
           widget.onToggleVariantInventoryInfo(variantIndex),
       coverImageFile: images['cover'],
-      additionalImageFile: images['additional'],
+      additionalImageFiles:
+          images['additional'] != null ? [images['additional']!] : [],
       loadCoverImage: loadStates['cover'] ?? false,
       loadAdditionalImages: loadStates['additional'] ?? false,
       onPickCoverImage: () => widget.onPickVariantCoverImage(variantIndex),
@@ -247,6 +248,8 @@ class _MultipleVariantsSectionState
       isApplyToAllEnabled: widget.inventoryAppliedFromVariant == null ||
           widget.inventoryAppliedFromVariant == variantIndex,
       appliedFromVariant: widget.inventoryAppliedFromVariant,
+      onRemoveAdditionalImageAt: (index) =>
+          widget.onRemoveVariantAdditionalImage(variantIndex),
     );
   }
 
