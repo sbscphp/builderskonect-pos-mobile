@@ -17,6 +17,10 @@ class _AddProductRequestScreenState
 
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ref.read(productInventoryVmodel).clearControllers();
+      setState(() {});
+    });
     super.initState();
   }
 
@@ -24,9 +28,24 @@ class _AddProductRequestScreenState
   Widget build(BuildContext context) {
     // final textTheme = Theme.of(context).textTheme;
     // final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(productInventoryVmodel);
     return Scaffold(
       appBar: CustomAppbar(
         title: "Request to Add Product",
+        onBack: () {
+          if (regSteps == 1) {
+            vm.setSelectedAttributeList([]);
+            Navigator.pop(context);
+
+            // Clear product list and selected Store ID
+            // ref.read(productTransferVm).productList = [];
+            // ref.read(productTransferVm).selectedStore = null;
+            // ref.read(productTransferVm).storeC.clear();
+          } else {
+            regSteps--;
+            setState(() {});
+          }
+        },
       ),
       body: Column(
         children: [
@@ -67,15 +86,17 @@ class _AddProductRequestScreenState
                   child: child,
                 );
               },
-              child: switch (regSteps) {
-                1 => RequestBasicInfo(
+              child: IndexedStack(
+                index: regSteps - 1,
+                children: [
+                  RequestBasicInfo(
                     key: const ValueKey('basic_info'),
                     onNext: () {
                       regSteps = 2;
                       setState(() {});
                     },
                   ),
-                2 => RequestAttributeVarientTab(
+                  RequestAttributeVarientTab(
                     key: const ValueKey('attribute_varient'),
                     onNext: () {
                       printty("attribute_varient");
@@ -87,7 +108,7 @@ class _AddProductRequestScreenState
                       setState(() {});
                     },
                   ),
-                _ => RequestOtherInfoTab(
+                  RequestOtherInfoTab(
                     key: const ValueKey('other_info'),
                     onPrevious: () {
                       setState(() {
@@ -95,7 +116,8 @@ class _AddProductRequestScreenState
                       });
                     },
                   ),
-              },
+                ],
+              ),
             ),
           ),
         ],

@@ -46,3 +46,4 @@ export 'upload_file_model.dart';
 export 'user_profile_model.dart';
 export 'user_subcription.dart';
 export 'vendor_profile_model.dart';
+export 'product_attribute_model.dart';

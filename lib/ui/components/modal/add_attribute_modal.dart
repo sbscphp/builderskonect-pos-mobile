@@ -2,9 +2,9 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class AddAttributeModal extends ConsumerStatefulWidget {
-  const AddAttributeModal({super.key, this.isCategory = true});
+  const AddAttributeModal({super.key, this.selectedAttributeList});
 
-  final bool isCategory;
+  final List<ProductAttributeModel>? selectedAttributeList;
 
   @override
   ConsumerState<AddAttributeModal> createState() => _AddAttributeModalState();
@@ -14,21 +14,18 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
 
+  List<ProductAttributeModel> selectedAttributeList = [];
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {});
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.selectedAttributeList != null) {
+        selectedAttributeList = widget.selectedAttributeList ?? [];
+        setState(() {});
+      }
+    });
   }
-
-  List<String> attributeList = [
-    "size",
-    "Colour",
-    "Texture",
-    "Shape",
-    "Finish",
-  ];
-
-  List<String> selectedAttributeList = [];
 
   @override
   void dispose() {
@@ -41,7 +38,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    final onboardVm = ref.watch(onboardVmodel);
+    final vm = ref.watch(productInventoryVmodel);
+    // attributeList = vm.productAttributes.map((e) => e.attribute ?? 'N/A').toList();
     return Container(
       height: Sizer.screenHeight * 0.7,
       padding: EdgeInsets.symmetric(
@@ -138,12 +136,8 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
               XBox(24),
               InkWell(
                 onTap: () {
-                  if (selectedAttributeList.isNotEmpty) {
-                    selectedAttributeList.clear();
-                  } else {
-                    selectedAttributeList.addAll(attributeList);
-                  }
-                  setState(() {});
+                  selectedAttributeList.addAll(vm.productAttributes);
+                  vm.reBuildUI();
                 },
                 child: Text(
                   "Select all",
@@ -162,10 +156,10 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                 bottom: Sizer.height(80),
               ),
               shrinkWrap: true,
-              itemCount: attributeList.length,
+              itemCount: vm.productAttributes.length,
               separatorBuilder: (_, __) => YBox(24),
               itemBuilder: (_, i) {
-                final item = attributeList[i];
+                final item = vm.productAttributes[i];
                 return InkWell(
                   onTap: () {
                     if (selectedAttributeList.contains(item)) {
@@ -173,7 +167,7 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                     } else {
                       selectedAttributeList.add(item);
                     }
-                    setState(() {});
+                    vm.reBuildUI();
                   },
                   child: Row(
                     children: [
@@ -182,7 +176,7 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                       ),
                       XBox(8),
                       Text(
-                        item,
+                        item.attribute ?? '',
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.text14,
@@ -193,14 +187,13 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
               },
             ),
           ),
-          YBox(32),
+          YBox(10),
           CustomBtn.solid(
             online: selectedAttributeList.isNotEmpty,
             text: "Save",
             onTap: () {
-              if (selectedAttributeList.isNotEmpty) {
-                Navigator.pop(context, selectedAttributeList);
-              }
+              vm.setSelectedAttributeList(selectedAttributeList);
+              Navigator.pop(context, selectedAttributeList);
             },
           ),
           YBox(30),

@@ -12,7 +12,9 @@ class ProductInventoryVm extends BaseVm {
   Future<ApiResponse> getInventoryProducts(
       {String? q,
       bool productReview = false,
-      String? busyObjectName = getState,String? dateFilter,String? status}) async {
+      String? busyObjectName = getState,
+      String? dateFilter,
+      String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -136,6 +138,77 @@ class ProductInventoryVm extends BaseVm {
       method: apiService.postWithAuth,
       errorObjectName: getState,
       busyObjectName: getState,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  List<ProductAttributeModel> _productAttributes = [];
+  List<ProductAttributeModel> get productAttributes => _productAttributes;
+  List<ProductAttributeModel> _selectedAttributeList = [];
+  List<ProductAttributeModel> get selectedAttributeList =>
+      _selectedAttributeList;
+  setSelectedAttributeList(List<ProductAttributeModel> val) {
+    _selectedAttributeList = val;
+    reBuildUI();
+  }
+
+  Future<ApiResponse> getProductAttributes(String catTypeId) async {
+    UriBuilder uriBuilder = UriBuilder("/api/v1/shared/inventory-attributes")
+      ..addQueryParameterIfNotEmpty("paginate", '0')
+      ..addQueryParameterIfNotEmpty("category_id", catTypeId.toString());
+
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: getState,
+      busyObjectName: getState,
+      onSuccess: (data) {
+        _productAttributes =
+            productAttributeModelFromJson(json.encode(data['data']));
+        return apiResponse;
+      },
+    );
+  }
+
+  ProductVariationParams? _variationParams;
+  ProductVariationParams? get variationParams => _variationParams;
+  void setVariationParams(ProductVariationParams? params) {
+    if (params == null) {
+      _variationParams = null;
+      reBuildUI();
+      return;
+    }
+
+    _variationParams = _variationParams?.copyWith(
+          productCreationFormat: "multiple",
+          name: params.name,
+          code: params.code,
+          categoryId: params.categoryId,
+          subcategoryId: params.subcategoryId,
+          productTypeId: params.productTypeId,
+          brand: params.brand,
+          description: params.description,
+          tags: params.tags,
+          shippingClasses: params.shippingClasses,
+          media: params.media,
+          variants: params.variants,
+        ) ??
+        params;
+
+    reBuildUI();
+  }
+
+  Future<ApiResponse> createMultipleVariation() async {
+    final body = _variationParams?.toJson();
+
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products",
+      method: apiService.postWithAuth,
+      errorObjectName: createState,
+      busyObjectName: createState,
       body: body,
       onSuccess: (data) {
         return apiResponse;

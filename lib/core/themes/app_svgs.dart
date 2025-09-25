@@ -73,4 +73,9 @@ class AppSvgs {
   static const String naira = "$svgIcon/naira.svg";
   static const String edit = "$svgIcon/edit.svg";
   static const String deleteWhite = "$svgIcon/deleteWhite.svg";
+  static const String dottedCover = "$svgIcon/dottedCover.svg";
+
+  static const String dottedUpload = "$svgIcon/dottedUpload.svg";
+  static const String borderMinus = "$svgIcon/borderMinus.svg";
+  static const String borderPlus = "$svgIcon/borderPlus.svg";
 }

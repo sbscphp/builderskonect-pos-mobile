@@ -28,9 +28,22 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
   void initState() {
     super.initState();
     searchC.addListener(() {
-      isSearching = searchC.text.isNotEmpty && searchF.hasFocus;
-      setState(() {});
+      _updateSearchingState();
     });
+    
+    searchF.addListener(() {
+      _updateSearchingState();
+    });
+  }
+
+  void _updateSearchingState() {
+    final salesVm = ref.read(salesVmodel);
+    // Show search results when:
+    // 1. Search field is focused AND
+    // 2. Either there's search text OR there are products in the list
+    isSearching = searchF.hasFocus && 
+                  (searchC.text.isNotEmpty || salesVm.productList.isNotEmpty);
+    setState(() {});
   }
 
   // Search with debounce
@@ -126,6 +139,9 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
               'Product "${product.name}" added to selection');
         }
 
+        // Close search results by removing focus
+        searchF.unfocus();
+        
         setState(() {});
 
         // If no exact match found, show warning
@@ -190,6 +206,8 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
                 showLabelHeader: true,
                 onChanged: _searchProducts,
               ),
+
+              // Search results
               AnimatedSize(
                 duration: Duration(milliseconds: 500),
                 child: Builder(builder: (context) {
@@ -257,6 +275,10 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
                                 salesVm.productList
                                     .add(product.copyWith(quantity: 1));
                               }
+                              
+                              // Close search results by removing focus
+                              searchF.unfocus();
+                              
                               setState(() {});
                             },
                           ),

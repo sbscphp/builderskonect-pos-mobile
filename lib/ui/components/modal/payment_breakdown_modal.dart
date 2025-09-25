@@ -169,13 +169,16 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
                         context: context,
                         widget: ConfirmationModal(
                           modalConfirmationArg: ModalConfirmationArg(
-                            iconPath: AppSvgs.checkIcon,
+                            iconPath: AppSvgs.infoCircle,
                             title: "Create Order",
                             description:
                                 "Are you sure you want to create order? This order will be \nrecorded and sent for order confirmation.",
                             solidBtnText: "Yes, create order",
                             onSolidBtnOnTap: () {
                               Navigator.pop(ctx, true);
+                            },
+                            onOutlineBtnOnTap: () {
+                              Navigator.pop(ctx);
                             },
                           ),
                         ),
@@ -247,27 +250,28 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
       paymentMethods: paymentMethods,
     );
 
-    final res = await ref.read(salesVmodel).salesOrderCheckout(
-          params: SalesCheckoutParams(
-            orders: [order],
-          ),
-        );
+    final res = await saleVm.salesOrderCheckout(
+      params: SalesCheckoutParams(
+        orders: [order],
+      ),
+    );
 
     handleApiResponse(
         // showErrorToast: false,
-        showSuccessToast: false,
         response: res,
+        showSuccessToast: false,
         onSuccess: () {
+          // Clear product list and selected customer data
+          saleVm.productList = [];
+          saleVm.selectedCustomerData = null;
+
+          saleVm.getSalesOverview(stateObjectName: "empty");
+
           // Use post-frame callback to ensure the widget tree is stable
           WidgetsBinding.instance.addPostFrameCallback((_) {
             final ctx = NavKey.appNavKey.currentContext;
             if (ctx == null) return;
 
-            // Clear product list and selected customer data
-            ref.read(salesVmodel).productList = [];
-            ref.read(salesVmodel).selectedCustomerData = null;
-
-            ref.read(salesVmodel).getSalesOverview(stateObjectName: "empty");
             Navigator.of(ctx).pop();
 
             ModalWrapper.bottomSheet(

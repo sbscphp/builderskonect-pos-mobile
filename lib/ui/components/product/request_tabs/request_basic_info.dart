@@ -15,6 +15,7 @@ class RequestBasicInfo extends ConsumerStatefulWidget {
 
 class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   final _formKey = GlobalKey<FormState>();
+
   final productNameC = TextEditingController();
   final brandC = TextEditingController();
   final categoryC = TextEditingController();
@@ -27,6 +28,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
   CategoryModel? selectedCategory;
   CategoryModel? selectedSubCategory;
   CategoryModel? selectedCategoryType;
+  List<String> tags = [];
 
   @override
   void dispose() {
@@ -35,14 +37,15 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
     categoryC.dispose();
     subCategoryC.dispose();
     typeC.dispose();
+    tagsC.dispose();
     descriptionC.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final vm = ref.watch(productInventoryVmodel);
     return ListView(
       padding: EdgeInsets.only(
         left: Sizer.width(16),
@@ -73,6 +76,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   labelText: 'Product Name',
                   hintText: 'Enter product name',
                   showLabelHeader: true,
+                  validator: Validators.required(),
                 ),
                 YBox(16),
                 CustomTextField(
@@ -82,12 +86,14 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
                       widget: ProductBrandModal(),
                     );
                     if (res is BrandModel) {
+                      selectedBrand = res;
                       brandC.text = res.name ?? '';
                     }
                   },
@@ -100,6 +106,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     final res = await ModalWrapper.bottomSheet(
                       context: context,
@@ -109,6 +116,12 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     if (res is CategoryModel) {
                       selectedCategory = res;
                       categoryC.text = res.name ?? '';
+
+                      // Clear sub category and type
+                      selectedSubCategory = null;
+                      subCategoryC.clear();
+                      selectedCategoryType = null;
+                      typeC.clear();
                     }
                   },
                 ),
@@ -120,6 +133,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     if (selectedCategory == null) {
                       showWarningToast("Please select category first");
@@ -135,6 +149,13 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                     if (res is CategoryModel) {
                       selectedSubCategory = res;
                       subCategoryC.text = res.name ?? '';
+
+                      // Set type to null
+                      selectedCategoryType = null;
+                      typeC.clear();
+
+                      // Fetch attributes
+                      vm.getProductAttributes(res.id ?? "");
                     }
                   },
                 ),
@@ -146,6 +167,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                   showLabelHeader: true,
                   showSuffixIcon: true,
                   readOnly: true,
+                  validator: Validators.required(),
                   onTap: () async {
                     if (selectedSubCategory == null) {
                       showWarningToast("Please select sub category first");
@@ -202,33 +224,55 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                 //   ),
                 // ),
                 YBox(16),
-                CustomTextField(
-                  controller: tagsC,
+                TagInputWidget(
                   labelText: 'Tags',
-                  hintText: 'Enter tags',
+                  hintText: 'Enter tags, e.g Cement, tiles, home interior',
                   showLabelHeader: true,
-                ),
-
-                Text(
-                  "This will help customers find your product in the marketplace.",
-                  style: textTheme.text14?.copyWith(
-                    color: colorScheme.black45,
-                  ),
+                  isRequired: true,
+                  initialTags: tags,
+                  onTagsChanged: (newTags) {
+                    setState(() {
+                      tags = newTags;
+                    });
+                  },
+                  validator: (value) {
+                    if (tags.isEmpty) {
+                      return 'Please add at least one tag';
+                    }
+                    return null;
+                  },
+                  helperText:
+                      "This will help customers find your product in the marketplace.",
                 ),
                 YBox(16),
 
                 CustomTextField(
                   labelText: 'Description',
                   hintText: 'Enter description',
+                  controller: descriptionC,
                   maxLines: 3,
                   showLabelHeader: true,
+                  isRequired: false,
                 ),
 
                 YBox(32),
                 CustomBtn.solid(
                   text: "Next",
                   onTap: () {
-                    widget.onNext?.call();
+                    if (_formKey.currentState?.validate() == true) {
+                      vm.setVariationParams(
+                        ProductVariationParams(
+                          name: productNameC.text,
+                          categoryId: selectedCategory?.id ?? "",
+                          subcategoryId: selectedSubCategory?.id ?? "",
+                          productTypeId: selectedCategoryType?.id ?? "",
+                          brand: selectedBrand?.id?.toString() ?? "",
+                          description: descriptionC.text,
+                          tags: tags.join(','),
+                        ),
+                      );
+                      widget.onNext?.call();
+                    }
                   },
                 ),
               ],
