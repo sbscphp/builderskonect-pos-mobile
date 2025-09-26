@@ -191,6 +191,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                             onFilter: (filterData) {
                               // printty("Filter applied: $filterData");
                               salesVm.getSalesOverview(
+                                  stateObjectName: searchState,
                                   dateFilter: filterData["date_filter"],
                                   status: filterData["selectorGroups"]
                                               ["status"] ==
@@ -245,41 +246,48 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                     ),
                   ),
                   YBox(10),
-                  Builder(builder: (context) {
-                    if (salesVm.salesData.isEmpty) {
-                      return SizedBox(
-                        child: EmptyListState(
-                          text: "No Data",
-                        ),
-                      );
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      padding: EdgeInsets.only(
-                        top: Sizer.height(14),
-                      ),
-                      itemCount: salesVm.salesData.length,
-                      separatorBuilder: (_, __) => HDivider(),
-                      itemBuilder: (ctx, i) {
-                        final data = salesVm.salesData[i];
-                        return CustomColWidget(
-                          firstColText: "#${data.orderNumber ?? ""}",
-                          subTitle: "Total items: ",
-                          subTitle2: data.itemsCount?.toString() ?? "",
-                          status: data.status ?? "",
-                          date: data.orderDate?.toLocal(),
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              RoutePath.viewSalesOrderScreen,
-                              arguments: data.id,
+                  LoadableContentBuilder(
+                      isBusy: salesVm.busy(searchState),
+                      items: salesVm.salesData,
+                      loadingBuilder: (context) {
+                        return SizerLoader(height: 300);
+                      },
+                      emptyBuilder: (context) {
+                        return SizedBox(
+                          height: Sizer.height(240),
+                          child: EmptyListState(
+                            text: "No data",
+                          ),
+                        );
+                      },
+                      contentBuilder: (context) {
+                        return ListView.separated(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(
+                            top: Sizer.height(14),
+                          ),
+                          itemCount: salesVm.salesData.length,
+                          separatorBuilder: (_, __) => HDivider(),
+                          itemBuilder: (ctx, i) {
+                            final data = salesVm.salesData[i];
+                            return CustomColWidget(
+                              firstColText: "#${data.orderNumber ?? ""}",
+                              subTitle: "Total items: ",
+                              subTitle2: data.itemsCount?.toString() ?? "",
+                              status: data.status ?? "",
+                              date: data.orderDate?.toLocal(),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RoutePath.viewSalesOrderScreen,
+                                  arguments: data.id,
+                                );
+                              },
                             );
                           },
                         );
-                      },
-                    );
-                  }),
+                      }),
                   if (salesVm.busy(paginateState))
                     SpinKitLoader(
                       size: 16,

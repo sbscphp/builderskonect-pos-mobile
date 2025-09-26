@@ -262,6 +262,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                     onFilter: (filterData) {
                                       // printty("Filter applied: $filterData");
                                       productVm.getInventoryProducts(
+                                        busyObjectName: searchState,
                                           dateFilter: filterData['date_filter'],
                                           status: filterData["selectorGroups"]
                                                       ["status"] ==

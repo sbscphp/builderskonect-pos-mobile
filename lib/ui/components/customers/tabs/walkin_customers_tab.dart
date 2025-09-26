@@ -151,20 +151,9 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                         context: context,
                         widget: FilterDataModal(
                           modalHeight: Sizer.screenHeight * 0.4,
-                          // selectorGroups: [
-                          //   SelectorGroup(
-                          //     key: "channel",
-                          //     title: "Channel",
-                          //     options: [
-                          //       "All",
-                          //       "Online",
-                          //       "Walk-in",
-                          //     ],
-                          //     // selectedValue: staffStatus,
-                          //   ),
-                          // ],
                           onFilter: (filterData) {
                             customerVm.getCustomerOverview(
+                                busyObjectName: searchState,
                                 type: CustomType.online,
                                 dateFilter: filterData["date_filter"]);
                           },
@@ -217,53 +206,57 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                     ],
                   ),
                 ),
-                Builder(builder: (context) {
-                  if (customerVm.busy(getState)) {
-                    return SizerLoader(height: 300);
-                  }
-                  if (customerVm.walkInCustomerData.isEmpty) {
-                    return SizedBox(
-                      height: Sizer.height(300),
-                      child: EmptyListState(
-                        text: "No Data",
-                      ),
-                    );
-                  }
-                  return Column(
-                    children: [
-                      YBox(10),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(
-                          top: Sizer.height(14),
-                          bottom: Sizer.height(50),
+                LoadableContentBuilder(
+                    isBusy: customerVm.busy(searchState),
+                    items: customerVm.walkInCustomerData,
+                    loadingBuilder: (context) {
+                      return SizerLoader(height: 300);
+                    },
+                    emptyBuilder: (context) {
+                      return SizedBox(
+                        height: Sizer.height(240),
+                        child: EmptyListState(
+                          text: "No data",
                         ),
-                        itemCount: customerVm.walkInCustomerData.length,
-                        separatorBuilder: (_, __) => HDivider(),
-                        itemBuilder: (ctx, i) {
-                          final customer = customerVm.walkInCustomerData[i];
-                          return CustomerListTile(
-                            customerId: " #${customer.customerId ?? ""}",
-                            title: customer.name ?? 'N/A',
-                            subTitle: customer.email ?? 'N/A',
-                            channel: customer.channel?.toLowerCase() ==
-                                    "offline"
-                                ? "Walk-in"
-                                : customer.channel?.capitalizeFirst ?? "N/A",
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                RoutePath.viewCustomerScreen,
-                                arguments: customer,
+                      );
+                    },
+                    contentBuilder: (context) {
+                      return Column(
+                        children: [
+                          YBox(10),
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.only(
+                              top: Sizer.height(14),
+                              bottom: Sizer.height(50),
+                            ),
+                            itemCount: customerVm.walkInCustomerData.length,
+                            separatorBuilder: (_, __) => HDivider(),
+                            itemBuilder: (ctx, i) {
+                              final customer = customerVm.walkInCustomerData[i];
+                              return CustomerListTile(
+                                customerId: " #${customer.customerId ?? ""}",
+                                title: customer.name ?? 'N/A',
+                                subTitle: customer.email ?? 'N/A',
+                                channel:
+                                    customer.channel?.toLowerCase() == "offline"
+                                        ? "Walk-in"
+                                        : customer.channel?.capitalizeFirst ??
+                                            "N/A",
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.viewCustomerScreen,
+                                    arguments: customer,
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                }),
+                          ),
+                        ],
+                      );
+                    }),
                 if (customerVm.busy(paginateState))
                   SpinKitLoader(
                     size: 16,

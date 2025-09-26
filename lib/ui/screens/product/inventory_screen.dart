@@ -217,12 +217,19 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                               ],
                               showPriceRange: true,
                               onFilter: (filterData) {
-                                printty("Filter applied: $filterData");
+                                // printty("Filter applied: $filterData");
+                                 productVm.getInventoryProducts(
+                                        busyObjectName: searchState,
+                                          dateFilter: filterData['date_filter'],
+                                          status: filterData["selectorGroups"]
+                                                      ["status"] ==
+                                                  "All"
+                                              ? ''
+                                              : (filterData["selectorGroups"]
+                                                      ["status"] as String)
+                                                  .toLowerCase());
                               },
-                              onReset: () {
-                                printty("Filters reset");
-                                // Handle reset action here
-                              },
+
                             ),
                           );
                         },

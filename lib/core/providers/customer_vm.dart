@@ -308,6 +308,7 @@ class CustomerVm extends BaseVm {
   List<ReviewsModel> get vendorReviewModel => _vendorReviewModel;
   Future<ApiResponse> vendorReviewProduct({
     bool paginate = true,
+    String? busyObjectName = vendorReviewsState,
     String? q,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/reviews")
@@ -318,8 +319,8 @@ class CustomerVm extends BaseVm {
     return await performApiCall(
       url: uriBuilder.build().toString(),
       method: apiService.getWithAuth,
-      errorObjectName: vendorReviewsState,
-      busyObjectName: vendorReviewsState,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
       onSuccess: (data) {
         if (paginate) {
           _vendorReviewsStats =

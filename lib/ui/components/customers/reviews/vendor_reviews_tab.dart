@@ -33,7 +33,8 @@ class VendorReviewsTabState extends ConsumerState<VendorReviewsTab> {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
       final customerVm = ref.read(customerVmodel);
-      customerVm.vendorReviewProduct(q: query.trim());
+      customerVm.vendorReviewProduct(
+          q: query.trim(), busyObjectName: searchState);
     });
   }
 
@@ -234,11 +235,11 @@ class VendorReviewsTabState extends ConsumerState<VendorReviewsTab> {
                       ),
                       YBox(10),
                       LoadableContentBuilder(
-                        isBusy: customerVm.busy(vendorReviewsState),
-                        isError: customerVm.error(vendorReviewsState),
+                        isBusy: customerVm.busy(searchState),
+                        isError: customerVm.error(searchState),
                         items: customerVm.vendorReviewModel,
-                        loadingBuilder: (p0) {
-                          return SizedBox.shrink();
+                        loadingBuilder: (context) {
+                          return SizerLoader(height: 300);
                         },
                         emptyBuilder: (context) {
                           return SizedBox(
