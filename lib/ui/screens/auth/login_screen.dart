@@ -160,7 +160,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           response: res,
                                           onSuccess: () {
                                             Navigator.pushNamed(context,
-                                                RoutePath.selectModuleScreen);
+                                                RoutePath.bottomNavScreen);
+                                            // Navigator.pushNamed(context,
+                                            //     RoutePath.selectModuleScreen);
                                           },
                                         );
                                       }
