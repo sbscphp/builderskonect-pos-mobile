@@ -70,78 +70,78 @@ final List<MeasurementCategory> sellingUnitCategories = [
   ),
 ];
 
-final List<MeasurementCategory> measuringUnitCategories = [
-  MeasurementCategory(
-    id: 'linear',
-    label: 'Linear Measurement',
-    example: 'LxWxH',
-    subOptions: [
-      SubOption(
-        id: 'L×W×H',
-        label: 'Length × Width × Height',
-        description: '(boxes, panels, cartons)',
-      ),
-      SubOption(
-        id: 'L×D',
-        label: 'Length × Diameter',
-        description: '(pipes, rods)',
-      ),
-      SubOption(
-        id: 'L',
-        label: 'Length Only',
-        description: '(liquids, containers)',
-      ),
-      SubOption(
-        id: 'feet',
-        label: 'Feet',
-      ),
-      SubOption(
-        id: 'D',
-        label: 'Diameter Only',
-      ),
-    ],
-  ),
-  MeasurementCategory(
-    id: 'volume',
-    label: 'Volume Measurement',
-    example: 'Ltr',
-    subOptions: [
-      SubOption(id: 'capacity', label: 'Capacity', description: '(Litres)'),
-      SubOption(id: 'volume', label: 'Volume', description: '(Cubic Meters)'),
-      SubOption(id: 'displacement', label: 'Displacement', description: '(CC)'),
-    ],
-  ),
-  MeasurementCategory(
-    id: 'area',
-    label: 'Area Measurement',
-    example: 'sqm',
-    subOptions: [
-      SubOption(
-          id: 'coverage', label: 'Coverage', description: '(Square Meters)'),
-      SubOption(
-          id: 'surface', label: 'Surface Area', description: '(Square Feet)'),
-    ],
-  ),
-  MeasurementCategory(
-    id: 'weight',
-    label: 'Weight Based',
-    example: 'kg',
-    subOptions: [
-      SubOption(id: 'perUnit', label: 'Per Unit Weight'),
-      SubOption(id: 'total', label: 'Total Weight'),
-    ],
-  ),
-  MeasurementCategory(
-    id: 'complex',
-    label: 'Complex / Multiple',
-    example: 'custom',
-    subOptions: [
-      SubOption(id: 'multiple', label: 'Multiple Parameters'),
-      SubOption(id: 'custom', label: 'Custom Measurement'),
-    ],
-  ),
-];
+// final List<MeasurementCategory> measuringUnitCategories = [
+//   MeasurementCategory(
+//     id: 'linear',
+//     label: 'Linear Measurement',
+//     example: 'LxWxH',
+//     subOptions: [
+//       SubOption(
+//         id: 'L×W×H',
+//         label: 'Length × Width × Height',
+//         description: '(boxes, panels, cartons)',
+//       ),
+//       SubOption(
+//         id: 'L×D',
+//         label: 'Length × Diameter',
+//         description: '(pipes, rods)',
+//       ),
+//       SubOption(
+//         id: 'L',
+//         label: 'Length Only',
+//         description: '(liquids, containers)',
+//       ),
+//       SubOption(
+//         id: 'feet',
+//         label: 'Feet',
+//       ),
+//       SubOption(
+//         id: 'D',
+//         label: 'Diameter Only',
+//       ),
+//     ],
+//   ),
+//   MeasurementCategory(
+//     id: 'volume',
+//     label: 'Volume Measurement',
+//     example: 'Ltr',
+//     subOptions: [
+//       SubOption(id: 'capacity', label: 'Capacity', description: '(Litres)'),
+//       SubOption(id: 'volume', label: 'Volume', description: '(Cubic Meters)'),
+//       SubOption(id: 'displacement', label: 'Displacement', description: '(CC)'),
+//     ],
+//   ),
+//   MeasurementCategory(
+//     id: 'area',
+//     label: 'Area Measurement',
+//     example: 'sqm',
+//     subOptions: [
+//       SubOption(
+//           id: 'coverage', label: 'Coverage', description: '(Square Meters)'),
+//       SubOption(
+//           id: 'surface', label: 'Surface Area', description: '(Square Feet)'),
+//     ],
+//   ),
+//   MeasurementCategory(
+//     id: 'weight',
+//     label: 'Weight Based',
+//     example: 'kg',
+//     subOptions: [
+//       SubOption(id: 'perUnit', label: 'Per Unit Weight'),
+//       SubOption(id: 'total', label: 'Total Weight'),
+//     ],
+//   ),
+//   MeasurementCategory(
+//     id: 'complex',
+//     label: 'Complex / Multiple',
+//     example: 'custom',
+//     subOptions: [
+//       SubOption(id: 'multiple', label: 'Multiple Parameters'),
+//       SubOption(id: 'custom', label: 'Custom Measurement'),
+//     ],
+//   ),
+// ];
 
 // Backward compatibility alias
 final List<MeasurementCategory> sellingUnits = sellingUnitCategories;
-final List<MeasurementCategory> measuringUnits = measuringUnitCategories;
+// final List<MeasurementCategory> measuringUnits = measuringUnitCategories;

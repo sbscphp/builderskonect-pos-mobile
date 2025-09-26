@@ -4,7 +4,7 @@ import 'package:builders_konnect/ui/components/components.dart';
 class ProductAttributesSection extends ConsumerStatefulWidget {
   const ProductAttributesSection({
     super.key,
-    required this.attributeControllers,
+    // required this.attributeControllers,
     required this.productHasVariant,
     required this.onProductHasVariantChanged,
     required this.configureVariantArg,
@@ -12,7 +12,7 @@ class ProductAttributesSection extends ConsumerStatefulWidget {
     required this.onEnsureControllers,
   });
 
-  final List<TextEditingController> attributeControllers;
+  // final List<TextEditingController> attributeControllers;
   final bool productHasVariant;
   final Function(bool) onProductHasVariantChanged;
   final ConfigureVariantArg? configureVariantArg;

@@ -33,6 +33,7 @@ class MultipleVariantsSection extends ConsumerStatefulWidget {
     required this.onConfigureVariantChanged,
     this.inventoryAppliedFromVariant,
     this.pricingAppliedFromVariant,
+    this.onVariantUnitChanged,
   });
 
   final ConfigureVariantArg? configureVariantArg;
@@ -60,6 +61,7 @@ class MultipleVariantsSection extends ConsumerStatefulWidget {
   final Function(ConfigureVariantArg?) onConfigureVariantChanged;
   final int? inventoryAppliedFromVariant;
   final int? pricingAppliedFromVariant;
+  final Function(int, String)? onVariantUnitChanged;
 
   @override
   ConsumerState<MultipleVariantsSection> createState() =>
@@ -250,6 +252,9 @@ class _MultipleVariantsSectionState
       appliedFromVariant: widget.inventoryAppliedFromVariant,
       onRemoveAdditionalImageAt: (index) =>
           widget.onRemoveVariantAdditionalImage(variantIndex),
+      onUnitSelectionChanged: widget.onVariantUnitChanged != null
+          ? (unit) => widget.onVariantUnitChanged!(variantIndex, unit)
+          : null,
     );
   }
 
