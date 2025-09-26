@@ -98,6 +98,147 @@ class _RequestAttributeVarientTabState
   Map<int, Map<String, String>> variantValidationErrors = {};
   Set<String> usedVariantCombinations = {};
 
+  // Unit synchronization methods
+  void _onSingleProductUnitChanged(String selectedUnit) {
+    // Apply the selected unit to all related quantity fields
+    _updateQuantityFieldUnits(selectedUnit, {
+      'stockQty': stockQtyC,
+      'qtyPerSellUnit': qtyPerSellUnitC,
+      'minOrderQty': minOrderQty,
+      'reorderLevel': reorderLevelC,
+    });
+  }
+
+  void _onVariantUnitChanged(int variantIndex, String selectedUnit) {
+    final inventoryControllers = variantInventoryControllers[variantIndex];
+    if (inventoryControllers != null) {
+      // Apply the selected unit to all related quantity fields for this variant
+      _updateQuantityFieldUnits(selectedUnit, {
+        'stockQty': inventoryControllers['stockQty']!,
+        'qtyPerSellUnit': inventoryControllers['qtyPerSellUnit']!,
+        'minOrderQty': inventoryControllers['minOrderQty']!,
+        'reorderLevel': inventoryControllers['reorderLevel']!,
+      });
+    }
+  }
+
+  void _updateQuantityFieldUnits(
+      String unit, Map<String, TextEditingController> controllers) {
+    // This method ensures that when a selling unit is selected,
+    // all related quantity fields are synchronized with the same unit
+    // The actual unit display is handled by the UI components
+    setState(() {
+      // Force a rebuild to update suffix icons in quantity fields
+    });
+  }
+
+  // Comprehensive cleanup method for variant-related state
+  void _cleanupVariantState() {
+    // 1. Reset selectedVariantList and variant count
+    _configureVariantArg = null;
+
+    // 2. Clear and dispose all variant controllers
+    _disposeAllVariantControllers();
+
+    // 3. Reset UI state
+    _resetVariantUIState();
+
+    // 4. Clean up variant images
+    _cleanupVariantImages();
+
+    // 5. Reset validation errors
+    _resetVariantValidation();
+
+    // 6. Reset bulk application tracking
+    inventoryAppliedFromVariant = null;
+    pricingAppliedFromVariant = null;
+
+    // 7. Clear variation params in the view model
+    final productInventoryVm = ref.read(productInventoryVmodel);
+    productInventoryVm.setVariationParams(null);
+
+    // 8. Reset single product state to start fresh
+    _resetSingleProductState();
+  }
+
+  void _disposeAllVariantControllers() {
+    // Dispose variant attribute controllers
+    for (var variantControllers in variantAttributeControllers.values) {
+      for (var controller in variantControllers) {
+        controller.dispose();
+      }
+    }
+    variantAttributeControllers.clear();
+
+    // Dispose variant inventory controllers
+    for (var variantControllers in variantInventoryControllers.values) {
+      for (var controller in variantControllers.values) {
+        controller.dispose();
+      }
+    }
+    variantInventoryControllers.clear();
+
+    // Dispose variant pricing controllers
+    for (var variantControllers in variantPricingControllers.values) {
+      for (var controller in variantControllers.values) {
+        controller.dispose();
+      }
+    }
+    variantPricingControllers.clear();
+  }
+
+  void _resetVariantUIState() {
+    // Clear variant visibility states
+    isViewVariantInfo.clear();
+    isViewVariantInventoryInfo.clear();
+    isViewVariantPricingInfo.clear();
+  }
+
+  void _cleanupVariantImages() {
+    // Clear all variant images and URLs
+    variantImages.clear();
+    variantImageUrls.clear();
+    variantImageLoadStates.clear();
+  }
+
+  void _resetVariantValidation() {
+    // Clear validation errors and used combinations
+    variantValidationErrors.clear();
+    usedVariantCombinations.clear();
+  }
+
+  void _resetSingleProductState() {
+    // Clear single product controllers to start fresh
+    // This ensures no residual data from previous variant configurations
+    sellingUnitC.clear();
+    stockQtyC.clear();
+    qtyPerSellUnitC.clear();
+    minOrderQty.clear();
+    measurementC.clear();
+    dimensionC.clear();
+    weightPerSellUnitC.clear();
+    weightPerUnitItemC.clear();
+    reorderLevelC.clear();
+    skuC.clear();
+    costPricePerUnitC.clear();
+    sellingPricePerUnitC.clear();
+    discountPriceC.clear();
+
+    // Clear single product images
+    _coverImageFile = null;
+    _coverImageUrl = null;
+    _additionalImageFiles.clear();
+    _additionalImageUrls.clear();
+
+    // Reset load states
+    loadCoverImage = false;
+    loadAdditionalImages = false;
+
+    // Reset inventory and pricing visibility
+    isViewInventoryInformation = false;
+    isViewPricingInformation = false;
+  }
+
   // Method to ensure we have the right number of controllers
   void _ensureControllers(int requiredCount) {
     // Add controllers if we need more
@@ -489,6 +630,7 @@ class _RequestAttributeVarientTabState
     if (sourceControllers == null || sourceImageUrls == null) return;
 
     final numVariants = _configureVariantArg?.numOfVariants ?? 0;
+    final sourceSellingUnit = sourceControllers['sellingUnit']?.text ?? '';
 
     for (int i = 0; i < numVariants; i++) {
       if (i == sourceVariantIndex) continue; // Skip source variant
@@ -498,8 +640,7 @@ class _RequestAttributeVarientTabState
 
       if (targetControllers != null && targetImageUrls != null) {
         // Copy all inventory field values
-        targetControllers['sellingUnit']?.text =
-            sourceControllers['sellingUnit']?.text ?? '';
+        targetControllers['sellingUnit']?.text = sourceSellingUnit;
         targetControllers['stockQty']?.text =
             sourceControllers['stockQty']?.text ?? '';
         targetControllers['qtyPerSellUnit']?.text =
@@ -521,6 +662,11 @@ class _RequestAttributeVarientTabState
         // Copy image URLs
         targetImageUrls['cover'] = sourceImageUrls['cover'];
         targetImageUrls['additional'] = sourceImageUrls['additional'];
+
+        // Trigger unit synchronization for the target variant if unit was copied
+        if (sourceSellingUnit.isNotEmpty) {
+          _onVariantUnitChanged(i, sourceSellingUnit);
+        }
       }
     }
 
@@ -758,9 +904,18 @@ class _RequestAttributeVarientTabState
       children: [
         YBox(16),
         ProductAttributesSection(
-          attributeControllers: attributeControllers,
+          // attributeControllers: attributeControllers,
           productHasVariant: productHasVariant,
           onProductHasVariantChanged: (value) {
+            // If changing from YES to NO, perform comprehensive cleanup
+            if (productHasVariant == true && value == false) {
+              _cleanupVariantState();
+            }
+            // If changing from NO to YES, ensure we start with a clean slate
+            else if (productHasVariant == false && value == true) {
+              // Clear any existing variant configuration to start fresh
+              _configureVariantArg = null;
+            }
             productHasVariant = value;
             setState(() {});
           },
@@ -839,6 +994,7 @@ class _RequestAttributeVarientTabState
                 },
                 inventoryAppliedFromVariant: inventoryAppliedFromVariant,
                 pricingAppliedFromVariant: pricingAppliedFromVariant,
+                onVariantUnitChanged: _onVariantUnitChanged,
               ),
             // else
             //   // Show single variant section if no variants configured
@@ -911,6 +1067,7 @@ class _RequestAttributeVarientTabState
                           }
                         });
                       },
+                      onUnitSelectionChanged: _onSingleProductUnitChanged,
                     ),
                     PricingInformationSection(
                       costPricePerUnitC: costPricePerUnitC,

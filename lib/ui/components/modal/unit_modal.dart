@@ -2,12 +2,17 @@ import 'package:builders_konnect/core/core.dart';
 
 class UnitModalOption {
   final String title;
+  final String? desc;
+  final String? example;
+
   final VoidCallback onTap;
   final Color? textColor;
   final bool showTrailing;
 
   const UnitModalOption({
     required this.title,
+    this.desc,
+    this.example,
     required this.onTap,
     this.textColor,
     this.showTrailing = true,
@@ -80,6 +85,8 @@ class _UnitModalState extends ConsumerState<UnitModal> {
                   colorScheme,
                   textTheme,
                   title: option.title,
+                  desc: option.desc,
+                  example: option.example,
                   onTap: option.onTap,
                   textColor: option.textColor,
                   showTrailing: option.showTrailing,
@@ -96,6 +103,8 @@ class _UnitModalState extends ConsumerState<UnitModal> {
     ColorScheme colorScheme,
     TextTheme textTheme, {
     required String title,
+    String? desc,
+    String? example,
     required bool showTrailing,
     Color? textColor,
     Function()? onTap,
@@ -115,11 +124,42 @@ class _UnitModalState extends ConsumerState<UnitModal> {
         // ),
         child: Row(
           children: [
-            Text(
-              title,
-              style: textTheme.text14?.copyWith(
-                color: textColor ?? colorScheme.black85,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      title,
+                      style: textTheme.text14?.copyWith(
+                        color: textColor ?? colorScheme.black85,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(left: Sizer.height(4)),
+                      child: Text(
+                        example ?? "",
+                        style: textTheme.text12?.copyWith(
+                          color: colorScheme.black45,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (desc != null)
+                  Padding(
+                    padding: EdgeInsets.only(
+                      top: Sizer.height(4),
+                    ),
+                    child: Text(
+                      desc,
+                      style: textTheme.text14?.copyWith(
+                        color: colorScheme.black45,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             if (showTrailing) Spacer(),
             if (showTrailing)

@@ -35,6 +35,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     this.isApplyToAllEnabled = true,
     this.appliedFromVariant,
     this.onRemoveAdditionalImageAt,
+    this.onUnitSelectionChanged,
   });
 
   final TextEditingController sellingUnitC;
@@ -63,6 +64,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final bool isApplyToAllEnabled;
   final int? appliedFromVariant;
   final Function(int)? onRemoveAdditionalImageAt;
+  final Function(String)? onUnitSelectionChanged;
 
   @override
   ConsumerState<InventoryInformationSection> createState() =>
@@ -71,6 +73,80 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
 
 class _InventoryInformationSectionState
     extends ConsumerState<InventoryInformationSection> {
+  String? selectedSellingUnit;
+  String? selectedSubUnit;
+  SubOption? selectedSubOption;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize selected unit from controller if it has a value
+    if (widget.sellingUnitC.text.isNotEmpty) {
+      selectedSubUnit = widget.sellingUnitC.text;
+    }
+  }
+
+  // String? selectedMeasuremrntUnit;
+  // String? selectedSubMeasurementUnit;
+  // SubOption? selectedMeasureSubOption;
+
+  void _showSubUnitModal(BuildContext context, MeasurementCategory unit) {
+    ModalWrapper.bottomSheet(
+      context: context,
+      widget: UnitModal(
+        title: unit.name,
+        options: unit.subOptions
+            .map(
+              (subUnit) => UnitModalOption(
+                title: subUnit.label,
+                desc: subUnit.description,
+                showTrailing: false,
+                onTap: () {
+                  Navigator.pop(context);
+                  selectedSubOption = subUnit;
+                  selectedSubUnit = subUnit.id;
+                  widget.sellingUnitC.text = subUnit.label;
+
+                  // Notify parent about unit selection change
+                  if (widget.onUnitSelectionChanged != null) {
+                    widget.onUnitSelectionChanged!(subUnit.label);
+                  }
+
+                  setState(() {});
+                },
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
+
+  // void _showMeasuresntSubUnitModal(
+  //     BuildContext context, MeasurementCategory unit) {
+  //   ModalWrapper.bottomSheet(
+  //     context: context,
+  //     widget: UnitModal(
+  //       title: unit.name,
+  //       options: unit.subOptions
+  //           .map(
+  //             (subUnit) => UnitModalOption(
+  //               title: subUnit.label,
+  //               desc: subUnit.description,
+  //               showTrailing: false,
+  //               onTap: () {
+  //                 Navigator.pop(context);
+  //                 selectedMeasureSubOption = subUnit;
+  //                 selectedSubMeasurementUnit = subUnit.id;
+  //                 // measurementC.text = subUnit.label;
+  //                 setState(() {});
+  //               },
+  //             ),
+  //           )
+  //           .toList(),
+  //     ),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -182,6 +258,42 @@ class _InventoryInformationSectionState
           labelText: 'Selling Units',
           hintText: 'Select unit type',
           showLabelHeader: true,
+          readOnly: true,
+          onTap: () {
+            ModalWrapper.bottomSheet(
+              context: context,
+              widget: UnitModal(
+                title: "Selling Units",
+                options: sellingUnits
+                    .map(
+                      (unit) => UnitModalOption(
+                        title: unit.name,
+                        onTap: () {
+                          Navigator.pop(context);
+                          setState(() {
+                            selectedSellingUnit = unit.name;
+                            selectedSubUnit = null;
+                          });
+
+                          // Show sub-unit modal if the selected unit has sub-units
+                          if (unit.hasSubOptions) {
+                            _showSubUnitModal(context, unit);
+                          } else {
+                            // If no sub-options, set the main unit as the selling unit
+                            widget.sellingUnitC.text = unit.name;
+
+                            // Notify parent about unit selection change
+                            if (widget.onUnitSelectionChanged != null) {
+                              widget.onUnitSelectionChanged!(unit.name);
+                            }
+                          }
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            );
+          },
         ),
         YBox(16),
         CustomTextField(
@@ -193,6 +305,9 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: selectedSubUnit ?? "",
+          ),
         ),
         YBox(16),
         CustomTextField(
@@ -204,6 +319,9 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: selectedSubUnit ?? "",
+          ),
         ),
         YBox(16),
         CustomTextField(
@@ -215,8 +333,11 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: selectedSubUnit ?? "",
+          ),
         ),
-        // YBox(16),
+        YBox(16),
         // CustomTextField(
         //   controller: widget.measurementC,
         //   labelText: 'Measurement',
@@ -225,6 +346,34 @@ class _InventoryInformationSectionState
         //   showLabelHeader: true,
         //   showSuffixIcon: true,
         //   readOnly: true,
+        //   onTap: () {
+        //     ModalWrapper.bottomSheet(
+        //       context: context,
+        //       widget: UnitModal(
+        //         title: "Measurement Units",
+        //         options: measuringUnits
+        //             .map(
+        //               (unit) => UnitModalOption(
+        //                 title: unit.name,
+        //                 example: unit.example,
+        //                 onTap: () {
+        //                   Navigator.pop(context);
+        //                   setState(() {
+        //                     selectedMeasuremrntUnit = unit.name;
+        //                     selectedSubMeasurementUnit = null;
+        //                   });
+
+        //                   // Show sub-unit modal if the selected unit has sub-units
+        //                   if (unit.hasSubOptions) {
+        //                     _showMeasuresntSubUnitModal(context, unit);
+        //                   }
+        //                 },
+        //               ),
+        //             )
+        //             .toList(),
+        //       ),
+        //     );
+        //   },
         // ),
         YBox(16),
         CustomTextField(
@@ -248,6 +397,9 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: "kg",
+          ),
         ),
         YBox(16),
         CustomTextField(
@@ -272,6 +424,9 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: selectedSubUnit ?? "",
+          ),
         ),
         YBox(16),
         CustomTextField(

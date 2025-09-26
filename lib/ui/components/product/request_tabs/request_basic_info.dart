@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -92,6 +94,16 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                       context: context,
                       widget: ProductBrandModal(),
                     );
+                    if (res == "add") {
+                      final brand = await ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: AddProductBrandModal(),
+                      );
+                      if (brand != null) {
+                        selectedBrand = brand;
+                        brandC.text = brand.name ?? '';
+                      }
+                    }
                     if (res is BrandModel) {
                       selectedBrand = res;
                       brandC.text = res.name ?? '';
