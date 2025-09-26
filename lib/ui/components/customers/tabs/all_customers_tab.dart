@@ -27,7 +27,6 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
     });
   }
 
-
   @override
   void dispose() {
     searchC.dispose();
@@ -49,7 +48,6 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
     final customerVm = ref.read(customerVmodel);
     customerVm.getCustomerOverview();
   }
-
 
   _scrollListener() {
     final vm = ref.watch(customerVmodel);
@@ -153,23 +151,9 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                         context: context,
                         widget: FilterDataModal(
                           modalHeight: Sizer.screenHeight * 0.4,
-                          // selectorGroups: [
-                          //   SelectorGroup(
-                          //     key: "channel",
-                          //     title: "Channel",
-                          //     options: [
-                          //       "All",
-                          //       "Online",
-                          //       "Walk-in",
-                          //     ],
-                          //     selectedValue: "All",
-                          //   ),
-                          // ],
                           onFilter: (data) {
                             customerVm.getCustomerOverview(
-                                // type:  data["selectorGroups"]["channel"] == "All"
-                                // ? null
-                                // : data["selectorGroups"]["channel"] == "Online" ? CustomType.online : CustomType.offline,
+                                busyObjectName: searchState,
                                 dateFilter: data["date_filter"]);
                           },
                         ));
@@ -221,53 +205,57 @@ class _AllCustomersTabState extends ConsumerState<AllCustomersTab> {
                     ],
                   ),
                 ),
-                Builder(builder: (context) {
-                  if (customerVm.busy(getState)) {
-                    return SizerLoader(height: 300);
-                  }
-                  if (customerVm.customerData.isEmpty) {
-                    return SizedBox(
-                      height: Sizer.height(300),
-                      child: EmptyListState(
-                        text: "No Data",
-                      ),
-                    );
-                  }
-                  return Column(
-                    children: [
-                      YBox(10),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(
-                          top: Sizer.height(14),
-                          bottom: Sizer.height(50),
+                LoadableContentBuilder(
+                    isBusy: customerVm.busy(searchState),
+                    items: customerVm.customerData,
+                    loadingBuilder: (context) {
+                      return SizerLoader(height: 300);
+                    },
+                    emptyBuilder: (context) {
+                      return SizedBox(
+                        height: Sizer.height(240),
+                        child: EmptyListState(
+                          text: "No data",
                         ),
-                        itemCount: customerVm.customerData.length,
-                        separatorBuilder: (_, __) => HDivider(),
-                        itemBuilder: (ctx, i) {
-                          final customer = customerVm.customerData[i];
-                          return CustomerListTile(
-                            customerId: "#${customer.customerId ?? ""}",
-                            title: customer.name ?? "N/A",
-                            subTitle: customer.email ?? "N/A",
-                            channel: customer.channel?.toLowerCase() ==
-                                    "offline"
-                                ? "Walk-in"
-                                : customer.channel?.capitalizeFirst ?? "N/A",
-                            onTap: () {
-                              Navigator.pushNamed(
-                                context,
-                                RoutePath.viewCustomerScreen,
-                                arguments: customer,
+                      );
+                    },
+                    contentBuilder: (context) {
+                      return Column(
+                        children: [
+                          YBox(10),
+                          ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            padding: EdgeInsets.only(
+                              top: Sizer.height(14),
+                              bottom: Sizer.height(50),
+                            ),
+                            itemCount: customerVm.customerData.length,
+                            separatorBuilder: (_, __) => HDivider(),
+                            itemBuilder: (ctx, i) {
+                              final customer = customerVm.customerData[i];
+                              return CustomerListTile(
+                                customerId: "#${customer.customerId ?? ""}",
+                                title: customer.name ?? "N/A",
+                                subTitle: customer.email ?? "N/A",
+                                channel:
+                                    customer.channel?.toLowerCase() == "offline"
+                                        ? "Walk-in"
+                                        : customer.channel?.capitalizeFirst ??
+                                            "N/A",
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    RoutePath.viewCustomerScreen,
+                                    arguments: customer,
+                                  );
+                                },
                               );
                             },
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                }),
+                          ),
+                        ],
+                      );
+                    }),
                 if (customerVm.busy(paginateState))
                   SpinKitLoader(
                     size: 16,
