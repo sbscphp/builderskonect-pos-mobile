@@ -299,104 +299,105 @@ class _SearchAddProductScreenState
                             height: Sizer.height(300),
                           );
                         }
-                        if (!isSearching || !searchF.hasFocus) {
-                          return SizedBox.shrink();
-                        }
-
-                        return Container(
-                          height: Sizer.screenHeight * 0.5,
-                          margin: EdgeInsets.only(top: Sizer.height(8)),
-                          padding: EdgeInsets.all(Sizer.radius(16)),
-                          decoration: BoxDecoration(
-                            color: AppColors.white,
-                            borderRadius:
-                                BorderRadius.circular(Sizer.radius(2)),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12.withValues(alpha: 0.1),
-                                blurRadius: 20,
-                                offset: const Offset(0, 5),
-                              ),
-                            ],
-                          ),
-                          // constraints: BoxConstraints(
-                          //   maxHeight: Sizer.height(300),
-                          // ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Can’t find the product you want to add?",
-                                style: textTheme.text14,
-                              ),
-                              YBox(5),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.pushNamed(context,
-                                      RoutePath.addProductRequestScreen);
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    vertical: Sizer.height(2),
-                                  ),
-                                  child: Text(
-                                    "Request to add product",
-                                    style: textTheme.text14?.medium.copyWith(
-                                      color: colorScheme.primaryColor,
+                        if (isSearching || searchF.hasFocus) {
+                          return Container(
+                            height: Sizer.screenHeight * 0.5,
+                            margin: EdgeInsets.only(top: Sizer.height(8)),
+                            padding: EdgeInsets.all(Sizer.radius(16)),
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              borderRadius:
+                                  BorderRadius.circular(Sizer.radius(2)),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black12.withValues(alpha: 0.1),
+                                  blurRadius: 20,
+                                  offset: const Offset(0, 5),
+                                ),
+                              ],
+                            ),
+                            // constraints: BoxConstraints(
+                            //   maxHeight: Sizer.height(300),
+                            // ),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Can’t find the product you want to add?",
+                                  style: textTheme.text14,
+                                ),
+                                YBox(5),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.pushNamed(context,
+                                        RoutePath.addProductRequestScreen);
+                                  },
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: Sizer.height(2),
+                                    ),
+                                    child: Text(
+                                      "Request to add product",
+                                      style: textTheme.text14?.medium.copyWith(
+                                        color: colorScheme.primaryColor,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              Expanded(
-                                child: ListView.separated(
-                                  shrinkWrap: true,
-                                  padding: EdgeInsets.only(
-                                    top: Sizer.height(16),
-                                    bottom: Sizer.height(30),
-                                  ),
-                                  itemCount:
-                                      catalogueVm.catalogueProducts.length,
-                                  separatorBuilder: (_, __) => HDivider(),
-                                  itemBuilder: (ctx, i) {
-                                    final product =
-                                        catalogueVm.catalogueProducts[i];
-                                    return ProductWithSkuListTile(
-                                      showTrailing: false,
-                                      productTitle: product.name ?? '',
-                                      subTitle: product.productType?.name ?? '',
-                                      productImage:
-                                          product.primaryMediaUrl ?? '',
-                                      onTap: () {
-                                        final existingIndex =
-                                            productCatalogues.indexWhere(
-                                          (p) =>
-                                              p.catalogueModel.id == product.id,
-                                        );
-
-                                        if (existingIndex != -1) {
-                                          productCatalogues
-                                              .removeAt(existingIndex);
-                                        } else {
-                                          productCatalogues.add(
-                                            ProductCatalogueWithStatus(
-                                              catalogueModel: product,
-                                            ),
+                                Expanded(
+                                  child: ListView.separated(
+                                    shrinkWrap: true,
+                                    padding: EdgeInsets.only(
+                                      top: Sizer.height(16),
+                                      bottom: Sizer.height(30),
+                                    ),
+                                    itemCount:
+                                        catalogueVm.catalogueProducts.length,
+                                    separatorBuilder: (_, __) => HDivider(),
+                                    itemBuilder: (ctx, i) {
+                                      final product =
+                                          catalogueVm.catalogueProducts[i];
+                                      return ProductWithSkuListTile(
+                                        showTrailing: false,
+                                        productTitle: product.name ?? '',
+                                        subTitle:
+                                            product.productType?.name ?? '',
+                                        productImage:
+                                            product.primaryMediaUrl ?? '',
+                                        onTap: () {
+                                          final existingIndex =
+                                              productCatalogues.indexWhere(
+                                            (p) =>
+                                                p.catalogueModel.id ==
+                                                product.id,
                                           );
-                                        }
 
-                                        // Close catalogue suggestions by removing focus (keep search text)
-                                        searchF.unfocus();
+                                          if (existingIndex != -1) {
+                                            productCatalogues
+                                                .removeAt(existingIndex);
+                                          } else {
+                                            productCatalogues.add(
+                                              ProductCatalogueWithStatus(
+                                                catalogueModel: product,
+                                              ),
+                                            );
+                                          }
 
-                                        setState(() {});
-                                      },
-                                    );
-                                  },
+                                          // Close catalogue suggestions by removing focus (keep search text)
+                                          searchF.unfocus();
+
+                                          setState(() {});
+                                        },
+                                      );
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        );
+                              ],
+                            ),
+                          );
+                        }
+                        return SizedBox.shrink();
                       }),
                     ),
                     YBox(24),

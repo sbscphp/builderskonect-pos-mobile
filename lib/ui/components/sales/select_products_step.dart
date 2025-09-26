@@ -30,7 +30,7 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
     searchC.addListener(() {
       _updateSearchingState();
     });
-    
+
     searchF.addListener(() {
       _updateSearchingState();
     });
@@ -41,8 +41,8 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
     // Show search results when:
     // 1. Search field is focused AND
     // 2. Either there's search text OR there are products in the list
-    isSearching = searchF.hasFocus && 
-                  (searchC.text.isNotEmpty || salesVm.productList.isNotEmpty);
+    isSearching = searchF.hasFocus &&
+        (searchC.text.isNotEmpty || salesVm.productList.isNotEmpty);
     setState(() {});
   }
 
@@ -141,7 +141,7 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
 
         // Close search results by removing focus
         searchF.unfocus();
-        
+
         setState(() {});
 
         // If no exact match found, show warning
@@ -211,81 +211,83 @@ class _SelectProductsTabState extends ConsumerState<SelectProductsStep> {
               AnimatedSize(
                 duration: Duration(milliseconds: 500),
                 child: Builder(builder: (context) {
-                  if (!isSearching) {
-                    return SizedBox.shrink();
-                  }
-
                   if (inventoryProductVm.busy(getState)) {
                     return SizerLoader(
                       height: Sizer.height(300),
                     );
                   }
-                  return Container(
-                    margin: EdgeInsets.only(top: Sizer.height(8)),
-                    decoration: BoxDecoration(
-                      color: AppColors.white,
-                      borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12.withValues(alpha: 0.1),
-                          blurRadius: 20,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                    ),
-                    constraints: BoxConstraints(
-                      maxHeight: Sizer.height(300),
-                    ),
-                    child: ListView.separated(
-                      shrinkWrap: true,
-                      padding: EdgeInsets.only(
-                        top: Sizer.height(16),
-                        bottom: Sizer.height(30),
+
+                  if (searchF.hasFocus &&
+                      inventoryProductVm.inventoryProducts.isNotEmpty) {
+                    return Container(
+                      margin: EdgeInsets.only(top: Sizer.height(8)),
+                      decoration: BoxDecoration(
+                        color: AppColors.white,
+                        borderRadius: BorderRadius.circular(Sizer.radius(2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12.withValues(alpha: 0.1),
+                            blurRadius: 20,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
                       ),
-                      itemCount: inventoryProductVm.inventoryProducts.length,
-                      separatorBuilder: (_, __) => HDivider(),
-                      itemBuilder: (ctx, i) {
-                        final product = inventoryProductVm.inventoryProducts[i];
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: Sizer.width(16),
-                          ),
-                          child: SalesProductWidget(
-                            productTitle: product.name ?? '',
-                            subTitle: product.productType ?? '',
-                            productImage: product.primaryMediaUrl ?? '',
-                            sku: product.quantity?.toString() ?? '',
-                            onTap: () {
-                              printty(
-                                  "product image ${product.primaryMediaUrl}");
-                              final existingProductIndex = salesVm.productList
-                                  .indexWhere((p) => p.id == product.id);
-                              if (existingProductIndex != -1) {
-                                salesVm.productList[
-                                    existingProductIndex] = salesVm.productList[
-                                        existingProductIndex]
-                                    .copyWith(
-                                        quantity: (salesVm
-                                                    .productList[
-                                                        existingProductIndex]
-                                                    .quantity ??
-                                                0) +
-                                            1);
-                              } else {
-                                salesVm.productList
-                                    .add(product.copyWith(quantity: 1));
-                              }
-                              
-                              // Close search results by removing focus
-                              searchF.unfocus();
-                              
-                              setState(() {});
-                            },
-                          ),
-                        );
-                      },
-                    ),
-                  );
+                      constraints: BoxConstraints(
+                        maxHeight: Sizer.height(300),
+                      ),
+                      child: ListView.separated(
+                        shrinkWrap: true,
+                        padding: EdgeInsets.only(
+                          top: Sizer.height(16),
+                          bottom: Sizer.height(30),
+                        ),
+                        itemCount: inventoryProductVm.inventoryProducts.length,
+                        separatorBuilder: (_, __) => HDivider(),
+                        itemBuilder: (ctx, i) {
+                          final product =
+                              inventoryProductVm.inventoryProducts[i];
+                          return Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal: Sizer.width(16),
+                            ),
+                            child: SalesProductWidget(
+                              productTitle: product.name ?? '',
+                              subTitle: product.productType ?? '',
+                              productImage: product.primaryMediaUrl ?? '',
+                              sku: product.quantity?.toString() ?? '',
+                              onTap: () {
+                                printty(
+                                    "product image ${product.primaryMediaUrl}");
+                                final existingProductIndex = salesVm.productList
+                                    .indexWhere((p) => p.id == product.id);
+                                if (existingProductIndex != -1) {
+                                  salesVm.productList[
+                                      existingProductIndex] = salesVm.productList[
+                                          existingProductIndex]
+                                      .copyWith(
+                                          quantity: (salesVm
+                                                      .productList[
+                                                          existingProductIndex]
+                                                      .quantity ??
+                                                  0) +
+                                              1);
+                                } else {
+                                  salesVm.productList
+                                      .add(product.copyWith(quantity: 1));
+                                }
+
+                                // Close search results by removing focus
+                                searchF.unfocus();
+
+                                setState(() {});
+                              },
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  }
+                  return SizedBox.shrink();
                 }),
               ),
               YBox(24),

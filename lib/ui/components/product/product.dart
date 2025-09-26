@@ -9,6 +9,7 @@ export 'product_with_status_list_tile.dart';
 export 'request_tabs/request_tabs.dart';
 export 'select_store_step.dart';
 export 'select_transfer_products_step.dart';
+export 'suffix_box.dart';
 export 'tag_input_widget.dart';
 export 'tag_widget.dart';
 export 'transfer_product_widget.dart';

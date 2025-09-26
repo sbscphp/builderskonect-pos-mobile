@@ -6,10 +6,12 @@ class CategoriesVm extends BaseVm {
   Future<ApiResponse> getCategories({
     bool paginate = false,
     String? table,
+    String? q,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/shared/categorizations")
       ..addQueryParameterIfNotEmpty("table", table ?? 'inventory_products')
       ..addQueryParameterIfNotEmpty("level", 'category')
+      ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
@@ -30,11 +32,13 @@ class CategoriesVm extends BaseVm {
     String catId, {
     bool paginate = false,
     String? table,
+    String? q,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/shared/categorizations")
       ..addQueryParameterIfNotEmpty("parent_id", catId)
       ..addQueryParameterIfNotEmpty("table", table ?? 'inventory_products')
       ..addQueryParameterIfNotEmpty("level", 'subcategory')
+      ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
@@ -55,11 +59,13 @@ class CategoriesVm extends BaseVm {
     String catId, {
     bool paginate = false,
     String? table,
+    String? q,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/shared/categorizations")
       ..addQueryParameterIfNotEmpty("parent_id", catId)
       ..addQueryParameterIfNotEmpty("table", table ?? 'inventory_products')
       ..addQueryParameterIfNotEmpty("level", 'type')
+      ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
@@ -78,10 +84,11 @@ class CategoriesVm extends BaseVm {
   List<BrandModel> get brands => _brands;
   Future<ApiResponse> getBrands({
     bool paginate = false,
-    String? table,
+    String? q,
   }) async {
     UriBuilder uriBuilder =
         UriBuilder("/api/v1/super_admin/platform-configurations/brands")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
           ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
@@ -92,6 +99,26 @@ class CategoriesVm extends BaseVm {
       onSuccess: (data) {
         _brands = brandModelFromJson(json.encode(data['data']));
         return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse<BrandModel>> createBrands({
+    required String brandName,
+  }) async {
+    return await performApiCall<BrandModel>(
+      url: "/api/v1/super_admin/platform-configurations/brands",
+      method: apiService.postWithAuth,
+      errorObjectName: createState,
+      busyObjectName: createState,
+      body: {
+        "name": brandName,
+      },
+      onSuccess: (data) {
+        return ApiResponse(
+          success: true,
+          data: BrandModel.fromJson(data["data"]),
+        );
       },
     );
   }

@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class ProductSubCategoryModal extends ConsumerStatefulWidget {
-  const ProductSubCategoryModal({
-    super.key,
-    required this.catId,
-  });
+  const ProductSubCategoryModal(
+      {super.key, this.isCategory = true, required this.catId});
 
+  final bool isCategory;
   final String catId;
 
   @override
@@ -18,6 +18,7 @@ class _ProductSubCategoryModalState
     extends ConsumerState<ProductSubCategoryModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -27,8 +28,21 @@ class _ProductSubCategoryModalState
     });
   }
 
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      ref.read(categoryVmodel).getSubCategories(widget.catId, q: query.trim().isEmpty ? null : query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    ref.read(categoryVmodel).getSubCategories(widget.catId);
+  }
+
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     searchC.dispose();
     searchF.dispose();
     super.dispose();
@@ -73,8 +87,9 @@ class _ProductSubCategoryModalState
             controller: searchC,
             isRequired: false,
             showLabelHeader: false,
-            hintText: "Search with brand name.",
+            hintText: "Search with sub category name.",
             onChanged: (value) {
+              _performSearch(value);
               setState(() {});
             },
             suffixIcon: Row(
@@ -82,7 +97,10 @@ class _ProductSubCategoryModalState
               children: [
                 if (searchC.text.isNotEmpty)
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _clearSearch();
+                      setState(() {});
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(Sizer.width(10)),
                       child: Icon(
@@ -93,7 +111,9 @@ class _ProductSubCategoryModalState
                     ),
                   ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    _performSearch(searchC.text);
+                  },
                   child: Container(
                     padding: EdgeInsets.all(Sizer.width(10)),
                     decoration: BoxDecoration(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -14,6 +15,7 @@ class ProductCategoryModal extends ConsumerStatefulWidget {
 class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -23,8 +25,21 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
     });
   }
 
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      ref.read(categoryVmodel).getCategories(q: query.trim().isEmpty ? null : query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    ref.read(categoryVmodel).getCategories();
+  }
+
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     searchC.dispose();
     searchF.dispose();
     super.dispose();
@@ -69,8 +84,9 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
             controller: searchC,
             isRequired: false,
             showLabelHeader: false,
-            hintText: "Search with brand name.",
+            hintText: "Search with category name.",
             onChanged: (value) {
+              _performSearch(value);
               setState(() {});
             },
             suffixIcon: Row(
@@ -78,7 +94,10 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
               children: [
                 if (searchC.text.isNotEmpty)
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _clearSearch();
+                      setState(() {});
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(Sizer.width(10)),
                       child: Icon(
@@ -89,7 +108,9 @@ class _ProductCategoryModalState extends ConsumerState<ProductCategoryModal> {
                     ),
                   ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    _performSearch(searchC.text);
+                  },
                   child: Container(
                     padding: EdgeInsets.all(Sizer.width(10)),
                     decoration: BoxDecoration(

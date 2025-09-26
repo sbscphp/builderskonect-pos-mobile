@@ -246,14 +246,21 @@ class AppRouter {
           settings,
         );
 
-     case RoutePath.viewProductTransferScreen:
-       
+      case RoutePath.viewProductTransferScreen:
         if (args is String) {
-           return TransitionUtils.buildTransition(
-           ViewProductTransferScreen(productId: args),
-          settings,
-        );
-          
+          return TransitionUtils.buildTransition(
+            ViewProductTransferScreen(productId: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.editInventoryScreen:
+        if (args is ProductModel) {
+          return TransitionUtils.buildTransition(
+            EditInventoryScreen(product: args),
+            settings,
+          );
         }
         return errorScreen(settings);
 

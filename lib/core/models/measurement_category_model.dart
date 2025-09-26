@@ -1,16 +1,19 @@
 class SubOption {
   final String id;
   final String label;
+  final String? description;
 
   const SubOption({
     required this.id,
     required this.label,
+    this.description,
   });
 
   factory SubOption.fromMap(Map<String, dynamic> map) {
     return SubOption(
       id: map['id'] ?? '',
       label: map['label'] ?? '',
+      description: map['description'] ?? '',
     );
   }
 
@@ -18,6 +21,7 @@ class SubOption {
     return {
       'id': id,
       'label': label,
+      'description': description,
     };
   }
 }

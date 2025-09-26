@@ -78,10 +78,18 @@ class ProductInventoryVm extends BaseVm {
     required String productId,
     required String quantity,
     String? reOrderValue,
+    String? costPrice,
+    String? retailPrice,
+    String? currentPrice,
+    String? minimumOrderQuantity,
   }) async {
     final body = {
       "new_quantity": quantity,
       "reorder_value": reOrderValue,
+      "unit_cost_price": costPrice,
+      "unit_retail_price": retailPrice,
+      "current_price": currentPrice,
+      "minimum_order_quantity": minimumOrderQuantity,
     }..removeWhere((k, v) => v == null || v == "");
     return await performApiCall(
       url: "/api/v1/merchants/inventory-products/$productId/edit-quantity",

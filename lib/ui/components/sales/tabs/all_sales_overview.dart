@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -12,6 +14,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
   final _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -27,7 +30,22 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
     searchC.dispose();
     searchFocus.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final salesVm = ref.read(salesVmodel);
+      salesVm.getSalesOverview(q: query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final salesVm = ref.read(salesVmodel);
+    salesVm.getSalesOverview();
   }
 
   _scrollListener() {
@@ -193,13 +211,17 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                     hintText: "Search by product id, name etc.",
                     onChanged: (value) {
                       setState(() {});
+                      _performSearch(value);
                     },
                     suffixIcon: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (searchC.text.isNotEmpty)
                           InkWell(
-                            onTap: () {},
+                            onTap: () {
+                              _clearSearch();
+                              setState(() {});
+                            },
                             child: Padding(
                               padding: EdgeInsets.all(Sizer.width(10)),
                               child: Icon(
@@ -210,7 +232,9 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                             ),
                           ),
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            _performSearch(searchC.text);
+                          },
                           child: Container(
                             padding: EdgeInsets.all(Sizer.width(10)),
                             decoration: BoxDecoration(),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -11,6 +13,7 @@ class WalkInCustomersTab extends ConsumerStatefulWidget {
 class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
   final searchC = TextEditingController();
   final _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -28,7 +31,22 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
   void dispose() {
     searchC.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final customerVm = ref.read(customerVmodel);
+      customerVm.getCustomerOverview(q: query.trim(), type: CustomType.offline);
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final customerVm = ref.read(customerVmodel);
+    customerVm.getCustomerOverview(type: CustomType.offline);
   }
 
   _scrollListener() {
@@ -161,13 +179,17 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                   hintText: "Search by customer ID, name etc",
                   onChanged: (value) {
                     setState(() {});
+                    _performSearch(value);
                   },
                   suffixIcon: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (searchC.text.isNotEmpty)
                         InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            _clearSearch();
+                            setState(() {});
+                          },
                           child: Padding(
                             padding: EdgeInsets.all(Sizer.width(10)),
                             child: Icon(
@@ -178,7 +200,9 @@ class _WalkInCustomersTabState extends ConsumerState<WalkInCustomersTab> {
                           ),
                         ),
                       InkWell(
-                        onTap: () {},
+                        onTap: () {
+                          _performSearch(searchC.text);
+                        },
                         child: Container(
                           padding: EdgeInsets.all(Sizer.width(10)),
                           decoration: BoxDecoration(

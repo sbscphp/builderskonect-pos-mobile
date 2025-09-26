@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -10,6 +12,7 @@ class ProductReviewsTab extends ConsumerStatefulWidget {
 
 class ProductReviewsTabState extends ConsumerState<ProductReviewsTab> {
   final searchC = TextEditingController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -24,7 +27,22 @@ class ProductReviewsTabState extends ConsumerState<ProductReviewsTab> {
   @override
   void dispose() {
     searchC.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final productVm = ref.read(productInventoryVmodel);
+      productVm.getInventoryProducts(productReview: true, q: query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final productVm = ref.read(productInventoryVmodel);
+    productVm.getInventoryProducts(productReview: true);
   }
 
   @override
@@ -59,12 +77,30 @@ class ProductReviewsTabState extends ConsumerState<ProductReviewsTab> {
               hintText: "Search reviews.",
               onChanged: (value) {
                 setState(() {});
+                _performSearch(value);
               },
               suffixIcon: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  if (searchC.text.isNotEmpty)
+                    InkWell(
+                      onTap: () {
+                        _clearSearch();
+                        setState(() {});
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.all(Sizer.width(10)),
+                        child: Icon(
+                          Icons.close,
+                          size: Sizer.width(20),
+                          color: AppColors.gray500,
+                        ),
+                      ),
+                    ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _performSearch(searchC.text);
+                    },
                     child: Container(
                       padding: EdgeInsets.all(Sizer.width(14)),
                       decoration: BoxDecoration(

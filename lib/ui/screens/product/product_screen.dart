@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -15,6 +17,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
   final _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -30,7 +33,25 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
     searchC.dispose();
     searchFocus.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final productVm = ref.read(productInventoryVmodel);
+      productVm.getInventoryProducts(
+        q: query.trim(),
+        busyObjectName: searchState,
+      );
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final productVm = ref.read(productInventoryVmodel);
+    productVm.getInventoryProducts();
   }
 
   _scrollListener() {
@@ -263,13 +284,17 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                               hintText: "Search by product id, name etc.",
                               onChanged: (value) {
                                 setState(() {});
+                                _performSearch(value);
                               },
                               suffixIcon: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (searchC.text.isNotEmpty)
                                     InkWell(
-                                      onTap: () {},
+                                      onTap: () {
+                                        _clearSearch();
+                                        setState(() {});
+                                      },
                                       child: Padding(
                                         padding:
                                             EdgeInsets.all(Sizer.width(10)),
@@ -281,7 +306,9 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                       ),
                                     ),
                                   InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      _performSearch(searchC.text);
+                                    },
                                     child: Container(
                                       padding: EdgeInsets.all(Sizer.width(10)),
                                       decoration: BoxDecoration(
@@ -297,74 +324,104 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                               ),
                             ),
                             YBox(10),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              padding: EdgeInsets.only(
-                                top: Sizer.height(14),
-                              ),
-                              itemCount: productVm.inventoryProducts.length,
-                              separatorBuilder: (_, __) => HDivider(),
-                              itemBuilder: (ctx, i) {
-                                final product = productVm.inventoryProducts[i];
-                                return ProductWithStatusListTile(
-                                  productImage: product.primaryMediaUrl ?? "",
-                                  productTitle: product.name ?? '',
-                                  subTitle: product.productType ?? '',
-                                  subTitle1: "Price: ",
-                                  subValue1:
-                                      "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(product.costPrice ?? "0") ?? 0)}",
-                                  subTitle2: "Stock level: ",
-                                  subValue2: "${product.quantity} left",
-                                  status: product.status ?? '',
-                                  onTap: () {
-                                    ModalWrapper.bottomSheet(
-                                      context: context,
-                                      widget: StoreOptionModal(options: [
-                                        ModalOption(
-                                          title: "View product details",
-                                          onTap: () {
-                                            Navigator.pushNamed(
-                                              context,
-                                              RoutePath
-                                                  .viewProductDetailsScreen,
-                                              arguments: product,
-                                            );
-                                          },
+                            LoadableContentBuilder(
+                                isBusy: productVm.busy(searchState),
+                                items: productVm.inventoryProducts,
+                                loadingBuilder: (context) {
+                                  return SizerLoader(height: 300);
+                                },
+                                emptyBuilder: (context) {
+                                  return SizedBox(
+                                    height: Sizer.height(240),
+                                    child: EmptyListState(
+                                      text: "No data",
+                                    ),
+                                  );
+                                },
+                                contentBuilder: (context) {
+                                  return Column(
+                                    children: [
+                                      ListView.separated(
+                                        shrinkWrap: true,
+                                        physics:
+                                            const NeverScrollableScrollPhysics(),
+                                        padding: EdgeInsets.only(
+                                          top: Sizer.height(14),
                                         ),
-                                        // ModalOption(
-                                        //   title: "Edit product details",
-                                        //   onTap: () {},
-                                        // ),
-                                        ModalOption(
-                                          title: "Delete product",
-                                          textColor: AppColors.red2D,
-                                          onTap: () {
-                                            _deleteProduct(product.id ?? '');
-                                          },
+                                        itemCount:
+                                            productVm.inventoryProducts.length,
+                                        separatorBuilder: (_, __) => HDivider(),
+                                        itemBuilder: (ctx, i) {
+                                          final product =
+                                              productVm.inventoryProducts[i];
+                                          return ProductWithStatusListTile(
+                                            productImage:
+                                                product.primaryMediaUrl ?? "",
+                                            productTitle: product.name ?? '',
+                                            subTitle: product.productType ?? '',
+                                            subTitle1: "Price: ",
+                                            subValue1:
+                                                "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(product.costPrice ?? "0") ?? 0)}",
+                                            subTitle2: "Stock level: ",
+                                            subValue2:
+                                                "${product.quantity} left",
+                                            status: product.status ?? '',
+                                            onTap: () {
+                                              ModalWrapper.bottomSheet(
+                                                context: context,
+                                                widget:
+                                                    StoreOptionModal(options: [
+                                                  ModalOption(
+                                                    title:
+                                                        "View product details",
+                                                    onTap: () {
+                                                      Navigator.pushNamed(
+                                                        context,
+                                                        RoutePath
+                                                            .viewProductDetailsScreen,
+                                                        arguments: product,
+                                                      );
+                                                    },
+                                                  ),
+                                                  // ModalOption(
+                                                  //   title: "Edit product details",
+                                                  //   onTap: () {},
+                                                  // ),
+                                                  ModalOption(
+                                                    title: "Delete product",
+                                                    textColor: AppColors.red2D,
+                                                    onTap: () {
+                                                      _deleteProduct(
+                                                          product.id ?? '');
+                                                    },
+                                                  ),
+                                                ]),
+                                              );
+                                            },
+                                          );
+                                        },
+                                      ),
+                                      if (productVm.busy(paginateState))
+                                        SpinKitLoader(
+                                          size: 16,
+                                          color: AppColors.neutral5,
                                         ),
-                                      ]),
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                            if (productVm.busy(paginateState))
-                              SpinKitLoader(
-                                size: 16,
-                                color: AppColors.neutral5,
-                              ),
-                            if (productVm.error(paginateState))
-                              Padding(
-                                padding: const EdgeInsets.only(top: 16.0),
-                                child: ErrorState(
-                                  onPressed: () {
-                                    productVm.getInventoryProducts(
-                                        busyObjectName: paginateState);
-                                  },
-                                  isPaginationType: true,
-                                ),
-                              )
+                                      if (productVm.error(paginateState))
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(top: 16.0),
+                                          child: ErrorState(
+                                            onPressed: () {
+                                              productVm.getInventoryProducts(
+                                                  busyObjectName:
+                                                      paginateState);
+                                            },
+                                            isPaginationType: true,
+                                          ),
+                                        )
+                                    ],
+                                  );
+                                })
                           ],
                         ),
                       ),

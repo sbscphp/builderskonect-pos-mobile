@@ -1,12 +1,11 @@
+import 'dart:async';
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class ProductType extends ConsumerStatefulWidget {
-  const ProductType({
-    super.key,
-    required this.catId,
-  });
+  const ProductType({super.key, this.isCategory = true, required this.catId});
 
+  final bool isCategory;
   final String catId;
 
   @override
@@ -16,6 +15,7 @@ class ProductType extends ConsumerStatefulWidget {
 class _ProductTypeState extends ConsumerState<ProductType> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -25,8 +25,21 @@ class _ProductTypeState extends ConsumerState<ProductType> {
     });
   }
 
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      ref.read(categoryVmodel).getCategoryType(widget.catId, q: query.trim().isEmpty ? null : query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    ref.read(categoryVmodel).getCategoryType(widget.catId);
+  }
+
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     searchC.dispose();
     searchF.dispose();
     super.dispose();
@@ -71,8 +84,9 @@ class _ProductTypeState extends ConsumerState<ProductType> {
             controller: searchC,
             isRequired: false,
             showLabelHeader: false,
-            hintText: "Search product type.",
+            hintText: "Search with product type name.",
             onChanged: (value) {
+              _performSearch(value);
               setState(() {});
             },
             suffixIcon: Row(
@@ -80,7 +94,10 @@ class _ProductTypeState extends ConsumerState<ProductType> {
               children: [
                 if (searchC.text.isNotEmpty)
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _clearSearch();
+                      setState(() {});
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(Sizer.width(10)),
                       child: Icon(
@@ -91,7 +108,9 @@ class _ProductTypeState extends ConsumerState<ProductType> {
                     ),
                   ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    _performSearch(searchC.text);
+                  },
                   child: Container(
                     padding: EdgeInsets.all(Sizer.width(10)),
                     decoration: BoxDecoration(

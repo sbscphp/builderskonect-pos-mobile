@@ -1,4 +1,5 @@
 export 'add_attribute_modal.dart';
+export 'add_product_brand_modal.dart';
 export 'business_category_type_modal.dart';
 export 'city_modal.dart';
 export 'configure_variant_modal.dart';
@@ -6,7 +7,6 @@ export 'confirmation_modal.dart';
 export 'customer_review_modal.dart';
 export 'customer_review_respond_modal.dart';
 export 'discount_options_modal.dart';
-export 'edit_inventory_modal.dart';
 export 'filter_data_modal.dart';
 export 'google_address_modal.dart';
 export 'payment_breakdown_modal.dart';

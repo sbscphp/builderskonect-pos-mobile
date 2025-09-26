@@ -23,7 +23,7 @@ class ConfigureVariantModal extends ConsumerStatefulWidget {
 
 class _ConfigureVariantModalState extends ConsumerState<ConfigureVariantModal> {
   List<ProductAttributeModel> selectedVariantList = [];
-  int numOfVariants = 1;
+  int numOfVariants = 2;
   @override
   void initState() {
     super.initState();
@@ -178,7 +178,7 @@ class _ConfigureVariantModalState extends ConsumerState<ConfigureVariantModal> {
                       children: [
                         InkWell(
                           onTap: () {
-                            if (numOfVariants > 1) {
+                            if (numOfVariants > 2) {
                               numOfVariants--;
                               setState(() {});
                             }

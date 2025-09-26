@@ -140,38 +140,37 @@ class ProductModel {
   int? requestQuantity;
   TransferItemDetails? transferItemDetails;
 
-  ProductModel({
-    this.id,
-    this.name,
-    this.sku,
-    this.ean,
-    this.code,
-    this.category,
-    this.categoryId,
-    this.subcategory,
-    this.subcategoryId,
-    this.productType,
-    this.productTypeId,
-    this.retailPrice,
-    this.brand,
-    this.costPrice,
-    this.currentPrice,
-    this.metadata,
-    this.dateAdded,
-    this.description,
-    this.tags,
-    this.status,
-    this.quantity,
-    this.measurementUnit,
-    this.dimension,
-    this.weight,
-    this.reorderValue,
-    this.primaryMediaUrl,
-    this.media,
-    this.attributes,
-    this.ratings,
-    this.totalReviews
-  });
+  ProductModel(
+      {this.id,
+      this.name,
+      this.sku,
+      this.ean,
+      this.code,
+      this.category,
+      this.categoryId,
+      this.subcategory,
+      this.subcategoryId,
+      this.productType,
+      this.productTypeId,
+      this.retailPrice,
+      this.brand,
+      this.costPrice,
+      this.currentPrice,
+      this.metadata,
+      this.dateAdded,
+      this.description,
+      this.tags,
+      this.status,
+      this.quantity,
+      this.measurementUnit,
+      this.dimension,
+      this.weight,
+      this.reorderValue,
+      this.primaryMediaUrl,
+      this.media,
+      this.attributes,
+      this.ratings,
+      this.totalReviews});
 
   // ProductModel copywith
   ProductModel copyWith({
@@ -313,32 +312,32 @@ class ProductModel {
       };
 }
 
-class AttributesClass {
-  final List<String>? type;
-  final List<String>? safetyGear;
+// class AttributesClass {
+//   final List<String>? type;
+//   final List<String>? safetyGear;
 
-  AttributesClass({
-    this.type,
-    this.safetyGear,
-  });
+//   AttributesClass({
+//     this.type,
+//     this.safetyGear,
+//   });
 
-  factory AttributesClass.fromJson(Map<String, dynamic> json) =>
-      AttributesClass(
-        type: json["Type"] == null
-            ? []
-            : List<String>.from(json["Type"]!.map((x) => x)),
-        safetyGear: json["Safety Gear"] == null
-            ? []
-            : List<String>.from(json["Safety Gear"]!.map((x) => x)),
-      );
+//   factory AttributesClass.fromJson(Map<String, dynamic> json) =>
+//       AttributesClass(
+//         type: json["Type"] == null
+//             ? []
+//             : List<String>.from(json["Type"]!.map((x) => x)),
+//         safetyGear: json["Safety Gear"] == null
+//             ? []
+//             : List<String>.from(json["Safety Gear"]!.map((x) => x)),
+//       );
 
-  Map<String, dynamic> toJson() => {
-        "Type": type == null ? [] : List<dynamic>.from(type!.map((x) => x)),
-        "Safety Gear": safetyGear == null
-            ? []
-            : List<dynamic>.from(safetyGear!.map((x) => x)),
-      };
-}
+//   Map<String, dynamic> toJson() => {
+//         "Type": type == null ? [] : List<dynamic>.from(type!.map((x) => x)),
+//         "Safety Gear": safetyGear == null
+//             ? []
+//             : List<dynamic>.from(safetyGear!.map((x) => x)),
+//       };
+// }
 
 class DimensionClass {
   final String? length;
@@ -365,22 +364,16 @@ class DimensionClass {
 }
 
 class InventoryMetadata {
-  final AttributesClass? attributes;
+  final dynamic attributes;
 
   InventoryMetadata({
     this.attributes,
   });
 
   factory InventoryMetadata.fromJson(Map<String, dynamic> json) =>
-      InventoryMetadata(
-        attributes: json["attributes"] == null
-            ? null
-            : AttributesClass.fromJson(json["attributes"]),
-      );
+      InventoryMetadata(attributes: json["attributes"]);
 
-  Map<String, dynamic> toJson() => {
-        "attributes": attributes?.toJson(),
-      };
+  Map<String, dynamic> toJson() => {"attributes": attributes};
 }
 
 class WeightClass {
@@ -443,12 +436,12 @@ TransferItemDetails transferItemDetailsFromJson(String str) =>
     TransferItemDetails.fromJson(json.decode(str));
 
 class TransferItemDetails {
-   String? id;
-   String? name;
-   String? primaryImage;
-   String? sku;
-   int? sourceQty;
-   int? destinyQty;
+  String? id;
+  String? name;
+  String? primaryImage;
+  String? sku;
+  int? sourceQty;
+  int? destinyQty;
 
   TransferItemDetails(
       {this.id,

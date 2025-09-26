@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -12,6 +14,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
   final searchC = TextEditingController();
   final searchFocus = FocusNode();
   final _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -27,7 +30,23 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
     searchC.dispose();
     searchFocus.dispose();
     _scrollController.dispose();
+    _debounceTimer?.cancel();
     super.dispose();
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final productVm = ref.read(productInventoryVmodel);
+      productVm.getInventoryProducts(
+          q: query.trim(), busyObjectName: searchState);
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final productVm = ref.read(productInventoryVmodel);
+    productVm.getInventoryProducts();
   }
 
   _scrollListener() {
@@ -217,13 +236,17 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                         hintText: "Search by product id, name etc.",
                         onChanged: (value) {
                           setState(() {});
+                          _performSearch(value);
                         },
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (searchC.text.isNotEmpty)
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  _clearSearch();
+                                  setState(() {});
+                                },
                                 child: Padding(
                                   padding: EdgeInsets.all(Sizer.width(10)),
                                   child: Icon(
@@ -234,7 +257,9 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                 ),
                               ),
                             InkWell(
-                              onTap: () {},
+                              onTap: () {
+                                _performSearch(searchC.text);
+                              },
                               child: Container(
                                 padding: EdgeInsets.all(Sizer.width(10)),
                                 decoration: BoxDecoration(
@@ -250,115 +275,150 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                         ),
                       ),
                       YBox(10),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(
-                          top: Sizer.height(14),
-                          bottom: Sizer.height(20),
-                        ),
-                        itemCount: 10,
-                        separatorBuilder: (_, __) => HDivider(),
-                        itemBuilder: (ctx, i) {
-                          final product = productVm.inventoryProducts[i];
-                          return ProductWithStatusListTile(
-                            productImage: product.primaryMediaUrl ?? "",
-                            productTitle: product.name ?? '',
-                            subTitle: product.productType ?? '',
-                            subTitle1: "Category: ",
-                            subValue1: product.category ?? 'N/A',
-                            subTitle2: "Stock level: ",
-                            subValue2: "${product.quantity} left",
-                            status: product.status ?? '',
-                            onTap: () {
-                              ModalWrapper.bottomSheet(
-                                context: context,
-                                widget: StoreOptionModal(options: [
-                                  ModalOption(
-                                    title: "View inventory details",
-                                    onTap: () {
-                                      Navigator.pushNamed(
-                                        context,
-                                        RoutePath.inventoryDetailsScreen,
-                                        arguments: product,
-                                      );
-                                    },
+                      LoadableContentBuilder(
+                          isBusy: productVm.busy(searchState),
+                          items: productVm.inventoryProducts,
+                          loadingBuilder: (context) {
+                            return SizerLoader(height: 300);
+                          },
+                          emptyBuilder: (context) {
+                            return SizedBox(
+                              height: Sizer.height(240),
+                              child: EmptyListState(
+                                text: "No data",
+                              ),
+                            );
+                          },
+                          contentBuilder: (context) {
+                            return Column(
+                              children: [
+                                ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  padding: EdgeInsets.only(
+                                    top: Sizer.height(14),
+                                    bottom: Sizer.height(20),
                                   ),
-                                  ModalOption(
-                                    title: "Edit inventory",
-                                    onTap: () {
-                                      Navigator.pop(context);
-                                      ModalWrapper.bottomSheet(
-                                        context: context,
-                                        widget: EditInventoryModal(
-                                          product: product,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                  ModalOption(
-                                    title: "Trigger Re-order",
-                                    textColor: AppColors.red2D,
-                                    onTap: () async {
-                                      Navigator.pop(context);
-                                      final result =
-                                          await ModalWrapper.bottomSheet(
-                                        context: context,
-                                        widget: ConfirmationModal(
-                                          modalConfirmationArg:
-                                              ModalConfirmationArg(
-                                            iconPath: AppSvgs.infoCircleRed,
-                                            title: "Trigger Reorder",
-                                            description:
-                                                "Are you sure you want to trigger a reorder of this product? Procurement will be notified of this restock request.",
-                                            solidBtnText: "Yes, trigger",
-                                            onSolidBtnOnTap: () {
-                                              Navigator.pop(context, true);
-                                            },
-                                            onOutlineBtnOnTap: () {
-                                              Navigator.pop(context, false);
-                                            },
-                                          ),
-                                        ),
-                                      );
+                                  itemCount: productVm.inventoryProducts.length,
+                                  separatorBuilder: (_, __) => HDivider(),
+                                  itemBuilder: (ctx, i) {
+                                    final product =
+                                        productVm.inventoryProducts[i];
+                                    return ProductWithStatusListTile(
+                                      productImage:
+                                          product.primaryMediaUrl ?? "",
+                                      productTitle: product.name ?? '',
+                                      subTitle: product.productType ?? '',
+                                      subTitle1: "Category: ",
+                                      subValue1: product.category ?? 'N/A',
+                                      subTitle2: "Stock level: ",
+                                      subValue2: "${product.quantity} left",
+                                      status: product.status ?? '',
+                                      onTap: () {
+                                        ModalWrapper.bottomSheet(
+                                          context: context,
+                                          widget: StoreOptionModal(options: [
+                                            ModalOption(
+                                              title: "View inventory details",
+                                              onTap: () {
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  RoutePath
+                                                      .inventoryDetailsScreen,
+                                                  arguments: product,
+                                                );
+                                              },
+                                            ),
+                                            ModalOption(
+                                              title: "Edit inventory",
+                                              onTap: () {
+                                                Navigator.pop(context);
+                                                // ModalWrapper.bottomSheet(
+                                                //   context: context,
+                                                //   widget: EditInventoryModal(
+                                                //     product: product,
+                                                //   ),
+                                                // );
+                                                Navigator.pushNamed(
+                                                  context,
+                                                  RoutePath.editInventoryScreen,
+                                                  arguments: product,
+                                                );
+                                              },
+                                            ),
+                                            ModalOption(
+                                              title: "Trigger Re-order",
+                                              textColor: AppColors.red2D,
+                                              onTap: () async {
+                                                Navigator.pop(context);
+                                                final result =
+                                                    await ModalWrapper
+                                                        .bottomSheet(
+                                                  context: context,
+                                                  widget: ConfirmationModal(
+                                                    modalConfirmationArg:
+                                                        ModalConfirmationArg(
+                                                      iconPath:
+                                                          AppSvgs.infoCircleRed,
+                                                      title: "Trigger Reorder",
+                                                      description:
+                                                          "Are you sure you want to trigger a reorder of this product? Procurement will be notified of this restock request.",
+                                                      solidBtnText:
+                                                          "Yes, trigger",
+                                                      onSolidBtnOnTap: () {
+                                                        Navigator.pop(
+                                                            context, true);
+                                                      },
+                                                      onOutlineBtnOnTap: () {
+                                                        Navigator.pop(
+                                                            context, false);
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
 
-                                      if (result == true) {
-                                        final res = await ref
-                                            .read(productInventoryVmodel)
-                                            .triggerReorder(
-                                          ids: [product.id ?? ''],
+                                                if (result == true) {
+                                                  final res = await ref
+                                                      .read(
+                                                          productInventoryVmodel)
+                                                      .triggerReorder(
+                                                    ids: [product.id ?? ''],
+                                                  );
+
+                                                  handleApiResponse(
+                                                      response: res,
+                                                      onSuccess: () {
+                                                        productVm
+                                                            .getInventoryProducts();
+                                                      });
+                                                }
+                                              },
+                                            ),
+                                          ]),
                                         );
-
-                                        handleApiResponse(
-                                            response: res,
-                                            onSuccess: () {
-                                              productVm.getInventoryProducts();
-                                            });
-                                      }
-                                    },
+                                      },
+                                    );
+                                  },
+                                ),
+                                if (productVm.busy(paginateState))
+                                  SpinKitLoader(
+                                    size: 16,
+                                    color: AppColors.neutral5,
                                   ),
-                                ]),
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      if (productVm.busy(paginateState))
-                        SpinKitLoader(
-                          size: 16,
-                          color: AppColors.neutral5,
-                        ),
-                      if (productVm.error(paginateState))
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: ErrorState(
-                            onPressed: () {
-                              productVm.getInventoryProducts(
-                                  busyObjectName: paginateState);
-                            },
-                            isPaginationType: true,
-                          ),
-                        )
+                                if (productVm.error(paginateState))
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 16.0),
+                                    child: ErrorState(
+                                      onPressed: () {
+                                        productVm.getInventoryProducts(
+                                            busyObjectName: paginateState);
+                                      },
+                                      isPaginationType: true,
+                                    ),
+                                  )
+                              ],
+                            );
+                          }),
                     ],
                   ),
                 ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -13,6 +15,7 @@ class ProductBrandModal extends ConsumerStatefulWidget {
 class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
   final searchC = TextEditingController();
   final searchF = FocusNode();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
@@ -22,8 +25,23 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
     });
   }
 
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      ref
+          .read(categoryVmodel)
+          .getBrands(q: query.trim().isEmpty ? null : query.trim());
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    ref.read(categoryVmodel).getBrands();
+  }
+
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     searchC.dispose();
     searchF.dispose();
     super.dispose();
@@ -67,6 +85,7 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
             showLabelHeader: false,
             hintText: "Search with brand name.",
             onChanged: (value) {
+              _performSearch(value);
               setState(() {});
             },
             suffixIcon: Row(
@@ -74,7 +93,10 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
               children: [
                 if (searchC.text.isNotEmpty)
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      _clearSearch();
+                      setState(() {});
+                    },
                     child: Padding(
                       padding: EdgeInsets.all(Sizer.width(10)),
                       child: Icon(
@@ -85,7 +107,9 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
                     ),
                   ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    _performSearch(searchC.text);
+                  },
                   child: Container(
                     padding: EdgeInsets.all(Sizer.width(10)),
                     decoration: BoxDecoration(
@@ -97,6 +121,32 @@ class _ProductBrandModalState extends ConsumerState<ProductBrandModal> {
                     child: SvgPicture.asset(AppSvgs.search),
                   ),
                 ),
+              ],
+            ),
+          ),
+          YBox(10),
+          CustomBtn(
+            height: 46,
+            isOutline: true,
+            onTap: () async {
+              Navigator.pop(context, "add");
+
+              // if (res == true) {
+              //   ref.read(categoryVmodel).getBrands();
+              // }
+            },
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.add,
+                  size: Sizer.width(20),
+                ),
+                XBox(10),
+                Text(
+                  "Add Brand",
+                  style: textTheme.text14,
+                )
               ],
             ),
           ),
