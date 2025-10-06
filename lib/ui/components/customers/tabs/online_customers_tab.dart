@@ -92,11 +92,11 @@ class _OnlineCustomersTabState extends ConsumerState<OnlineCustomersTab> {
                   title: "Customer Overview",
                   subTitle: "Manage online and walk-in customers",
                   svgIcon: AppSvgs.circleAdd,
-                  trailingWidget: NewButtonWidget(
-                    onTap: () {
-                      Navigator.pushNamed(context, RoutePath.newCustomerScreen);
-                    },
-                  ),
+                  // trailingWidget: NewButtonWidget(
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, RoutePath.newCustomerScreen);
+                  //   },
+                  // ),
                 ),
                 YBox(16),
                 Container(

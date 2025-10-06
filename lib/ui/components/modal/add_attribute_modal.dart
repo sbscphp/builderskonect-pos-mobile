@@ -2,9 +2,7 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class AddAttributeModal extends ConsumerStatefulWidget {
-  const AddAttributeModal({super.key, this.selectedAttributeList});
-
-  final List<ProductAttributeModel>? selectedAttributeList;
+  const AddAttributeModal({super.key});
 
   @override
   ConsumerState<AddAttributeModal> createState() => _AddAttributeModalState();
@@ -20,8 +18,9 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.selectedAttributeList != null) {
-        selectedAttributeList = widget.selectedAttributeList ?? [];
+      final productVm = ref.watch(productInventoryVmodel);
+      if (productVm.selectedAttributeList.isNotEmpty) {
+        selectedAttributeList = productVm.selectedAttributeList;
         setState(() {});
       }
     });
@@ -129,7 +128,9 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                 child: Text(
                   "Deselect all",
                   style: textTheme.text16?.medium.copyWith(
-                    color: colorScheme.black25,
+                    color: selectedAttributeList.isEmpty
+                        ? colorScheme.black25
+                        : AppColors.red2D,
                   ),
                 ),
               ),
@@ -142,7 +143,10 @@ class _AddAttributeModalState extends ConsumerState<AddAttributeModal> {
                 child: Text(
                   "Select all",
                   style: textTheme.text16?.medium.copyWith(
-                    color: colorScheme.primaryColor,
+                    color: selectedAttributeList.length >=
+                            vm.productAttributes.length
+                        ? colorScheme.black25
+                        : colorScheme.primaryColor,
                   ),
                 ),
               ),

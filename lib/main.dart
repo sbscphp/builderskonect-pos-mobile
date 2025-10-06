@@ -1,5 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/utils/system_ui_helper.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,9 +31,9 @@ class MyApp extends StatelessWidget {
             // System UI overlay style
             builder: (context, child) {
               return AnnotatedRegion<SystemUiOverlayStyle>(
-                value: themeMode == ThemeMode.dark
-                    ? SystemUiOverlayStyle.light
-                    : SystemUiOverlayStyle.dark,
+                value: SystemUIHelper.getSystemUIStyle(
+                  isDarkMode: themeMode == ThemeMode.dark,
+                ),
                 child: child!,
               );
             },

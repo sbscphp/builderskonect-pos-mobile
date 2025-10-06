@@ -51,11 +51,9 @@ class _ProductAttributesSectionState
             isOutline: true,
             textColor: colorScheme.black85,
             onTap: () async {
-              await ModalWrapper.bottomSheet(
+              ModalWrapper.bottomSheet(
                 context: context,
-                widget: AddAttributeModal(
-                  selectedAttributeList: vm.selectedAttributeList,
-                ),
+                widget: AddAttributeModal(),
               );
             },
           ),

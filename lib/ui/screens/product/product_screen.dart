@@ -262,7 +262,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                     onFilter: (filterData) {
                                       // printty("Filter applied: $filterData");
                                       productVm.getInventoryProducts(
-                                        busyObjectName: searchState,
+                                          busyObjectName: searchState,
                                           dateFilter: filterData['date_filter'],
                                           status: filterData["selectorGroups"]
                                                       ["status"] ==
@@ -348,6 +348,7 @@ class _ProductScreenState extends ConsumerState<ProductScreen> {
                                             const NeverScrollableScrollPhysics(),
                                         padding: EdgeInsets.only(
                                           top: Sizer.height(14),
+                                          bottom: Sizer.height(80),
                                         ),
                                         itemCount:
                                             productVm.inventoryProducts.length,

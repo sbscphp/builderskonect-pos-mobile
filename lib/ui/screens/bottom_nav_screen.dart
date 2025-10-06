@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/utils/system_ui_helper.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
 
@@ -76,34 +77,37 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
         child: Scaffold(
           body: items[currentIndex].screen,
           backgroundColor: AppColors.white,
-          bottomNavigationBar: Container(
-            height: Sizer.height(84),
-            padding: EdgeInsets.only(
-              bottom: Sizer.height(10),
-            ),
-            // decoration: BoxDecoration(
-            //     color: AppColors.white,
-            //     border: Border(
-            //       top: BorderSide(
-            //         color: AppColors.grayF8,
-            //       ),
-            //     )),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ...items.map((e) {
-                  final index = items.indexOf(e);
-                  return BottomNavColumn(
-                    icon: e.iconPath,
-                    isActive: currentIndex == index,
-                    labelText: e.name,
-                    onPressed: () {
-                      currentIndex = index;
-                      setState(() {});
-                    },
-                  );
-                }),
-              ],
+          bottomNavigationBar: SystemUIHelper.safeAreaWrapper(
+            top: false,
+            child: Container(
+              height: Sizer.height(84),
+              padding: EdgeInsets.only(
+                bottom: Sizer.height(10),
+              ).add(SystemUIHelper.getHorizontalPadding(context)),
+              // decoration: BoxDecoration(
+              //     color: AppColors.white,
+              //     border: Border(
+              //       top: BorderSide(
+              //         color: AppColors.grayF8,
+              //       ),
+              //     )),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ...items.map((e) {
+                    final index = items.indexOf(e);
+                    return BottomNavColumn(
+                      icon: e.iconPath,
+                      isActive: currentIndex == index,
+                      labelText: e.name,
+                      onPressed: () {
+                        currentIndex = index;
+                        setState(() {});
+                      },
+                    );
+                  }),
+                ],
+              ),
             ),
           ),
         ),

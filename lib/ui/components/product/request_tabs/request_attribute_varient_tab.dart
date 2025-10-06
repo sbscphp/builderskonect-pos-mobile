@@ -1013,7 +1013,11 @@ class _RequestAttributeVarientTabState
             //   ),
 
             // Show inventory and pricing sections only when no variants are configured
-            if (!productHasVariant) ...[
+            if (!productHasVariant &&
+                ref
+                    .watch(productInventoryVmodel)
+                    .selectedAttributeList
+                    .isNotEmpty) ...[
               Container(
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(

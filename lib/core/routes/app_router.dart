@@ -392,11 +392,11 @@ class AppRouter {
           settings,
         );
 
-      case RoutePath.newCustomerScreen:
-        return TransitionUtils.buildTransition(
-          const NewCustomerScreen(),
-          settings,
-        );
+      // case RoutePath.newCustomerScreen:
+      //   return TransitionUtils.buildTransition(
+      //     const NewCustomerScreen(),
+      //     settings,
+      //   );
 
       case RoutePath.viewCustomerScreen:
         if (args is CustomerData) {
