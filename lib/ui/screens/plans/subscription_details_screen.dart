@@ -79,7 +79,13 @@ class _SubscriptionDetailsScreenState
                           switch (value) {
                             case 'renew':
                               Navigator.pushNamed(
-                                  context, RoutePath.renewSubscriptionScreen);
+                                context,
+                                RoutePath.renewSubscriptionScreen,
+                                arguments: SubcriptionArg(
+                                  planName: widget.arg.planName ?? "",
+                                  priceItemId: widget.arg.priceItemId ?? "",
+                                ),
+                              );
                               break;
                             case 'change':
                               Navigator.pushNamed(

@@ -226,6 +226,7 @@ class _MultipleVariantsSectionState
       minOrderQty: inventoryControllers['minOrderQty']!,
       measurementC: inventoryControllers['measurement']!,
       dimensionC: inventoryControllers['dimension']!,
+      dimensionUnitC: inventoryControllers['dimensionUnit'],
       weightPerSellUnitC: inventoryControllers['weightPerSellUnit']!,
       weightPerUnitItemC: inventoryControllers['weightPerUnitItem']!,
       reorderLevelC: inventoryControllers['reorderLevel']!,
@@ -255,6 +256,9 @@ class _MultipleVariantsSectionState
       onUnitSelectionChanged: widget.onVariantUnitChanged != null
           ? (unit) => widget.onVariantUnitChanged!(variantIndex, unit)
           : null,
+      onDimensionUnitChanged: (unit) {
+        inventoryControllers['dimensionUnit']?.text = unit;
+      },
     );
   }
 

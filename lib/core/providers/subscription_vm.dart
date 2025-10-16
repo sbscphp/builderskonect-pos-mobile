@@ -72,6 +72,8 @@ class SubscriptionVm extends BaseVm {
 
   final List<UserSubcription> _subscriptionHistory = [];
   List<UserSubcription> get subscriptionHistory => _subscriptionHistory;
+
+  // First subscription on list is current subscription
   UserSubcription? get currentSubscription =>
       _subscriptionHistory.isNotEmpty ? _subscriptionHistory[0] : null;
   Future<ApiResponse> getSubcriptionHistory({

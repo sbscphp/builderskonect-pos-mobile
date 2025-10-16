@@ -172,8 +172,8 @@ class _CustomerDetailsStepState extends ConsumerState<CustomerDetailsStep> {
                         labelText: 'Phone Number',
                         hintText: '0902344333',
                         showLabelHeader: true,
-                        readOnly: salesVm.selectedCustomerData != null,
-                        fillColor: salesVm.selectedCustomerData != null
+                        readOnly: salesVm.selectedCustomerData?.phone != null,
+                        fillColor: salesVm.selectedCustomerData?.phone != null
                             ? AppColors.neutral3
                             : Colors.transparent,
                         validator: Validators.required(),

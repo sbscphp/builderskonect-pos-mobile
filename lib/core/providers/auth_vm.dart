@@ -97,7 +97,7 @@ class AuthVm extends BaseVm {
 
       Navigator.pushNamedAndRemoveUntil(
         NavKey.appNavKey.currentContext!,
-        RoutePath.loginScreen,
+        RoutePath.introScreen,
         (r) => false,
       );
       setBusy(false);

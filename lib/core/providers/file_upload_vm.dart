@@ -30,6 +30,7 @@ class FileUploadVm extends BaseVm {
 
   Future<ApiResponse<List<UploadFileModel>>> uploadFile({
     required List<File> file,
+    String? busyObjectName,
   }) async {
     // Initialize progress for each file
     for (var f in file) {
@@ -86,7 +87,7 @@ class FileUploadVm extends BaseVm {
           return DioResponseHandler.dioErrorHandler(e);
         }
       },
-      busyObjectName: uploadState,
+      busyObjectName: busyObjectName ?? uploadState,
       isFormData: true,
       body: {}, // Empty body since we're handling FormData manually
       onSuccess: (data) {

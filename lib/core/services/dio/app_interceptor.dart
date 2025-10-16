@@ -66,7 +66,7 @@ class AppInterceptors extends QueuedInterceptorsWrapper {
 
   Future<void> logout() async {
     await StorageService.logout();
-    gotoNextScreen(RoutePath.loginScreen);
+    gotoNextScreen(RoutePath.introScreen);
   }
 
   gotoNextScreen(String route) {

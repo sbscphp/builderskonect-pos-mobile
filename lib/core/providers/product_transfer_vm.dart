@@ -75,8 +75,8 @@ class ProductTransferVm extends BaseVm {
     UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/inventory-products")
       ..addQueryParameterIfNotEmpty("q", q ?? '')
       ..addQueryParameterIfNotEmpty("location_id", _selectedStore?.id ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '50')
-      ..addQueryParameterIfNotEmpty("paginate", '1');
+      // ..addQueryParameterIfNotEmpty("limit", '50')
+      ..addQueryParameterIfNotEmpty("paginate", '0');
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
@@ -84,10 +84,11 @@ class ProductTransferVm extends BaseVm {
       errorObjectName: storeProductState,
       busyObjectName: storeProductState,
       onSuccess: (data) {
-        _inventoryProductModel =
-            inventoryProductModelFromJson(json.encode(data['data']));
-        _storeProducts = _inventoryProductModel?.data?.data ?? [];
-
+        // _inventoryProductModel =
+        //     inventoryProductModelFromJson(json.encode(data['data']));
+        // _storeProducts = _inventoryProductModel?.data?.data ?? [];
+        _storeProducts =
+            inventoryProductListFromJson(json.encode(data['data']));
         return apiResponse;
       },
     );

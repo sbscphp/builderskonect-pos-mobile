@@ -80,9 +80,9 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
           bottomNavigationBar: SystemUIHelper.safeAreaWrapper(
             top: false,
             child: Container(
-              height: Sizer.height(84),
+              height: Sizer.height(70),
               padding: EdgeInsets.only(
-                bottom: Sizer.height(10),
+                top: Sizer.height(10),
               ).add(SystemUIHelper.getHorizontalPadding(context)),
               // decoration: BoxDecoration(
               //     color: AppColors.white,

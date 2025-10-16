@@ -169,6 +169,15 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                               "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: _planBreakDownModel?.vatAmount ?? 0)}",
                         ),
                         YBox(14),
+                        ..._planBreakDownModel?.fees?.entries.map((e) {
+                              return PlansRowText(
+                                keyText: e.key.capitalizeFirst,
+                                valueText:
+                                    "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: double.tryParse(e.value.toString()) ?? 0)}",
+                              );
+                            }).toList() ??
+                            [],
+                        YBox(14),
                         PlansRowText(
                           keyText: "Total Cost",
                           valueText:
@@ -205,7 +214,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       controller: fullNameC,
                       isRequired: true,
                       labelText: 'Full Name',
-                      hintText: 'example',
+                      hintText: 'Enter full name',
                       showLabelHeader: true,
                       validator: Validators.required(),
                       onChanged: (v) => setState(() {}),
@@ -215,7 +224,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       controller: companyNameC,
                       isRequired: true,
                       labelText: 'Company Name',
-                      hintText: 'example',
+                      hintText: 'Enter company name',
                       showLabelHeader: true,
                       validator: Validators.required(),
                       onChanged: (v) => setState(() {}),
@@ -225,7 +234,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       controller: emailC,
                       isRequired: true,
                       labelText: 'Email address',
-                      hintText: 'example',
+                      hintText: 'Enter email address',
                       showLabelHeader: true,
                       validator: Validators.email(),
                       onChanged: (v) => setState(() {}),
@@ -235,7 +244,7 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       controller: phoneC,
                       isRequired: true,
                       labelText: 'Phone Number',
-                      hintText: 'example',
+                      hintText: 'Enter phone number',
                       keyboardType: TextInputType.number,
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,

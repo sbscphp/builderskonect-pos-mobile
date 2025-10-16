@@ -75,7 +75,9 @@ class RefundStats {
 
   factory RefundStats.fromJson(Map<String, dynamic> json) => RefundStats(
         totalReturns: json["total_returns"],
-        totalRefundValue: json["total_refund_value"],
+        totalRefundValue: json["total_refund_value"] is String
+            ? json["total_refund_value"]
+            : json["total_refund_value"]?.toString(),
         cancelledRequest: json["cancelled_request"],
         approvedRequest: json["approved_request"],
       );

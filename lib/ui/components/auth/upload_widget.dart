@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:flutter/cupertino.dart';
 
 class UploadWidget extends StatelessWidget {
   const UploadWidget({
@@ -7,6 +8,7 @@ class UploadWidget extends StatelessWidget {
     this.buttomTextDesc,
     this.labelText,
     this.uploadText,
+    this.isUploading = false,
     this.onUpload,
     this.onRemove,
   });
@@ -15,6 +17,7 @@ class UploadWidget extends StatelessWidget {
   final String? buttomTextDesc;
   final String? labelText;
   final String? uploadText;
+  final bool isUploading;
   final VoidCallback? onUpload;
   final VoidCallback? onRemove;
 
@@ -34,60 +37,74 @@ class UploadWidget extends StatelessWidget {
               ),
               YBox(6),
               if (documentName != null)
-                Container(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: Sizer.width(16),
-                    vertical: Sizer.height(10),
-                  ),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: AppColors.neutral5),
-                    borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(AppSvgs.attachment),
-                      XBox(8),
-                      Expanded(
-                        child: Text(documentName!,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.text14?.copyWith(
-                              color: colorScheme.primaryColor,
-                            )),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Sizer.width(16),
+                          vertical: Sizer.height(10),
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.neutral5),
+                          borderRadius: BorderRadius.circular(Sizer.radius(2)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset(AppSvgs.attachment),
+                            XBox(8),
+                            Expanded(
+                              child: Text(documentName!,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: textTheme.text14?.copyWith(
+                                    color: colorScheme.primaryColor,
+                                  )),
+                            ),
+                            XBox(16),
+                            InkWell(
+                              onTap: !isUploading ? onRemove : null,
+                              child: SvgPicture.asset(AppSvgs.delete),
+                            ),
+                          ],
+                        ),
                       ),
-                      XBox(16),
-                      InkWell(
-                        onTap: onRemove,
-                        child: SvgPicture.asset(AppSvgs.delete),
-                      ),
-                    ],
-                  ),
+                    ),
+                    if (isUploading) XBox(10),
+                    if (isUploading) CupertinoActivityIndicator()
+                  ],
                 )
               else
-                InkWell(
-                  onTap: onUpload,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: Sizer.width(16),
-                      vertical: Sizer.height(16),
-                    ),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.neutral5),
-                      borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(AppSvgs.upload),
-                        XBox(8),
-                        Text(
-                          uploadText ?? "Click to upload certificate",
-                          style: textTheme.text14,
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: !isUploading ? onUpload : null,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: Sizer.width(16),
+                          vertical: Sizer.height(16),
                         ),
-                      ],
+                        decoration: BoxDecoration(
+                          border: Border.all(color: AppColors.neutral5),
+                          borderRadius: BorderRadius.circular(Sizer.radius(2)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SvgPicture.asset(AppSvgs.upload),
+                            XBox(8),
+                            Text(
+                              uploadText ?? "Click to upload certificate",
+                              style: textTheme.text14,
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
+                    Spacer(),
+                    if (isUploading) CupertinoActivityIndicator()
+                  ],
                 ),
               if (buttomTextDesc != null)
                 Padding(

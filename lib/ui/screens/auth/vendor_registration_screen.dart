@@ -101,8 +101,10 @@ class _VendorRegistrationScreenState
                                 child: child,
                               );
                             },
-                            child: switch (regSteps) {
-                              1 => VendorDetails(
+                            child: IndexedStack(
+                              index: regSteps - 1,
+                              children: [
+                                VendorDetails(
                                   key: const ValueKey('vendor_details'),
                                   reference: widget.reference,
                                   onNext: () {
@@ -110,7 +112,7 @@ class _VendorRegistrationScreenState
                                     setState(() {});
                                   },
                                 ),
-                              2 => BankDetails(
+                                BankDetails(
                                   key: const ValueKey('bank_details'),
                                   onNext: () {
                                     regSteps = 3;
@@ -121,7 +123,7 @@ class _VendorRegistrationScreenState
                                     setState(() {});
                                   },
                                 ),
-                              _ => DocumentUpload(
+                                DocumentUpload(
                                   key: const ValueKey('document_upload'),
                                   onPrevious: () {
                                     setState(() {
@@ -129,7 +131,8 @@ class _VendorRegistrationScreenState
                                     });
                                   },
                                 ),
-                            },
+                              ],
+                            ),
                           ),
                         ),
                       ],

@@ -106,6 +106,10 @@ class InventoryResponse {
       };
 }
 
+List<ProductModel> inventoryProductListFromJson(String str) =>
+    List<ProductModel>.from(
+        json.decode(str).map((x) => ProductModel.fromJson(x)));
+
 class ProductModel {
   final String? id;
   final String? name;
@@ -273,7 +277,9 @@ class ProductModel {
             ? []
             : List<String>.from(json["media"]!.map((x) => x)),
         attributes: json["attributes"],
-        ratings: json["ratings"],
+        ratings: json["ratings"] is String
+            ? double.tryParse(json["ratings"]) ?? 0.0
+            : json["ratings"],
         totalReviews: json["total_reviews"],
       );
 

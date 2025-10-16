@@ -236,32 +236,31 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
               ),
               child: Column(
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "List of Items (${salesVm.salesOrdersModel?.itemsCount ?? 0})",
-                          style: textTheme.text16?.medium.copyWith(
-                            color: AppColors.black23,
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        showListOfItems = !showListOfItems;
+                      });
+
+                      if (showListOfItems) {
+                        _arrowAnimationController.forward();
+                        _scrollToListItems();
+                      } else {
+                        _arrowAnimationController.reverse();
+                      }
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "List of Items (${salesVm.salesOrdersModel?.itemsCount ?? 0})",
+                            style: textTheme.text16?.medium.copyWith(
+                              color: AppColors.black23,
+                            ),
                           ),
                         ),
-                      ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onTap: () {
-                            setState(() {
-                              showListOfItems = !showListOfItems;
-                            });
-
-                            if (showListOfItems) {
-                              _arrowAnimationController.forward();
-                              _scrollToListItems();
-                            } else {
-                              _arrowAnimationController.reverse();
-                            }
-                          },
-                          borderRadius: BorderRadius.circular(Sizer.radius(12)),
+                        Material(
+                          color: Colors.transparent,
                           child: Container(
                             padding: EdgeInsets.all(Sizer.radius(8)),
                             decoration: BoxDecoration(
@@ -288,9 +287,9 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                               },
                             ),
                           ),
-                        ),
-                      )
-                    ],
+                        )
+                      ],
+                    ),
                   ),
                   AnimatedSize(
                     duration: const Duration(milliseconds: 500),
@@ -363,6 +362,77 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                 ],
               ),
             ),
+            YBox(16),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+              padding: EdgeInsets.symmetric(
+                horizontal: Sizer.width(16),
+                vertical: Sizer.height(16),
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                color: colorScheme.white,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Order Summary",
+                    style: textTheme.text16?.medium.copyWith(
+                      color: AppColors.black23,
+                    ),
+                  ),
+                  YBox(16),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: Sizer.width(16),
+                      vertical: Sizer.height(20),
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.dayBreakBlue,
+                      borderRadius: BorderRadius.circular(Sizer.radius(8)),
+                    ),
+                    child: Column(
+                      children: [
+                        PlansRowText(
+                          keyText: 'Subtotal',
+                          valueText: salesVm.salesOrdersModel?.subtotal ?? "",
+                        ),
+                        YBox(14),
+                        PlansRowText(
+                          keyText: 'Discount',
+                          valueText: salesVm.salesOrdersModel?.discountBreakdown
+                                  ?.orderDiscount ??
+                              "",
+                        ),
+                        YBox(14),
+                        PlansRowText(
+                          keyText:
+                              "Tax (${salesVm.salesOrdersModel?.fees?.tax} VAT)",
+                          valueText:
+                              salesVm.salesOrdersModel?.fees?.tax?.toString() ??
+                                  "N/A",
+                        ),
+                        YBox(14),
+                        PlansRowText(
+                          keyText: "Service fee",
+                          valueText: salesVm.salesOrdersModel?.fees?.serviceFee
+                                  ?.toString() ??
+                              "N/A",
+                        ),
+                        YBox(14),
+                        PlansRowText(
+                          keyText: "Delivery Fee",
+                          valueText: salesVm.salesOrdersModel?.fees?.deliveryFee
+                                  ?.toString() ??
+                              "N/A",
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         );
       }),

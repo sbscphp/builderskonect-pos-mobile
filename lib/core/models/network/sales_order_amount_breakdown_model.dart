@@ -62,27 +62,29 @@ class SalesOrderAmountBreakdownModel {
 }
 
 class Fees {
-  final double? tax;
+  final String? tax;
   final double? taxAmount;
   final int? serviceFee;
+  final num? deliveryFee;
 
   Fees({
     this.tax,
     this.taxAmount,
     this.serviceFee,
+    this.deliveryFee,
   });
 
   factory Fees.fromJson(Map<String, dynamic> json) => Fees(
-        tax: json["tax"] is String
-            ? double.tryParse(json["tax"])
-            : json["tax"]?.toDouble(),
+        tax: json["tax"],
         taxAmount: json["tax_amount"]?.toDouble(),
         serviceFee: json["service_fee"],
+        deliveryFee: json["delivery_fee"],
       );
 
   Map<String, dynamic> toJson() => {
         "tax": tax,
         "tax_amount": taxAmount,
         "service_fee": serviceFee,
+        "delivery_fee": deliveryFee,
       };
 }

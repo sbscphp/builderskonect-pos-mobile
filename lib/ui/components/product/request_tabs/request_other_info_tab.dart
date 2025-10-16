@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class RequestOtherInfoTab extends ConsumerStatefulWidget {
   const RequestOtherInfoTab({
@@ -17,7 +18,7 @@ class RequestOtherInfoTab extends ConsumerStatefulWidget {
 }
 
 class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
-  final _formKey = GlobalKey<FormState>();
+  // final _formKey = GlobalKey<FormState>();
   final shippingWeightTypeC = TextEditingController();
   final shippingClassC = TextEditingController();
 
@@ -25,6 +26,10 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
   final lengthC = TextEditingController();
   final widthC = TextEditingController();
   final heightC = TextEditingController();
+
+  String? lengthUnit;
+  String? widthUnit;
+  String? heightUnit;
 
   File? _docFile;
   String? _docUrl;
@@ -215,7 +220,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     'Heavy duty',
                     'Extra heavy duty'
                   ];
-                  final res = await ModalWrapper.bottomSheet(
+                  await ModalWrapper.bottomSheet(
                     context: context,
                     widget: StoreOptionModal(
                       options: options
@@ -249,7 +254,7 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                     'liquid',
                     'special_handling',
                   ];
-                  final res = await ModalWrapper.bottomSheet(
+                  await ModalWrapper.bottomSheet(
                     context: context,
                     widget: StoreOptionModal(
                       options: options
@@ -301,6 +306,10 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                 hintText: 'Enter value',
                 showLabelHeader: true,
                 showSuffixIcon: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 suffixIcon: InkWell(
                   onTap: () async {
                     final options = [
@@ -308,28 +317,32 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                       "Meters (m)",
                       'Centimeter (cm)',
                     ];
-                    final res = await ModalWrapper.bottomSheet(
+                    await ModalWrapper.bottomSheet(
                       context: context,
                       widget: StoreOptionModal(
                         options: options
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  lengthC.text = e.split(' (')[1].split(')')[0];
+                                  lengthUnit = e.split(' (')[1].split(')')[0];
+                                  setState(() {});
                                   Navigator.pop(context);
                                 }))
                             .toList(),
                       ),
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(color: AppColors.gray100),
-                    padding: EdgeInsets.all(12),
-                    child: Text(
-                      lengthC.text,
-                      style: textTheme.text12,
-                    ),
+                  child: SuffixBox(
+                    text: lengthUnit ?? "-",
                   ),
+                  // child: Container(
+                  //   decoration: BoxDecoration(color: AppColors.gray100),
+                  //   padding: EdgeInsets.all(12),
+                  //   child: Text(
+                  //     lengthC.text,
+                  //     style: textTheme.text12,
+                  //   ),
+                  // ),
                 ),
                 // readOnly: true,
               ),
@@ -340,6 +353,10 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                 hintText: 'Enter value',
                 showLabelHeader: true,
                 showSuffixIcon: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 suffixIcon: InkWell(
                   onTap: () async {
                     final options = [
@@ -347,27 +364,23 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                       "Meters (m)",
                       'Centimeter (cm)',
                     ];
-                    final res = await ModalWrapper.bottomSheet(
+                    await ModalWrapper.bottomSheet(
                       context: context,
                       widget: StoreOptionModal(
                         options: options
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  widthC.text = e.split(' (')[1].split(')')[0];
+                                  widthUnit = e.split(' (')[1].split(')')[0];
+                                  setState(() {});
                                   Navigator.pop(context);
                                 }))
                             .toList(),
                       ),
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(color: AppColors.gray100),
-                    padding: EdgeInsets.all(12),
-                    child: Text(
-                      widthC.text,
-                      style: textTheme.text12,
-                    ),
+                  child: SuffixBox(
+                    text: widthUnit ?? "-",
                   ),
                 ),
                 // readOnly: true,
@@ -379,6 +392,10 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                 hintText: 'Enter value',
                 showLabelHeader: true,
                 showSuffixIcon: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
                 suffixIcon: InkWell(
                   onTap: () async {
                     final options = [
@@ -386,27 +403,23 @@ class _RequestOtherInfoTabState extends ConsumerState<RequestOtherInfoTab> {
                       "Meters (m)",
                       'Centimeter (cm)',
                     ];
-                    final res = await ModalWrapper.bottomSheet(
+                    await ModalWrapper.bottomSheet(
                       context: context,
                       widget: StoreOptionModal(
                         options: options
                             .map((e) => ModalOption(
                                 title: e,
                                 onTap: () {
-                                  heightC.text = e.split(' (')[1].split(')')[0];
+                                  heightUnit = e.split(' (')[1].split(')')[0];
+                                  setState(() {});
                                   Navigator.pop(context);
                                 }))
                             .toList(),
                       ),
                     );
                   },
-                  child: Container(
-                    decoration: BoxDecoration(color: AppColors.gray100),
-                    padding: EdgeInsets.all(12),
-                    child: Text(
-                      heightC.text,
-                      style: textTheme.text12,
-                    ),
+                  child: SuffixBox(
+                    text: heightUnit ?? "-",
                   ),
                 ),
                 // readOnly: true,

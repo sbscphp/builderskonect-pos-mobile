@@ -2,7 +2,10 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class RenewSubscriptionScreen extends ConsumerStatefulWidget {
-  const RenewSubscriptionScreen({super.key, required this.subcriptionArg});
+  const RenewSubscriptionScreen({
+    super.key,
+    required this.subcriptionArg,
+  });
 
   final SubcriptionArg subcriptionArg;
 

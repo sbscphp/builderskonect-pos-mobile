@@ -4,7 +4,7 @@ class SubcriptionArg {
   final String planName;
 
   SubcriptionArg({
-    required this.isUpgrade,
+    this.isUpgrade = false,
     required this.priceItemId,
     required this.planName,
   });

@@ -15,6 +15,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     required this.minOrderQty,
     required this.measurementC,
     required this.dimensionC,
+    this.dimensionUnitC,
     required this.weightPerSellUnitC,
     required this.weightPerUnitItemC,
     required this.reorderLevelC,
@@ -36,6 +37,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     this.appliedFromVariant,
     this.onRemoveAdditionalImageAt,
     this.onUnitSelectionChanged,
+    this.onDimensionUnitChanged,
   });
 
   final TextEditingController sellingUnitC;
@@ -44,6 +46,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final TextEditingController minOrderQty;
   final TextEditingController measurementC;
   final TextEditingController dimensionC;
+  final TextEditingController? dimensionUnitC;
   final TextEditingController weightPerSellUnitC;
   final TextEditingController weightPerUnitItemC;
   final TextEditingController reorderLevelC;
@@ -65,6 +68,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final int? appliedFromVariant;
   final Function(int)? onRemoveAdditionalImageAt;
   final Function(String)? onUnitSelectionChanged;
+  final Function(String)? onDimensionUnitChanged;
 
   @override
   ConsumerState<InventoryInformationSection> createState() =>
@@ -76,6 +80,7 @@ class _InventoryInformationSectionState
   String? selectedSellingUnit;
   String? selectedSubUnit;
   SubOption? selectedSubOption;
+  final GlobalKey _dimensionMenuAnchorKey = GlobalKey();
 
   @override
   void initState() {
@@ -87,8 +92,47 @@ class _InventoryInformationSectionState
   }
 
   // String? selectedMeasuremrntUnit;
-  // String? selectedSubMeasurementUnit;
-  // SubOption? selectedMeasureSubOption;
+  SubOption? selectedMeasureSubOption;
+  String? selectedDimensionUnit;
+  List<String> dimensionUnits = [];
+
+  RelativeRect _computeMenuPosition({Offset? globalPosition}) {
+    final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+    const double xOffset = 12.0;
+
+    final Offset? pos = globalPosition;
+    if (pos != null) {
+      final double left = (pos.dx + xOffset).clamp(0.0, overlay.size.width - 1);
+      final double top = pos.dy.clamp(0.0, overlay.size.height - 1);
+      final double right = overlay.size.width - left;
+      final double bottom = overlay.size.height - top;
+      return RelativeRect.fromLTRB(left, top, right, bottom);
+    }
+
+    final RenderObject? anchorRenderObject =
+        _dimensionMenuAnchorKey.currentContext?.findRenderObject();
+    if (anchorRenderObject is RenderBox) {
+      final RenderBox anchorBox = anchorRenderObject;
+      final Offset topLeft =
+          anchorBox.localToGlobal(Offset.zero, ancestor: overlay);
+      final Offset bottomRight = anchorBox.localToGlobal(
+          anchorBox.size.bottomRight(Offset.zero),
+          ancestor: overlay);
+      final double maxShift =
+          (overlay.size.width - bottomRight.dx - 1).clamp(0.0, xOffset);
+      final Rect anchorRect = Rect.fromPoints(
+        topLeft.translate(maxShift, 0),
+        bottomRight.translate(maxShift, 0),
+      );
+      return RelativeRect.fromRect(anchorRect, Offset.zero & overlay.size);
+    }
+
+    final double left = xOffset.clamp(0.0, overlay.size.width - 1);
+    const double top = 0.0;
+    final double right = overlay.size.width - left;
+    final double bottom = overlay.size.height - top;
+    return RelativeRect.fromLTRB(left, top, right, bottom);
+  }
 
   void _showSubUnitModal(BuildContext context, MeasurementCategory unit) {
     ModalWrapper.bottomSheet(
@@ -121,31 +165,42 @@ class _InventoryInformationSectionState
     );
   }
 
-  // void _showMeasuresntSubUnitModal(
-  //     BuildContext context, MeasurementCategory unit) {
-  //   ModalWrapper.bottomSheet(
-  //     context: context,
-  //     widget: UnitModal(
-  //       title: unit.name,
-  //       options: unit.subOptions
-  //           .map(
-  //             (subUnit) => UnitModalOption(
-  //               title: subUnit.label,
-  //               desc: subUnit.description,
-  //               showTrailing: false,
-  //               onTap: () {
-  //                 Navigator.pop(context);
-  //                 selectedMeasureSubOption = subUnit;
-  //                 selectedSubMeasurementUnit = subUnit.id;
-  //                 // measurementC.text = subUnit.label;
-  //                 setState(() {});
-  //               },
-  //             ),
-  //           )
-  //           .toList(),
-  //     ),
-  //   );
-  // }
+  void _showMeasuresntSubUnitModal(
+      BuildContext context, MeasurementCategory unit) {
+    ModalWrapper.bottomSheet(
+      context: context,
+      widget: UnitModal(
+        title: unit.name,
+        options: unit.subOptions
+            .map(
+              (subUnit) => UnitModalOption(
+                title: subUnit.label,
+                desc: subUnit.description,
+                showTrailing: false,
+                onTap: () {
+                  Navigator.pop(context);
+                  selectedMeasureSubOption = subUnit;
+                  dimensionUnits = getUnitsForDimensionUnit(subUnit.id);
+                  if (dimensionUnits.isNotEmpty) {
+                    selectedDimensionUnit = dimensionUnits.first;
+                    // propagate to controller and parent callback
+                    if (widget.dimensionUnitC != null) {
+                      widget.dimensionUnitC!.text = selectedDimensionUnit ?? '';
+                    }
+                    if (widget.onDimensionUnitChanged != null &&
+                        selectedDimensionUnit != null) {
+                      widget.onDimensionUnitChanged!(selectedDimensionUnit!);
+                    }
+                  }
+                  widget.measurementC.text = subUnit.label;
+                  setState(() {});
+                },
+              ),
+            )
+            .toList(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +306,7 @@ class _InventoryInformationSectionState
   }
 
   Widget _buildInventoryFields() {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         CustomTextField(
@@ -338,43 +394,46 @@ class _InventoryInformationSectionState
           ),
         ),
         YBox(16),
-        // CustomTextField(
-        //   controller: widget.measurementC,
-        //   labelText: 'Measurement',
-        //   hintText: 'Select unit measurement',
-        //   isRequired: false,
-        //   showLabelHeader: true,
-        //   showSuffixIcon: true,
-        //   readOnly: true,
-        //   onTap: () {
-        //     ModalWrapper.bottomSheet(
-        //       context: context,
-        //       widget: UnitModal(
-        //         title: "Measurement Units",
-        //         options: measuringUnits
-        //             .map(
-        //               (unit) => UnitModalOption(
-        //                 title: unit.name,
-        //                 example: unit.example,
-        //                 onTap: () {
-        //                   Navigator.pop(context);
-        //                   setState(() {
-        //                     selectedMeasuremrntUnit = unit.name;
-        //                     selectedSubMeasurementUnit = null;
-        //                   });
+        CustomTextField(
+          controller: widget.measurementC,
+          labelText: 'Measurement',
+          hintText: 'Select unit measurement',
+          isRequired: false,
+          showLabelHeader: true,
+          showSuffixIcon: true,
+          readOnly: true,
+          // suffixIcon: SuffixBox(
+          //   text: selectedMeasuremrntUnit ?? "",
+          // ),
+          onTap: () {
+            ModalWrapper.bottomSheet(
+              context: context,
+              widget: UnitModal(
+                title: "Measurement Units",
+                options: measuringUnits
+                    .map(
+                      (unit) => UnitModalOption(
+                        title: unit.name,
+                        example: unit.example,
+                        onTap: () {
+                          Navigator.pop(context);
+                          // setState(() {
+                          //   widget.measurementC.text = unit.name;
+                          //   selectedSubMeasurementUnit = null;
+                          // });
 
-        //                   // Show sub-unit modal if the selected unit has sub-units
-        //                   if (unit.hasSubOptions) {
-        //                     _showMeasuresntSubUnitModal(context, unit);
-        //                   }
-        //                 },
-        //               ),
-        //             )
-        //             .toList(),
-        //       ),
-        //     );
-        //   },
-        // ),
+                          // Show sub-unit modal if the selected unit has sub-units
+                          if (unit.hasSubOptions) {
+                            _showMeasuresntSubUnitModal(context, unit);
+                          }
+                        },
+                      ),
+                    )
+                    .toList(),
+              ),
+            );
+          },
+        ),
         YBox(16),
         CustomTextField(
           controller: widget.dimensionC,
@@ -386,6 +445,42 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: InkWell(
+            key: _dimensionMenuAnchorKey,
+            onTapDown: (details) {
+              final position =
+                  _computeMenuPosition(globalPosition: details.globalPosition);
+              showMenu(
+                context: context,
+                color: AppColors.white,
+                position: position,
+                items: List.generate(
+                  dimensionUnits.length,
+                  (index) => PopupMenuItem(
+                    value: dimensionUnits[index],
+                    child: Text(
+                      dimensionUnits[index],
+                      style: textTheme.text14,
+                    ),
+                  ),
+                ),
+          ).then((value) {
+            // Handle the selected option
+            if (value != null) {
+              selectedDimensionUnit = value;
+              // propagate to controller and parent callback
+              if (widget.dimensionUnitC != null) {
+                widget.dimensionUnitC!.text = selectedDimensionUnit ?? '';
+              }
+              if (widget.onDimensionUnitChanged != null) {
+                widget.onDimensionUnitChanged!(value);
+              }
+              setState(() {});
+            }
+          });
+        },
+        child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+      ),
         ),
         YBox(16),
         CustomTextField(
@@ -412,6 +507,9 @@ class _InventoryInformationSectionState
           inputFormatters: [
             FilteringTextInputFormatter.digitsOnly,
           ],
+          suffixIcon: SuffixBox(
+            text: "kg",
+          ),
         ),
         YBox(16),
         CustomTextField(

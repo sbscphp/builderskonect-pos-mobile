@@ -90,14 +90,15 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               YBox(20),
               UploadWidget(
                 documentName: _cacFile?.path.split('/').last,
+                isUploading: ref.watch(fileUploadVm).busy("cacUploadState"),
                 buttomTextDesc:
                     "Upload a copy of your Corporate Affairs Commission Certificate",
                 onUpload: () async {
                   final file = await ImageAndDocUtils.pickDocument();
                   if (file != null) {
                     _cacFile = file;
-                    final r =
-                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    final r = await ref.read(fileUploadVm).uploadFile(
+                        file: [file], busyObjectName: "cacUploadState");
                     _cacUrl = r.data?.first.url;
                     setState(() {});
                   }
@@ -123,6 +124,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
                 documentName: _tinFile?.path.split('/').last,
                 buttomTextDesc:
                     "Upload a copy of your Tax Identification Certificate",
+                isUploading: ref.watch(fileUploadVm).busy("tinUploadState"),
                 onUpload: () async {
                   // Reset progress tracking for any previous uploads
                   ref.read(fileUploadVm).resetProgress();
@@ -130,8 +132,8 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
                   final file = await ImageAndDocUtils.pickDocument();
                   if (file != null) {
                     _tinFile = file;
-                    final r =
-                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    final r = await ref.read(fileUploadVm).uploadFile(
+                        file: [file], busyObjectName: "tinUploadState");
                     _tinUrl = r.data?.first.url;
                   }
                 },
@@ -145,12 +147,15 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
               UploadWidget(
                 labelText: 'Proof of Address',
                 documentName: _proofOfAddressFile?.path.split('/').last,
+                isUploading:
+                    ref.watch(fileUploadVm).busy("proofOfAddressUploadState"),
                 onUpload: () async {
                   final file = await ImageAndDocUtils.pickDocument();
                   if (file != null) {
                     _proofOfAddressFile = file;
-                    final r =
-                        await ref.read(fileUploadVm).uploadFile(file: [file]);
+                    final r = await ref.read(fileUploadVm).uploadFile(
+                        file: [file],
+                        busyObjectName: "proofOfAddressUploadState");
                     _proofOfAddressUrl = r.data?.first.url;
                     setState(() {});
                   }
@@ -261,7 +266,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
     // Proof of Address media
     if (_proofOfAddressUrl != null && _proofOfAddressUrl!.isNotEmpty) {
       mediaList.add(Media(
-        name: "proofOfAddress",
+        name: "proof_of_address",
         url: _proofOfAddressUrl,
       ));
     }

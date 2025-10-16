@@ -1,8 +1,8 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/core/utils/system_ui_helper.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitService().init();

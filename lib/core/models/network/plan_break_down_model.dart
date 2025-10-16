@@ -8,12 +8,14 @@ class PlanBreakDownModel {
   final int? vatAmount;
   final double? discountAmount;
   final double? amountDue;
+  final Map<String, dynamic>? fees;
 
   PlanBreakDownModel({
     this.planAmount,
     this.vatAmount,
     this.discountAmount,
     this.amountDue,
+    this.fees,
   });
 
   factory PlanBreakDownModel.fromJson(Map<String, dynamic> json) =>
@@ -22,5 +24,6 @@ class PlanBreakDownModel {
         vatAmount: json["vat_amount"],
         discountAmount: json["discount_amount"]?.toDouble(),
         amountDue: json["amount_due"]?.toDouble(),
+        fees: json["fees"],
       );
 }

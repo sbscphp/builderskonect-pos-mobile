@@ -126,9 +126,18 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                               height: 40,
                               onTap: () {
                                 Navigator.pushNamed(
-                                    context, RoutePath.renewSubscriptionScreen,
-                                    arguments:
-                                        subscriptionVm.currentSubscription);
+                                  context,
+                                  RoutePath.renewSubscriptionScreen,
+                                  // arguments: subscriptionVm.currentSubscription,
+                                  arguments: SubcriptionArg(
+                                    planName: subscriptionVm
+                                            .currentSubscription?.planName ??
+                                        "",
+                                    priceItemId: subscriptionVm
+                                            .currentSubscription?.priceItemId ??
+                                        "",
+                                  ),
+                                );
                               },
                             ),
                           ),

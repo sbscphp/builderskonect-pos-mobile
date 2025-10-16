@@ -84,10 +84,15 @@ class _SubscriptionSuccessScreenState
                   "If you did not make this request, please email us at  ",
                   style: textTheme.text12,
                 ),
-                Text(
-                  "support@builderskonnect.com",
-                  style: textTheme.text12?.copyWith(
-                    color: colorScheme.primaryColor,
+                InkWell(
+                  onTap: () {
+                    AppUtils().launchEmail("support@builderskonnect.com");
+                  },
+                  child: Text(
+                    "support@builderskonnect.com",
+                    style: textTheme.text12?.copyWith(
+                      color: colorScheme.primaryColor,
+                    ),
                   ),
                 ),
                 YBox(50),

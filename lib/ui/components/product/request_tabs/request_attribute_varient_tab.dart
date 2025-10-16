@@ -34,6 +34,7 @@ class _RequestAttributeVarientTabState
   final minOrderQty = TextEditingController();
   final measurementC = TextEditingController();
   final dimensionC = TextEditingController();
+  final dimensionUnitC = TextEditingController();
   final weightPerSellUnitC = TextEditingController();
   final weightPerUnitItemC = TextEditingController();
   final reorderLevelC = TextEditingController();
@@ -313,6 +314,7 @@ class _RequestAttributeVarientTabState
         'minOrderQty': TextEditingController(),
         'measurement': TextEditingController(),
         'dimension': TextEditingController(),
+        'dimensionUnit': TextEditingController(),
         'weightPerSellUnit': TextEditingController(),
         'weightPerUnitItem': TextEditingController(),
         'reorderLevel': TextEditingController(),
@@ -1033,6 +1035,7 @@ class _RequestAttributeVarientTabState
                       minOrderQty: minOrderQty,
                       measurementC: measurementC,
                       dimensionC: dimensionC,
+                      dimensionUnitC: dimensionUnitC,
                       weightPerSellUnitC: weightPerSellUnitC,
                       weightPerUnitItemC: weightPerUnitItemC,
                       reorderLevelC: reorderLevelC,
@@ -1070,6 +1073,9 @@ class _RequestAttributeVarientTabState
                             _additionalImageUrls.removeAt(index);
                           }
                         });
+                      },
+                      onDimensionUnitChanged: (unit) {
+                        dimensionUnitC.text = unit;
                       },
                       onUnitSelectionChanged: _onSingleProductUnitChanged,
                     ),
@@ -1269,14 +1275,17 @@ class _RequestAttributeVarientTabState
     final minOrderQuantity = int.tryParse(minOrderQty.text.trim()) ?? 1;
     final reorderLevel = int.tryParse(reorderLevelC.text.trim()) ?? 0;
 
-    // Create unit values with defaults
+    // Take user input directly without extra validation/conversion
+    final selectedDimUnit =
+        dimensionUnitC.text.trim().isEmpty ? 'cm' : dimensionUnitC.text.trim();
+
     final physicalMeasurement = UnitValue(
-      unit: 'cm',
+      unit: selectedDimUnit,
       value: int.tryParse(measurementC.text.trim()) ?? 0,
     );
 
     final physicalDimension = UnitValue(
-      unit: 'cm',
+      unit: selectedDimUnit,
       value: int.tryParse(dimensionC.text.trim()) ?? 0,
     );
 
@@ -1398,16 +1407,23 @@ class _RequestAttributeVarientTabState
         int.tryParse(inventoryControllers['reorderLevel']?.text.trim() ?? '') ??
             0;
 
-    // Create unit values with defaults
+    // Take user input directly for units and values
+    final selectedDimUnit = (inventoryControllers['dimensionUnit']?.text
+                .trim()
+                .isEmpty ==
+            true)
+        ? 'cm'
+        : inventoryControllers['dimensionUnit']!.text.trim();
+
     final physicalMeasurement = UnitValue(
-      unit: 'cm',
+      unit: selectedDimUnit,
       value: int.tryParse(
               inventoryControllers['measurement']?.text.trim() ?? '') ??
           0,
     );
 
     final physicalDimension = UnitValue(
-      unit: 'cm',
+      unit: selectedDimUnit,
       value:
           int.tryParse(inventoryControllers['dimension']?.text.trim() ?? '') ??
               0,

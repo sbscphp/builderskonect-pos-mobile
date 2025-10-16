@@ -256,6 +256,13 @@ class _WalkInSalesOverviewState extends ConsumerState<WalkInSalesOverview> {
                               subTitle2: data.itemsCount?.toString() ?? "",
                               status: data.status ?? "",
                               date: data.orderDate?.toLocal(),
+                              onTap: () {
+                                Navigator.pushNamed(
+                                  context,
+                                  RoutePath.viewSalesOrderScreen,
+                                  arguments: data.id,
+                                );
+                              },
                             );
                           },
                         );
