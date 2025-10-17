@@ -163,10 +163,13 @@ class ProductInventoryVm extends BaseVm {
     reBuildUI();
   }
 
-  Future<ApiResponse> getProductAttributes(String catTypeId) async {
+  Future<ApiResponse> getProductAttributes(String subCategoryId) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/shared/inventory-attributes")
       ..addQueryParameterIfNotEmpty("paginate", '0')
-      ..addQueryParameterIfNotEmpty("category_id", catTypeId.toString());
+      ..addQueryParameterIfNotEmpty("category_id", subCategoryId.toString())
+      ..addQueryParameterIfNotEmpty(
+          "show_general", "1") // Show general attributes
+      ..addQueryParameterIfNotEmpty("scope", "children"); // parent or children
 
     return await performApiCall(
       url: uriBuilder.build().toString(),

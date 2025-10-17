@@ -54,6 +54,7 @@ class AppSvgs {
 
   static const String circleAdd = "$svgIcon/circleAdd.svg";
   static const String circleMenu = "$svgIcon/circleMenu.svg";
+  static const String circleMenuOutline = "$svgIcon/circleMenuOutline.svg";
   static const String support = "$svgIcon/support.svg";
   static const String plusCircle2 = "$svgIcon/plusCircle2.svg";
   static const String uploadImg = "$svgIcon/uploadImg.svg";

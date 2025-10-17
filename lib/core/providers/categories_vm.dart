@@ -56,13 +56,13 @@ class CategoriesVm extends BaseVm {
   List<CategoryModel> _categoryTypes = [];
   List<CategoryModel> get categoryTypes => _categoryTypes;
   Future<ApiResponse> getCategoryType(
-    String catId, {
+    String subbCatId, {
     bool paginate = false,
     String? table,
     String? q,
   }) async {
     UriBuilder uriBuilder = UriBuilder("/api/v1/shared/categorizations")
-      ..addQueryParameterIfNotEmpty("parent_id", catId)
+      ..addQueryParameterIfNotEmpty("parent_id", subbCatId)
       ..addQueryParameterIfNotEmpty("table", table ?? 'inventory_products')
       ..addQueryParameterIfNotEmpty("level", 'type')
       ..addQueryParameterIfNotEmpty("q", q ?? '')

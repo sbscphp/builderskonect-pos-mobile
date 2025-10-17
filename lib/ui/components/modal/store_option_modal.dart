@@ -4,11 +4,17 @@ class ModalOption {
   final String title;
   final VoidCallback onTap;
   final Color? textColor;
+  final bool showBorder;
+  final bool showTrailingArrow;
+  final double? textSize;
 
   const ModalOption({
     required this.title,
     required this.onTap,
     this.textColor,
+    this.showBorder = true,
+    this.showTrailingArrow = true,
+    this.textSize,
   });
 }
 
@@ -71,6 +77,9 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
                     title: option.title,
                     onTap: option.onTap,
                     textColor: option.textColor,
+                    showBorder: option.showBorder,
+                    showTrailingArrow: option.showTrailingArrow,
+                    textSize: option.textSize,
                   ),
                   if (option != widget.options.last) YBox(16),
                 ],
@@ -86,6 +95,9 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
     TextTheme textTheme, {
     required String title,
     Color? textColor,
+    required bool showBorder,
+    required bool showTrailingArrow,
+    double? textSize,
     Function()? onTap,
   }) {
     return InkWell(
@@ -96,9 +108,11 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
           vertical: Sizer.height(10),
         ),
         decoration: BoxDecoration(
-          border: Border.all(
-            color: colorScheme.text6,
-          ),
+          border: showBorder
+              ? Border.all(
+                  color: colorScheme.text6,
+                )
+              : null,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -106,15 +120,17 @@ class _StoreOptionModalState extends ConsumerState<StoreOptionModal> {
             Text(
               title,
               style: textTheme.text14?.copyWith(
+                fontSize: textSize,
                 color: textColor ?? colorScheme.black85,
               ),
             ),
             Spacer(),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: colorScheme.black85,
-              size: Sizer.width(16),
-            )
+            if (showTrailingArrow)
+              Icon(
+                Icons.arrow_forward_ios,
+                color: colorScheme.black85,
+                size: Sizer.width(16),
+              )
           ],
         ),
       ),

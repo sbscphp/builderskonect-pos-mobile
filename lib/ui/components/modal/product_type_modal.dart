@@ -1,11 +1,12 @@
 import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class ProductType extends ConsumerStatefulWidget {
-  const ProductType({super.key, this.isCategory = true, required this.catId});
+  const ProductType({super.key, required this.catId});
 
-  final bool isCategory;
+  // Sub category Id
   final String catId;
 
   @override
@@ -28,7 +29,8 @@ class _ProductTypeState extends ConsumerState<ProductType> {
   void _performSearch(String query) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 500), () {
-      ref.read(categoryVmodel).getCategoryType(widget.catId, q: query.trim().isEmpty ? null : query.trim());
+      ref.read(categoryVmodel).getCategoryType(widget.catId,
+          q: query.trim().isEmpty ? null : query.trim());
     });
   }
 

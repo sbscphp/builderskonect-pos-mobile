@@ -278,7 +278,7 @@ class _RequestBasicInfoState extends ConsumerState<RequestBasicInfo> {
                           categoryId: selectedCategory?.id ?? "",
                           subcategoryId: selectedSubCategory?.id ?? "",
                           productTypeId: selectedCategoryType?.id ?? "",
-                          brand: selectedBrand?.id?.toString() ?? "",
+                          brand: selectedBrand?.name ?? "",
                           description: descriptionC.text,
                           tags: tags.join(','),
                         ),

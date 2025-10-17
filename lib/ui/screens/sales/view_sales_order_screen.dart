@@ -68,6 +68,9 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
   bool get isStatusPending =>
       ref.watch(salesVmodel).salesOrdersModel?.paymentStatus?.toLowerCase() ==
       "pending";
+  bool get isStatusPaid =>
+      ref.watch(salesVmodel).salesOrdersModel?.paymentStatus?.toLowerCase() ==
+      "paid";
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +81,44 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
     return Scaffold(
       appBar: CustomAppbar(
         title: isStatusPending ? "Pending Confirmation" : "View Order",
+        trailingWidget: isStatusPending
+            ? null
+            : InkWell(
+                onTap: () {
+                  showMenu(
+                    context: context,
+                    position: RelativeRect.fromLTRB(100, 100, 0, 0),
+                    items: [
+                      PopupMenuItem(
+                        value: 'download_receipt',
+                        child:
+                            Text('Download Receipt', style: textTheme.text14),
+                      ),
+                      PopupMenuItem(
+                        value: 'share_receipt',
+                        child: Text('Share Receipt', style: textTheme.text14),
+                      ),
+                    ],
+                  ).then((value) {
+                    if (value != null) {
+                      printty('Selected: $value');
+                      switch (value) {
+                        case 'download_receipt':
+                          printty("download_receipt");
+                          break;
+                        case 'share_receipt':
+                          printty("share_receipt");
+                          break;
+                        default:
+                          break;
+                      }
+                    }
+                  });
+                },
+                child: Icon(
+                  Icons.more_vert,
+                ),
+              ),
       ),
       body: Builder(builder: (context) {
         if (salesVm.busy(viewState)) {
@@ -114,6 +155,80 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                   FilterHeader(
                     title: "Order Details",
                     subTitle: "View order information below",
+                    trailingWidget: isStatusPaid
+                        ? SizedBox.shrink()
+                        : InkWell(
+                            onTap: () {
+                              ModalWrapper.bottomSheet(
+                                context: context,
+                                widget: StoreOptionModal(
+                                  title: "Change Status",
+                                  options: [
+                                    ModalOption(
+                                      title: "Paid",
+                                      showBorder: false,
+                                      showTrailingArrow: false,
+                                      textSize: Sizer.text(16),
+                                      onTap: () async {
+                                        Navigator.pop(context);
+                                        final res = await ref
+                                            .read(salesVmodel)
+                                            .updateSalesOrderStatus(
+                                              id: widget.id,
+                                              paymentStatus: "paid",
+                                            );
+
+                                        handleApiResponse(
+                                            response: res,
+                                            onSuccess: () {
+                                              ref
+                                                  .read(salesVmodel)
+                                                  .getSalesOrderDetails(
+                                                      widget.id);
+                                            });
+                                      },
+                                    ),
+                                    // ModalOption(
+                                    //   title: "Payment Confirmed",
+                                    //   showBorder: false,
+                                    //   showTrailingArrow: false,
+                                    //   textSize: Sizer.text(16),
+                                    //   onTap: () {
+                                    //     Navigator.pop(context);
+                                    //   },
+                                    // ),
+                                    ModalOption(
+                                      title: "Failed",
+                                      showBorder: false,
+                                      showTrailingArrow: false,
+                                      textSize: Sizer.text(16),
+                                      onTap: () async {
+                                        Navigator.pop(context);
+                                        final res = await ref
+                                            .read(salesVmodel)
+                                            .updateSalesOrderStatus(
+                                              id: widget.id,
+                                              orderStatus: "failed",
+                                            );
+
+                                        handleApiResponse(
+                                            response: res,
+                                            onSuccess: () {
+                                              ref
+                                                  .read(salesVmodel)
+                                                  .getSalesOrderDetails(
+                                                      widget.id);
+                                            });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                            child: SvgPicture.asset(
+                              AppSvgs.circleMenuOutline,
+                            ),
+                          ),
                   ),
                   YBox(16),
                   Container(
@@ -128,7 +243,9 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                       children: [
                         ProfileColText(
                           title: "Order ID -",
-                          title2: "ONLINE",
+                          title2: salesVm.salesOrdersModel?.salesType
+                                  ?.toUpperCase() ??
+                              "N/A",
                           subTitle:
                               "#${salesVm.salesOrdersModel?.orderNumber ?? ""}",
                         ),
@@ -194,28 +311,29 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                           status:
                               salesVm.salesOrdersModel?.paymentStatus ?? "N/A",
                         ),
-                        if (!isStatusPending)
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: Sizer.height(16),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Order Status",
-                                  style: textTheme.text12?.copyWith(
-                                    color: AppColors.grey175,
-                                  ),
-                                ),
-                                YBox(6),
-                                OrderStatus(
-                                  status:
-                                      salesVm.salesOrdersModel?.status ?? "N/A",
-                                ),
-                              ],
-                            ),
+                        YBox(16),
+                        // if (!isStatusPending)
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: Sizer.height(16),
                           ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Order Status",
+                                style: textTheme.text12?.copyWith(
+                                  color: AppColors.grey175,
+                                ),
+                              ),
+                              YBox(6),
+                              OrderStatus(
+                                status:
+                                    salesVm.salesOrdersModel?.status ?? "N/A",
+                              ),
+                            ],
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -408,7 +526,7 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                         YBox(14),
                         PlansRowText(
                           keyText:
-                              "Tax (${salesVm.salesOrdersModel?.fees?.tax} VAT)",
+                              "VAT (${salesVm.salesOrdersModel?.fees?.tax} VAT)",
                           valueText:
                               salesVm.salesOrdersModel?.fees?.tax?.toString() ??
                                   "N/A",

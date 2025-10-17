@@ -1,7 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 
 class SalesVm extends BaseVm {
-    //page number
+  //page number
   int pageNumber = 1;
   int? lastPage;
 
@@ -22,14 +22,15 @@ class SalesVm extends BaseVm {
     if (stateObjectName != paginateState) {
       pageNumber = 1;
     }
-    UriBuilder uriBuilder = UriBuilder("/api/v1/merchants/sales-orders?page=$pageNumber")
-      ..addQueryParameterIfNotEmpty("q", q ?? '')
-      ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
-      ..addQueryParameterIfNotEmpty("sales_type", salesType ?? '')
-      ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
-      ..addQueryParameterIfNotEmpty("status", status ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '10')
-      ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/sales-orders?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("customer_id", customerId ?? '')
+          ..addQueryParameterIfNotEmpty("sales_type", salesType ?? '')
+          ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
+          ..addQueryParameterIfNotEmpty("status", status ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '10')
+          ..addQueryParameterIfNotEmpty("paginate", paginate ? '1' : '0');
 
     return await performApiCall(
       url: uriBuilder.build().toString(),
@@ -39,15 +40,16 @@ class SalesVm extends BaseVm {
       onSuccess: (data) {
         if (paginate) {
           _salesStats = salesStatsFromJson(json.encode(data['data']?['stats']));
-           if (stateObjectName != paginateState) {
-          _salesData =
-              salesDataFromJson(json.encode(data['data']?['data']?['data']));
-              pageNumber++;
-              lastPage = data['data']?['data']?['last_page'];
-           }else{
-              _salesData.addAll(salesDataFromJson(json.encode(data['data']?['data']?['data'])));
-              pageNumber++;
-           }
+          if (stateObjectName != paginateState) {
+            _salesData =
+                salesDataFromJson(json.encode(data['data']?['data']?['data']));
+            pageNumber++;
+            lastPage = data['data']?['data']?['last_page'];
+          } else {
+            _salesData.addAll(
+                salesDataFromJson(json.encode(data['data']?['data']?['data'])));
+            pageNumber++;
+          }
         } else {
           _salesData = salesDataFromJson(json.encode(data?['data']));
         }
@@ -265,6 +267,27 @@ class SalesVm extends BaseVm {
       busyObjectName: viewState,
       onSuccess: (data) {
         _salesOrdersModel = salesOrdersModelFromJson(json.encode(data['data']));
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> updateSalesOrderStatus({
+    required String id,
+    String? orderStatus, //failed, completed (update draft sales)
+    String? paymentStatus, // paid, failed (confirm payment)
+  }) async {
+    final body = {
+      "status": orderStatus,
+      "payment_status": paymentStatus,
+    }..removeWhere((k, v) => v == null || v == '');
+    return await performApiCall(
+      url: "/api/v1/merchants/sales-orders/$id",
+      method: apiService.putWithAuth,
+      errorObjectName: updateState,
+      busyObjectName: updateState,
+      body: body,
+      onSuccess: (data) {
         return apiResponse;
       },
     );
