@@ -213,14 +213,15 @@ class _OrderSummaryStepState extends ConsumerState<OrderSummaryStep> {
             ))
         .toList();
 
-    final res = await ref.read(salesVmodel).createPauseSales(
-          params: Order(
-            customer: customerCred,
-            status: "draft",
-            salesType: "pos",
-            lineItems: selectedProducts,
-          ),
-        );
+    final res = await ref.read(salesVmodel).createOfflineSalesOrder(
+      order: Order(
+        customer: customerCred,
+        status: "draft",
+        salesType: "pos",
+        lineItems: selectedProducts,
+      ),
+      metadata: {'order_type': 'paused_sales'},
+    );
 
     handleApiResponse(
         // showErrorToast: false,

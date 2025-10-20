@@ -58,6 +58,52 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
     }
   }
 
+  Future<void> _handleManualSync() async {
+    final salesVm = ref.read(salesVmodel);
+
+    if (!salesVm.isOfflineMode) {
+      // Show loading indicator
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+
+      try {
+        await salesVm.forceSyncAllOrders();
+        Navigator.of(context).pop(); // Close loading dialog
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Orders synced successfully'),
+            backgroundColor: AppColors.green1A,
+          ),
+        );
+      } catch (e) {
+        Navigator.of(context).pop(); // Close loading dialog
+
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Sync failed: $e'),
+            backgroundColor: AppColors.red2D,
+          ),
+        );
+      }
+    } else {
+      // Show offline message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Cannot sync while offline'),
+          backgroundColor: AppColors.yellow6,
+        ),
+      );
+    }
+  }
+
   @override
   void dispose() {
     _tabController.dispose();
@@ -95,6 +141,16 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                         value: 'order_analytics',
                         child: Text('Order Analytics', style: textTheme.text14),
                       ),
+                      PopupMenuItem(
+                        value: 'sync_orders',
+                        child: Row(
+                          children: [
+                            Icon(Icons.sync, size: 16),
+                            SizedBox(width: 8),
+                            Text('Sync Orders', style: textTheme.text14),
+                          ],
+                        ),
+                      ),
                     ],
                   ).then((value) {
                     if (value != null) {
@@ -111,6 +167,9 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                         case 'order_analytics':
                           Navigator.pushNamed(
                               context, RoutePath.orderAnalyticsScreen);
+                          break;
+                        case 'sync_orders':
+                          _handleManualSync();
                           break;
                         default:
                           break;

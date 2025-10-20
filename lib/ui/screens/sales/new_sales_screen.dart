@@ -62,6 +62,8 @@ class _NewSalesScreenState extends ConsumerState<NewSalesScreen> {
                 ],
               ),
             ),
+            const ConnectivityStatusWidget(),
+            const SyncStatusWidget(),
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 400),

@@ -1,4 +1,5 @@
 export 'api_response.dart';
+export 'offline_sales_order.dart';
 export 'onboard_params.dart';
 export 'product_catalogue_params.dart';
 export 'product_variation_params.dart';

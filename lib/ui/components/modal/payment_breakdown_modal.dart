@@ -250,7 +250,7 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
       paymentMethods: paymentMethods,
     );
 
-    final res = await saleVm.salesOrderCheckout(
+    final res = await saleVm.salesOrderCheckoutOfflineFirst(
       params: SalesCheckoutParams(
         orders: [order],
       ),
@@ -280,22 +280,34 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
               widget: ConfirmationModal(
                 modalConfirmationArg: ModalConfirmationArg(
                   iconPath: AppSvgs.checkIcon,
-                  title: "Order Created",
-                  description:
-                      "A sales order has been created and sent for order confirmation. Kindly confirm this order before releasing the products to the customer.",
+                  title: saleVm.isOfflineMode
+                      ? "Order Saved Offline"
+                      : "Order Created",
+                  description: saleVm.isOfflineMode
+                      ? "Your order has been saved locally and will be synced when internet connection is restored."
+                      : "A sales order has been created and sent for order confirmation. Kindly confirm this order before releasing the products to the customer.",
                   solidBtnText: "Okay, good",
                   onSolidBtnOnTap: () {
                     // Get navigation context safely
                     final navCtx = NavKey.appNavKey.currentContext;
                     if (navCtx == null) return;
 
-                    // Safely extract orderId from response
+                    // Handle offline orders differently
+                    if (saleVm.isOfflineMode) {
+                      // For offline orders, just go back to sales screen
+                      Navigator.of(navCtx).popUntil((route) => route.isFirst);
+                      return;
+                    }
+
+                    // For online orders, extract orderId and navigate to order details
                     final dynamic responseData = res.data;
                     if (responseData == null ||
                         responseData['data'] == null ||
                         responseData['data'].isEmpty ||
                         responseData['data'][0]['id'] == null) {
                       printty("Error: Invalid order ID in response");
+                      // Fallback: go back to sales screen
+                      Navigator.of(navCtx).popUntil((route) => route.isFirst);
                       return;
                     }
 
