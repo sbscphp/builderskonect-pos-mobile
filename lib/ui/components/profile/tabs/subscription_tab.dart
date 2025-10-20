@@ -261,7 +261,7 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                         controller: searchC,
                         isRequired: false,
                         showLabelHeader: false,
-                        hintText: "Search with order no.",
+                        hintText: "input search text",
                         onChanged: (value) {
                           setState(() {});
                         },
@@ -309,7 +309,8 @@ class _SubscriptionTabState extends ConsumerState<SubscriptionTab> {
                         itemBuilder: (ctx, i) {
                           final item = subscriptionVm.subscriptionHistory[i];
                           return CustomColWidget(
-                            firstColText: item.planName ?? "",
+                            firstColText:
+                                "${item.planName ?? ""} (${item.interval?.capitalizeFirst ?? ""})",
                             subTitle: item.amountPaid ?? "",
                             status: item.status ?? "",
                             date: item.endDate ?? DateTime.now(),

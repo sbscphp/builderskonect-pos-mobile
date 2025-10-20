@@ -33,7 +33,8 @@ class _RolePermissionTabState extends ConsumerState<RolePermissionTab> {
         children: [
           FilterHeader(
             title: "Roles and Permissions",
-            subTitle: "Manage user roles and permissions ",
+            subTitle: "View and manage user roles and permissions ",
+            subtitleFontSize: Sizer.text(11),
             svgIcon: AppSvgs.circleAdd,
             trailingWidget: NewButtonWidget(
               onTap: () {

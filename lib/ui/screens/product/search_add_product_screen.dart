@@ -35,9 +35,13 @@ class _SearchAddProductScreenState
       setState(() {});
     });
 
-    searchF.addListener(() {
-      isSearching = searchC.text.isNotEmpty && searchF.hasFocus;
-      setState(() {});
+    // searchF.addListener(() {
+    //   isSearching = searchC.text.isNotEmpty && searchF.hasFocus;
+    //   setState(() {});
+    // });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await ref.read(catalogueVmodel).getCatalogueProducts();
     });
   }
 

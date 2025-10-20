@@ -380,6 +380,8 @@ class _EditBusinessProfileScreenState
                       YBox(30),
                       CustomBtn.solid(
                         online: _hasChanges,
+                        isLoading:
+                            ref.watch(vendorProfileVmodel).busy(updateState),
                         text: "Submit",
                         onTap: _hasChanges
                             ? () {

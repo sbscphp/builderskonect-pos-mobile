@@ -6,6 +6,7 @@ class FilterHeader extends StatelessWidget {
     required this.title,
     this.subTitle,
     this.svgIcon,
+    this.subtitleFontSize,
     this.trailingWidget,
     this.onFilter,
   });
@@ -13,6 +14,7 @@ class FilterHeader extends StatelessWidget {
   final String title;
   final String? subTitle;
   final String? svgIcon;
+  final double? subtitleFontSize;
   final Widget? trailingWidget;
   final Function()? onFilter;
 
@@ -31,6 +33,7 @@ class FilterHeader extends StatelessWidget {
                 Text(
                   subTitle!,
                   style: textTheme.text12?.copyWith(
+                    fontSize: subtitleFontSize,
                     color: colorScheme.black45,
                   ),
                 ),

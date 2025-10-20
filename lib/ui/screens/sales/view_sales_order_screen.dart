@@ -2,6 +2,11 @@
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:printing/printing.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:builders_konnect/core/utils/pdf_receipt_generator.dart';
 
 class ViewSalesOrderScreen extends ConsumerStatefulWidget {
   const ViewSalesOrderScreen({super.key, required this.id});
@@ -104,10 +109,10 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                       printty('Selected: $value');
                       switch (value) {
                         case 'download_receipt':
-                          printty("download_receipt");
+                          _handleDownloadReceipt();
                           break;
                         case 'share_receipt':
-                          printty("share_receipt");
+                          _handleShareReceipt();
                           break;
                         default:
                           break;
@@ -555,6 +560,67 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
         );
       }),
     );
+  }
+
+  Future<void> _handleShareReceipt() async {
+    final order = ref.read(salesVmodel).salesOrdersModel;
+    if (order == null) {
+      FlushBarToast.fLSnackBar(
+        message: 'Unable to share: order not loaded',
+        snackBarType: SnackBarType.warning,
+      );
+      return;
+    }
+
+    try {
+      final bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
+      final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
+      await Printing.sharePdf(bytes: bytes, filename: filename);
+    } catch (e) {
+      FlushBarToast.fLSnackBar(
+        message: 'Failed to share receipt: $e',
+        snackBarType: SnackBarType.warning,
+      );
+    }
+  }
+
+  Future<void> _handleDownloadReceipt() async {
+    final order = ref.read(salesVmodel).salesOrdersModel;
+    if (order == null) {
+      FlushBarToast.fLSnackBar(
+        message: 'Unable to download: order not loaded',
+        snackBarType: SnackBarType.warning,
+      );
+      return;
+    }
+
+    try {
+      final Uint8List bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
+      final dir = await getApplicationDocumentsDirectory();
+      final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
+      final file = File('${dir.path}/$filename');
+      await file.writeAsBytes(bytes, flush: true);
+      FlushBarToast.fLSnackBar(
+        message: 'Receipt saved to ${file.path}',
+        snackBarType: SnackBarType.success,
+      );
+    } catch (e) {
+      // Fallback for web or failure: share to trigger download
+      try {
+        final bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
+        final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
+        await Printing.sharePdf(bytes: bytes, filename: filename);
+        FlushBarToast.fLSnackBar(
+          message: 'Download initiated',
+          snackBarType: SnackBarType.success,
+        );
+      } catch (e2) {
+        FlushBarToast.fLSnackBar(
+          message: 'Failed to download receipt: $e2',
+          snackBarType: SnackBarType.warning,
+        );
+      }
+    }
   }
 }
 

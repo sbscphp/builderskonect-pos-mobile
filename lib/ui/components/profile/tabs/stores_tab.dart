@@ -197,7 +197,7 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                             controller: searchC,
                             isRequired: false,
                             showLabelHeader: false,
-                            hintText: "Search with order no.",
+                            hintText: "Search stores",
                             onChanged: (value) {
                               setState(() {});
                             },

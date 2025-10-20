@@ -225,7 +225,7 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                               focusNode: searchFocus,
                               isRequired: false,
                               showLabelHeader: false,
-                              hintText: "Search by product id, name etc.",
+                              hintText: "Search by return id, product name etc",
                               onChanged: (value) {
                                 setState(() {});
                                 _performSearch(value);
@@ -240,7 +240,8 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
                                         setState(() {});
                                       },
                                       child: Padding(
-                                        padding: EdgeInsets.all(Sizer.width(10)),
+                                        padding:
+                                            EdgeInsets.all(Sizer.width(10)),
                                         child: Icon(
                                           Icons.close,
                                           size: Sizer.width(20),

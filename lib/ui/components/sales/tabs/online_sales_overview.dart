@@ -131,7 +131,7 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ProductColText(
-                          title: "TOTAL ONLINE SALES VALUE",
+                          title: "TOTAL SALES VALUE",
                           value:
                               "${AppUtils.nairaSymbol}${salesVm.salesStats?.onlineSales}",
                         ),
@@ -190,7 +190,7 @@ class _OnlineSalesOverviewState extends ConsumerState<OnlineSalesOverview> {
                     controller: searchC,
                     isRequired: false,
                     showLabelHeader: false,
-                    hintText: "Search by product id, name etc.",
+                    hintText: "Search by order id, name etc",
                     onChanged: (value) {
                       setState(() {});
                       _performSearch(value);

@@ -49,7 +49,7 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
       screen: const SalesScreen(),
     ),
     DashboardNav(
-      name: "Profile",
+      name: "Vendor",
       iconPath: AppSvgs.profile,
       screen: const VendorProfileScreen(),
     ),
