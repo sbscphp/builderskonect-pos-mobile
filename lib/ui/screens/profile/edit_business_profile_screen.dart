@@ -56,8 +56,8 @@ class _EditBusinessProfileScreenState
       'email': widget.business.email ?? '',
       'phone': widget.business.phone ?? '',
       'address': widget.business.address ?? '',
-      'state': '',
-      'city': '',
+      'state': widget.business.state?.name ?? '',
+      'city': widget.business.city?.name ?? '',
       'postalCode': '',
     };
 
@@ -275,6 +275,8 @@ class _EditBusinessProfileScreenState
                               isRequired: true,
                               labelText: 'Email address',
                               hintText: 'example',
+                              readOnly: true,
+                              fillColor: AppColors.neutral3,
                               showLabelHeader: true,
                               validator: Validators.email(
                                   errorMessage: "Invalid email"),
@@ -288,6 +290,8 @@ class _EditBusinessProfileScreenState
                               labelText: 'Phone Number',
                               hintText: 'example',
                               showLabelHeader: true,
+                              readOnly: true,
+                              fillColor: AppColors.neutral3,
                               keyboardType: TextInputType.phone,
                               inputFormatters: [
                                 FilteringTextInputFormatter.digitsOnly,
@@ -405,20 +409,34 @@ class _EditBusinessProfileScreenState
   _submitForm() async {
     final vendorRef = ref.read(vendorProfileVmodel);
 
-    final res = await vendorRef.updateVendorProfile(
-      VendorProfileParams(
-        name: businessNameC.text,
-        category: selectedCategory?.id,
-        type: selectedType?.id,
-
-        email: emailC.text,
-        phone: phoneC.text,
-        address: addressC.text,
-        // state: selectedState?.id,
-        // city: selectedCity?.id,
-        // postalCode: postalCodeC.text,
-      ),
+    // Build diff-only payload: include only changed fields
+    final params = VendorProfileParams(
+      name: _originalValues['businessName'] != businessNameC.text
+          ? businessNameC.text
+          : null,
+      category:
+          _originalValues['businessCategory'] != businessCategoryC.text
+              ? selectedCategory?.id
+              : null,
+      type: _originalValues['businessType'] != businessTypeC.text
+          ? selectedType?.id
+          : null,
+      email: _originalValues['email'] != emailC.text ? emailC.text : null,
+      phone: _originalValues['phone'] != phoneC.text ? phoneC.text : null,
+      address:
+          _originalValues['address'] != addressC.text ? addressC.text : null,
+      stateId: _originalValues['state'] != stateC.text
+          ? selectedState?.id?.toString()
+          : null,
+      cityId: _originalValues['city'] != cityC.text
+          ? selectedCity?.id?.toString()
+          : null,
+      postalCode: _originalValues['postalCode'] != postalCodeC.text
+          ? postalCodeC.text
+          : null,
     );
+
+    final res = await vendorRef.updateVendorProfile(params);
 
     handleApiResponse(
       response: res,

@@ -2,11 +2,6 @@
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
-import 'package:printing/printing.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
-import 'dart:typed_data';
-import 'package:builders_konnect/core/utils/pdf_receipt_generator.dart';
 
 class ViewSalesOrderScreen extends ConsumerStatefulWidget {
   const ViewSalesOrderScreen({super.key, required this.id});
@@ -95,25 +90,26 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                     position: RelativeRect.fromLTRB(100, 100, 0, 0),
                     items: [
                       PopupMenuItem(
-                        value: 'download_receipt',
-                        child:
-                            Text('Download Receipt', style: textTheme.text14),
+                        value: 'view_receipt',
+                        child: Text('View Receipt', style: textTheme.text14),
                       ),
-                      PopupMenuItem(
-                        value: 'share_receipt',
-                        child: Text('Share Receipt', style: textTheme.text14),
-                      ),
+                      // PopupMenuItem(
+                      //   value: 'share_receipt',
+                      //   child: Text('Share Receipt', style: textTheme.text14),
+                      // ),
                     ],
                   ).then((value) {
                     if (value != null) {
                       printty('Selected: $value');
                       switch (value) {
-                        case 'download_receipt':
-                          _handleDownloadReceipt();
+                        case 'view_receipt':
+                          Navigator.pushNamed(
+                            context,
+                            RoutePath.viewOrderReceiptScreen,
+                            arguments: widget.id,
+                          );
                           break;
-                        case 'share_receipt':
-                          _handleShareReceipt();
-                          break;
+
                         default:
                           break;
                       }
@@ -428,10 +424,10 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
                                   decoration: BoxDecoration(
                                     borderRadius:
                                         BorderRadius.circular(Sizer.radius(8)),
-                                    border: Border.all(
-                                      color: AppColors.neutral5,
-                                      width: 1,
-                                    ),
+                                    // border: Border.all(
+                                    //   color: AppColors.neutral5,
+                                    //   width: 1,
+                                    // ),
                                   ),
                                   child: ListView.separated(
                                     shrinkWrap: true,
@@ -559,195 +555,6 @@ class _ViewSalesOrderScreenState extends ConsumerState<ViewSalesOrderScreen>
           ],
         );
       }),
-    );
-  }
-
-  Future<void> _handleShareReceipt() async {
-    final order = ref.read(salesVmodel).salesOrdersModel;
-    if (order == null) {
-      FlushBarToast.fLSnackBar(
-        message: 'Unable to share: order not loaded',
-        snackBarType: SnackBarType.warning,
-      );
-      return;
-    }
-
-    try {
-      final bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
-      final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
-      await Printing.sharePdf(bytes: bytes, filename: filename);
-    } catch (e) {
-      FlushBarToast.fLSnackBar(
-        message: 'Failed to share receipt: $e',
-        snackBarType: SnackBarType.warning,
-      );
-    }
-  }
-
-  Future<void> _handleDownloadReceipt() async {
-    final order = ref.read(salesVmodel).salesOrdersModel;
-    if (order == null) {
-      FlushBarToast.fLSnackBar(
-        message: 'Unable to download: order not loaded',
-        snackBarType: SnackBarType.warning,
-      );
-      return;
-    }
-
-    try {
-      final Uint8List bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
-      final dir = await getApplicationDocumentsDirectory();
-      final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
-      final file = File('${dir.path}/$filename');
-      await file.writeAsBytes(bytes, flush: true);
-      FlushBarToast.fLSnackBar(
-        message: 'Receipt saved to ${file.path}',
-        snackBarType: SnackBarType.success,
-      );
-    } catch (e) {
-      // Fallback for web or failure: share to trigger download
-      try {
-        final bytes = await PdfReceiptGenerator.buildSalesOrderReceiptPdf(order: order);
-        final filename = 'Sales_Order_${order.orderNumber ?? order.id ?? 'Receipt'}.pdf';
-        await Printing.sharePdf(bytes: bytes, filename: filename);
-        FlushBarToast.fLSnackBar(
-          message: 'Download initiated',
-          snackBarType: SnackBarType.success,
-        );
-      } catch (e2) {
-        FlushBarToast.fLSnackBar(
-          message: 'Failed to download receipt: $e2',
-          snackBarType: SnackBarType.warning,
-        );
-      }
-    }
-  }
-}
-
-class SaleDetailsListTile extends StatelessWidget {
-  const SaleDetailsListTile({
-    super.key,
-    this.onTap,
-    required this.productImage,
-    required this.productTitle,
-    required this.subTitle,
-    required this.sku,
-    required this.price,
-    required this.totalAmount,
-    required this.quantity,
-    required this.discount,
-  });
-  final VoidCallback? onTap;
-  final String productImage;
-  final String productTitle;
-  final String subTitle;
-  final String sku;
-  final String price;
-  final String totalAmount;
-  final String quantity;
-  final String discount;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        children: [
-          ProductWithSkuListTile(
-            productImage: productImage,
-            productTitle: productTitle,
-            subTitle: subTitle,
-            sku: sku,
-          ),
-          YBox(10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Price: ",
-                      style: textTheme.text12?.medium.copyWith(
-                        color: AppColors.gray500,
-                      ),
-                    ),
-                    TextSpan(
-                      text: price,
-                      style: textTheme.text12?.medium.copyWith(
-                        color: colorScheme.primaryColor,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Total Amount: ",
-                      style: textTheme.text12?.medium.copyWith(
-                        color: AppColors.gray500,
-                      ),
-                    ),
-                    TextSpan(
-                      text: totalAmount,
-                      style: textTheme.text12?.medium.copyWith(
-                        color: AppColors.neutral11,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          if (quantity != "")
-            _buildRow(textTheme, title: "Quantity:", value: quantity),
-          if (discount != "")
-            _buildRow(textTheme, title: "Discount:", value: discount),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRow(
-    TextTheme textTheme, {
-    required String title,
-    required String value,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(
-        top: Sizer.height(8),
-      ),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: textTheme.text12?.medium,
-          ),
-          XBox(16),
-          Expanded(
-            child: Container(
-              padding: EdgeInsets.symmetric(
-                horizontal: Sizer.width(12),
-                vertical: Sizer.height(5),
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                border: Border.all(
-                  color: AppColors.neutral5,
-                ),
-              ),
-              child: Text(
-                value,
-                style: textTheme.text14?.medium,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

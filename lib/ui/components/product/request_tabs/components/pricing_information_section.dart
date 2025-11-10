@@ -86,6 +86,10 @@ class PricingInformationSection extends ConsumerWidget {
                         labelText: 'Cost Price per Unit',
                         hintText: '0.00',
                         showLabelHeader: true,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
                       ),
                       YBox(16),
                       CustomTextField(
@@ -97,6 +101,22 @@ class PricingInformationSection extends ConsumerWidget {
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final costPrice =
+                                double.tryParse(costPricePerUnitC.text) ?? 0.0;
+                            final sellingPrice =
+                                double.tryParse(sellingPricePerUnitC.text) ??
+                                    0.0;
+                            if (costPrice > 0 &&
+                                sellingPrice > 0 &&
+                                sellingPrice <= costPrice) {
+                              return 'Selling price must be greater than cost price';
+                            }
+                            return null;
+                          }
+                          return null;
+                        },
                       ),
                       YBox(16),
                       CustomTextField(

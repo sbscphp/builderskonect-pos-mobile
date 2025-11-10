@@ -79,7 +79,9 @@ class SalesOrdersModel {
         discountBreakdown: json["discount_breakdown"] == null
             ? null
             : DiscountBreakdown.fromJson(json["discount_breakdown"]),
-        fees: json["fees"] == null ? null : Fees.fromJson(json["fees"]),
+        fees: (json["fees"] == null || json["fees"] is List)
+            ? null
+            : Fees.fromJson(json["fees"]),
       );
 
   Map<String, dynamic> toJson() => {

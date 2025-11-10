@@ -28,5 +28,9 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Builder Konnect needs access to your photo library to save images.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Builder Konnect saves receipt images to your photo library.</string>
 </dict>
 </plist>

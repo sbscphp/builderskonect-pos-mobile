@@ -1,5 +1,8 @@
 import 'dart:convert';
 
+import 'package:builders_konnect/core/models/network/city_model.dart';
+import 'package:builders_konnect/core/models/network/state_model.dart';
+
 VendorProfileModel profileModelFromJson(String str) =>
     VendorProfileModel.fromJson(json.decode(str));
 
@@ -47,6 +50,9 @@ class Business {
   final String? phone;
   final String? vendorId;
   final String? address;
+  final StateModel? state;
+  final StateModel? country;
+  final CityModel? city;
 
   Business({
     this.name,
@@ -56,6 +62,9 @@ class Business {
     this.phone,
     this.vendorId,
     this.address,
+    this.state,
+    this.country,
+    this.city,
   });
 
   factory Business.fromJson(Map<String, dynamic> json) => Business(
@@ -66,6 +75,12 @@ class Business {
         phone: json["phone"],
         vendorId: json["vendorID"],
         address: json["address"],
+        state:
+            json["state"] == null ? null : StateModel.fromJson(json["state"]),
+        country: json["country"] == null
+            ? null
+            : StateModel.fromJson(json["country"]),
+        city: json["city"] == null ? null : CityModel.fromJson(json["city"]),
       );
 }
 
@@ -103,17 +118,20 @@ class Cac {
 }
 
 class Finance {
+  final int? bankId;
   final String? bankName;
   final String? accountNumber;
   final String? accountName;
 
   Finance({
+    this.bankId,
     this.bankName,
     this.accountNumber,
     this.accountName,
   });
 
   factory Finance.fromJson(Map<String, dynamic> json) => Finance(
+        bankId: json["bank_id"],
         bankName: json["bank_name"],
         accountNumber: json["account_number"],
         accountName: json["account_name"],

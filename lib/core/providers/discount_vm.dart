@@ -13,7 +13,10 @@ class DiscountVm extends BaseVm {
   List<DiscountModel> get discounts => _discounts;
 
   Future<ApiResponse> getDashboardStats(
-      {String q = '', String? busyObjectName = firstState,String? dateFilter,String? status}) async {
+      {String q = '',
+      String? busyObjectName = firstState,
+      String? dateFilter,
+      String? status}) async {
     if (busyObjectName != paginateState) {
       pageNumber = 1;
     }
@@ -38,7 +41,7 @@ class DiscountVm extends BaseVm {
               json.encode(_discountOverviewModel?.data?.data));
           pageNumber++;
           lastPage = _discountOverviewModel?.data?.lastPage;
-        }else {
+        } else {
           _discountOverviewModel =
               discountOverviewViewModelFromJson(json.encode(data["data"]));
           _discounts.addAll(discountListFromJson(

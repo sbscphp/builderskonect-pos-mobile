@@ -246,9 +246,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
       mediaList.add(Media(
         name: "cac",
         url: _cacUrl,
-        metadata: Iddata(
-          identificationNumber: null, // Set to null as per payload requirement
-        ),
+        metadata: Iddata(identificationNumber: cacC.text.trim()),
       ));
     }
 
@@ -257,9 +255,7 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
       mediaList.add(Media(
         name: "tin",
         url: _tinUrl,
-        metadata: Iddata(
-          identificationNumber: null, // Set to null as per payload requirement
-        ),
+        metadata: Iddata(identificationNumber: tinC.text.trim()),
       ));
     }
 

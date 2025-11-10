@@ -79,4 +79,6 @@ class AppSvgs {
   static const String dottedUpload = "$svgIcon/dottedUpload.svg";
   static const String borderMinus = "$svgIcon/borderMinus.svg";
   static const String borderPlus = "$svgIcon/borderPlus.svg";
+  static const String iconAttachment = "$svgIcon/iconAttachment.svg";
+  static const String download = "$svgIcon/download.svg";
 }
