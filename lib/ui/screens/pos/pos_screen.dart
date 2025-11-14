@@ -17,6 +17,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _callDashboardData();
+
+      // Get sales data
+      ref.read(salesVmodel)
+        ..getSalesOverview()
+        ..getSalesOverview(salesType: SalesType.omp.text)
+        ..getSalesOverview(salesType: SalesType.pos.text);
     });
   }
 
@@ -84,7 +90,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 ),
                 children: [
                   YBox(16),
-                  if (vendorProfileVm.vendorProfile?.onboardingStatus !=
+                  if (vendorProfileVm.vendorProfile?.onboardingStatus
+                          ?.toLowerCase() !=
                       "approved")
                     InfoContainer(
                       show: _isExpanded,

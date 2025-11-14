@@ -227,6 +227,13 @@ class _MultipleVariantsSectionState
       measurementC: inventoryControllers['measurement']!,
       dimensionC: inventoryControllers['dimension']!,
       dimensionUnitC: inventoryControllers['dimensionUnit'],
+
+      // Pass separate dimension controllers for variants
+      lengthC: inventoryControllers['length'],
+      widthC: inventoryControllers['width'],
+      heightC: inventoryControllers['height'],
+      diameterC: inventoryControllers['diameter'],
+
       weightPerSellUnitC: inventoryControllers['weightPerSellUnit']!,
       weightPerUnitItemC: inventoryControllers['weightPerUnitItem']!,
       reorderLevelC: inventoryControllers['reorderLevel']!,
@@ -258,6 +265,14 @@ class _MultipleVariantsSectionState
           : null,
       onDimensionUnitChanged: (unit) {
         inventoryControllers['dimensionUnit']?.text = unit;
+      },
+      onDimensionTypeChanged: (dimensionType) {
+        // Clear dimension values when switching types for this variant
+        inventoryControllers['length']?.clear();
+        inventoryControllers['width']?.clear();
+        inventoryControllers['height']?.clear();
+        inventoryControllers['diameter']?.clear();
+        inventoryControllers['dimension']?.clear();
       },
     );
   }

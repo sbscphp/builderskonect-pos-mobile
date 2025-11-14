@@ -70,16 +70,6 @@ class SalesVm extends BaseVm {
   List<OfflineSalesOrder> _offlineSalesOrders = [];
   List<OfflineSalesOrder> get offlineSalesOrders => _offlineSalesOrders;
 
-  bool _isOfflineMode = false;
-  bool get isOfflineMode => _isOfflineMode;
-
-  ConnectivityState _connectivityState = ConnectivityState.unknown;
-  ConnectivityState get connectivityState => _connectivityState;
-
-  SyncStatistics? _syncStatistics;
-  SyncStatistics? get syncStatistics => _syncStatistics;
-
-  StreamSubscription<ConnectivityState>? _connectivitySubscription;
   StreamSubscription<SyncEvent>? _syncEventSubscription;
 
   SalesOrderAmountBreakdownModel? _salesOrderAmountBreakdownModel;
@@ -203,6 +193,13 @@ class SalesVm extends BaseVm {
     );
   }
 
+  // selected pause to resume
+  PausedSalesModel? _selectedPausedSalesModel;
+  PausedSalesModel? get selectedPausedSalesModel => _selectedPausedSalesModel;
+  setSelectedPausedSalesModel(PausedSalesModel? value) {
+    _selectedPausedSalesModel = value;
+  }
+
   List<PausedSalesModel> _pausedSales = [];
   List<PausedSalesModel> get pausedSales => _pausedSales;
   Future<ApiResponse> getDraftOverview({String? q}) async {
@@ -315,15 +312,6 @@ class SalesVm extends BaseVm {
 
   /// Initialize offline functionality
   void initializeOfflineSupport() {
-    _connectivitySubscription =
-        ConnectivityService.instance.connectivityStateStream.listen(
-      _onConnectivityChanged,
-      onError: (error) {
-        printty('SalesVm connectivity stream error: $error',
-            logName: 'SalesVm');
-      },
-    );
-
     _syncEventSubscription = SalesSyncService.instance.syncEventStream.listen(
       _onSyncEvent,
       onError: (error) {
@@ -331,32 +319,22 @@ class SalesVm extends BaseVm {
       },
     );
 
-    // Initial state
-    _connectivityState = ConnectivityService.instance.currentState;
-    _isOfflineMode = !ConnectivityService.instance.isOnline;
-
     // Load offline orders
     _loadOfflineOrders();
-    _updateSyncStatistics();
   }
 
-  /// Handle connectivity changes
-  void _onConnectivityChanged(ConnectivityState state) {
-    _connectivityState = state;
-    _isOfflineMode = state != ConnectivityState.online;
-    notifyListeners();
-
-    printty('SalesVm connectivity changed: ${state.name}', logName: 'SalesVm');
-  }
+  // Connectivity getters that delegate to ConnectivityService
+  bool get isOfflineMode => !ConnectivityService.instance.isOnline;
+  ConnectivityState get connectivityState =>
+      ConnectivityService.instance.currentState;
 
   /// Handle sync events
   void _onSyncEvent(SyncEvent event) {
     printty('SalesVm sync event: ${event.type.name}', logName: 'SalesVm');
 
-    // Reload offline orders and sync statistics when sync completes
+    // Reload offline orders when sync completes
     if (event.type == SyncEventType.completed) {
       _loadOfflineOrders();
-      _updateSyncStatistics();
     }
   }
 
@@ -368,16 +346,6 @@ class SalesVm extends BaseVm {
       notifyListeners();
     } catch (e) {
       printty('Error loading offline orders: $e', logName: 'SalesVm');
-    }
-  }
-
-  /// Update sync statistics
-  Future<void> _updateSyncStatistics() async {
-    try {
-      _syncStatistics = await SalesSyncService.instance.getSyncStatistics();
-      notifyListeners();
-    } catch (e) {
-      printty('Error updating sync statistics: $e', logName: 'SalesVm');
     }
   }
 
@@ -406,7 +374,7 @@ class SalesVm extends BaseVm {
 
       return ApiResponse(
         success: true,
-        message: _isOfflineMode
+        message: isOfflineMode
             ? 'Order saved offline. Will sync when connection is restored.'
             : 'Order created successfully.',
         data: {'local_id': offlineOrder.localId},
@@ -425,25 +393,25 @@ class SalesVm extends BaseVm {
     required SalesCheckoutParams params,
   }) async {
     // If offline, save locally
-    if (_isOfflineMode) {
-      if (params.orders?.isNotEmpty == true) {
-        return await createOfflineSalesOrder(order: params.orders!.first);
-      }
-      return ApiResponse(success: false, message: 'No order data provided');
-    }
+    // if (isOfflineMode) {
+    //   if (params.orders?.isNotEmpty == true) {
+    //     return await createOfflineSalesOrder(order: params.orders!.first);
+    //   }
+    //   return ApiResponse(success: false, message: 'No order data provided');
+    // }
 
     // If online, try normal checkout first
     final onlineResult = await salesOrderCheckout(params: params);
 
     // If online checkout fails, save offline as fallback
-    if (!onlineResult.success) {
-      if (params.orders?.isNotEmpty == true) {
-        return await createOfflineSalesOrder(
-          order: params.orders!.first,
-          metadata: {'fallback_reason': 'online_checkout_failed'},
-        );
-      }
-    }
+    // if (!onlineResult.success) {
+    //   if (params.orders?.isNotEmpty == true) {
+    //     return await createOfflineSalesOrder(
+    //       order: params.orders!.first,
+    //       metadata: {'fallback_reason': 'online_checkout_failed'},
+    //     );
+    //   }
+    // }
 
     return onlineResult;
   }
@@ -456,17 +424,7 @@ class SalesVm extends BaseVm {
 
     await SalesSyncService.instance.forceSyncAll();
     await _loadOfflineOrders();
-    await _updateSyncStatistics();
   }
-
-  /// Get pending sync count
-  int get pendingSyncCount => _syncStatistics?.pendingCount ?? 0;
-
-  /// Get failed sync count
-  int get failedSyncCount => _syncStatistics?.failedCount ?? 0;
-
-  /// Check if there are unsynced orders
-  bool get hasUnsyncedOrders => _syncStatistics?.hasUnsynced ?? false;
 
   /// Get connectivity status text for UI
   String get connectivityStatusText =>
@@ -475,7 +433,6 @@ class SalesVm extends BaseVm {
   /// Dispose offline resources
   @override
   void dispose() {
-    _connectivitySubscription?.cancel();
     _syncEventSubscription?.cancel();
     super.dispose();
   }

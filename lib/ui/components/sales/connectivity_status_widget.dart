@@ -5,11 +5,11 @@ class ConnectivityStatusWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final salesVm = ref.watch(salesVmodel);
+    final connectivityVm = ref.watch(connectivityViewModelProvider);
     final textTheme = Theme.of(context).textTheme;
 
-    // Don't show anything if we're online
-    if (!salesVm.isOfflineMode) {
+    // Don't show anything if we're online and no unsynced orders
+    if (connectivityVm.isOnline && !connectivityVm.hasUnsyncedOrders) {
       return const SizedBox.shrink();
     }
 
@@ -23,26 +23,41 @@ class ConnectivityStatusWidget extends ConsumerWidget {
         vertical: Sizer.height(8),
       ),
       decoration: BoxDecoration(
-        color: AppColors.yellowE6,
+        color: connectivityVm.isOnline
+            ? AppColors.dayBreakBlue
+            : AppColors.yellowE6,
         borderRadius: BorderRadius.circular(Sizer.radius(6)),
         border: Border.all(
-          color: AppColors.yellow6,
+          color: connectivityVm.connectivityStatusColor,
           width: 1,
         ),
       ),
       child: Row(
         children: [
-          Icon(
-            Icons.wifi_off,
-            size: Sizer.width(16),
-            color: AppColors.yellow6,
-          ),
+          if (connectivityVm.isSyncing)
+            SizedBox(
+              width: Sizer.width(16),
+              height: Sizer.width(16),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    connectivityVm.connectivityStatusColor),
+              ),
+            )
+          else
+            Icon(
+              connectivityVm.isOnline ? Icons.wifi : Icons.wifi_off,
+              size: Sizer.width(16),
+              color: connectivityVm.connectivityStatusColor,
+            ),
           XBox(8),
           Expanded(
             child: Text(
-              'Working offline - Orders will sync when connection is restored',
+              connectivityVm.isOnline
+                  ? 'Online - ${connectivityVm.connectivityStatusText}'
+                  : 'Working offline - Orders will sync when connection is restored',
               style: textTheme.bodySmall?.copyWith(
-                color: AppColors.yellow06,
+                color: connectivityVm.connectivityStatusColor,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -58,16 +73,17 @@ class SyncStatusWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final salesVm = ref.watch(salesVmodel);
+    final connectivityVm = ref.watch(connectivityViewModelProvider);
     final textTheme = Theme.of(context).textTheme;
 
     // Don't show if no unsynced orders
-    if (!salesVm.hasUnsyncedOrders) {
+    if (!connectivityVm.hasUnsyncedOrders) {
       return const SizedBox.shrink();
     }
 
-    final pendingCount = salesVm.pendingSyncCount;
-    final failedCount = salesVm.failedSyncCount;
+    final syncStats = connectivityVm.syncStats;
+    final pendingCount = syncStats?.pendingCount ?? 0;
+    final failedCount = syncStats?.failedCount ?? 0;
 
     return Container(
       margin: EdgeInsets.symmetric(
@@ -88,17 +104,31 @@ class SyncStatusWidget extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Icon(
-            failedCount > 0 ? Icons.sync_problem : Icons.sync,
-            size: Sizer.width(16),
-            color: failedCount > 0 ? AppColors.red2D : AppColors.primaryBlue,
-          ),
+          if (connectivityVm.isSyncing)
+            SizedBox(
+              width: Sizer.width(16),
+              height: Sizer.width(16),
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  failedCount > 0 ? AppColors.red2D : AppColors.primaryBlue,
+                ),
+              ),
+            )
+          else
+            Icon(
+              failedCount > 0 ? Icons.sync_problem : Icons.sync,
+              size: Sizer.width(16),
+              color: failedCount > 0 ? AppColors.red2D : AppColors.primaryBlue,
+            ),
           XBox(8),
           Expanded(
             child: Text(
-              failedCount > 0
-                  ? '$failedCount orders failed to sync, $pendingCount pending'
-                  : '$pendingCount orders pending sync',
+              connectivityVm.isSyncing
+                  ? 'Syncing orders...'
+                  : failedCount > 0
+                      ? '$failedCount orders failed to sync, $pendingCount pending'
+                      : '$pendingCount orders pending sync',
               style: textTheme.bodySmall?.copyWith(
                 color:
                     failedCount > 0 ? AppColors.red2D : AppColors.primaryBlue,
@@ -106,9 +136,9 @@ class SyncStatusWidget extends ConsumerWidget {
               ),
             ),
           ),
-          if (salesVm.connectivityState == ConnectivityState.online)
+          if (connectivityVm.canManualSync)
             InkWell(
-              onTap: () => salesVm.forceSyncAllOrders(),
+              onTap: () => connectivityVm.triggerManualSync(),
               child: Container(
                 padding: EdgeInsets.symmetric(
                   horizontal: Sizer.width(8),
