@@ -13,3 +13,4 @@ export 'suffix_box.dart';
 export 'tag_input_widget.dart';
 export 'tag_widget.dart';
 export 'transfer_product_widget.dart';
+export 'tabs/tabs.dart';

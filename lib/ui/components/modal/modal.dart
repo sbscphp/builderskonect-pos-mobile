@@ -27,3 +27,4 @@ export 'store_option_modal.dart';
 export 'take_transfer_action_modal.dart';
 export 'transfer_rejection_modal.dart';
 export 'unit_modal.dart';
+export 'stores_selection_modal.dart';

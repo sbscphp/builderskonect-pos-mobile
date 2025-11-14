@@ -126,11 +126,12 @@ class ProductModel {
   final String? brand;
   final String? costPrice;
   final String? currentPrice;
-  final InventoryMetadata? metadata;
+  // final InventoryMetadata? metadata;
   final DateTime? dateAdded;
   final String? description;
   final String? tags;
   final String? status;
+  final dynamic timeline;
   final int? quantity;
   final String? measurementUnit;
   final dynamic dimension;
@@ -160,7 +161,8 @@ class ProductModel {
       this.brand,
       this.costPrice,
       this.currentPrice,
-      this.metadata,
+      // this.metadata,
+      this.timeline,
       this.dateAdded,
       this.description,
       this.tags,
@@ -193,7 +195,7 @@ class ProductModel {
     String? brand,
     String? costPrice,
     String? currentPrice,
-    InventoryMetadata? metadata,
+    // InventoryMetadata? metadata,
     DateTime? dateAdded,
     String? description,
     String? tags,
@@ -225,7 +227,7 @@ class ProductModel {
       brand: brand ?? this.brand,
       costPrice: costPrice ?? this.costPrice,
       currentPrice: currentPrice ?? this.currentPrice,
-      metadata: metadata ?? this.metadata,
+      // metadata: metadata ?? this.metadata,
       dateAdded: dateAdded ?? this.dateAdded,
       description: description ?? this.description,
       tags: tags ?? this.tags,
@@ -258,9 +260,10 @@ class ProductModel {
         brand: json["brand"],
         costPrice: json["cost_price"],
         currentPrice: json["current_price"],
-        metadata: json["metadata"] == null
-            ? null
-            : InventoryMetadata.fromJson(json["metadata"]),
+        timeline: json['timeline'],
+        // metadata: json["metadata"] == null
+        //     ? null
+        //     : InventoryMetadata.fromJson(json["metadata"]),
         dateAdded: json["date_added"] == null
             ? null
             : DateTime.parse(json["date_added"]),
@@ -299,7 +302,8 @@ class ProductModel {
         "brand": brand,
         "cost_price": costPrice,
         "current_price": currentPrice,
-        "metadata": metadata?.toJson(),
+        "timeline":timeline,
+        // "metadata": metadata?.toJson(),
         "date_added": dateAdded?.toIso8601String(),
         "description": description,
         "tags": tags,
@@ -409,6 +413,10 @@ class ProductStats {
   final dynamic lowStockProducts;
   final dynamic availableProducts;
   final dynamic totalSales;
+  final dynamic activePromotions;
+  final dynamic expiredPromotions;
+  final dynamic scheduledPromotions;
+
 
   ProductStats({
     this.totalProducts,
@@ -417,6 +425,9 @@ class ProductStats {
     this.lowStockProducts,
     this.availableProducts,
     this.totalSales,
+    this.activePromotions,
+    this.expiredPromotions,
+    this.scheduledPromotions
   });
 
   factory ProductStats.fromJson(Map<String, dynamic> json) => ProductStats(
@@ -426,6 +437,10 @@ class ProductStats {
         lowStockProducts: json["low_stock_products"],
         availableProducts: json["available_products"],
         totalSales: json["total_sales"],
+        activePromotions: json['active_promotions'],
+        expiredPromotions: json['expired_promotions'],
+        scheduledPromotions: json['scheduled_promotions'],
+
       );
 
   Map<String, dynamic> toJson() => {

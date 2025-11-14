@@ -45,9 +45,45 @@ class _ViewProductScreenState extends ConsumerState<ViewProductDetailsScreen> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final staffRef = ref.watch(staffVm);
     return Scaffold(
         appBar: CustomAppbar(
           title: "View Product",
+           trailingWidget: !staffRef.hasAccessToProductOverview
+              ? null
+              : InkWell(
+                  onTap: () {
+                    showMenu(
+                      context: context,
+                      position: RelativeRect.fromLTRB(100, 125, 0, 0),
+                      items: [
+                        PopupMenuItem(
+                          value: 'promote_product',
+                          child: Text('Promote Product', style: textTheme.text14),
+                        ),
+                        
+                      ],
+                    ).then((value) {
+                      if (value != null) {
+                        // printty('Selected: $value');
+                        switch (value) {
+                          case 'promote_product':
+                            Navigator.pushNamed(
+                                context, RoutePath.promoteProductScreen,
+                                 arguments: widget.product,);
+                            break;
+                          
+                          default:
+                            break;
+                        }
+                      }
+                    });
+                  },
+                  child: SvgPicture.asset(
+                    AppSvgs.circleMenu,
+                    height: Sizer.height(32),
+                  ),
+                ),
         ),
         body: RefreshIndicator(
           onRefresh: () async {

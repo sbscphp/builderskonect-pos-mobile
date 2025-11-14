@@ -29,3 +29,8 @@ const String brandState = 'brandState';
 const String catTypeState = 'catTypeState';
 const String reviewState = 'reviewState';
 const String rendResponse = 'rendResponse';
+//product promotion
+const String paymentBreakdownState = 'paymentBreakdownState';
+const String getFeesState = 'getFeesState';
+const String createPromotionState = 'createPromotionState';
+

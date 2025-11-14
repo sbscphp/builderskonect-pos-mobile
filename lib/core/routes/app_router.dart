@@ -198,6 +198,15 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.promoteProductScreen:
+        if (args is ProductModel) {
+        return TransitionUtils.buildTransition(
+           PromoteProductScreen(product: args),
+          settings,
+        );
+        }
+        return errorScreen(settings);
+
       case RoutePath.inventoryScreen:
         return TransitionUtils.buildTransition(
           const InventoryScreen(),

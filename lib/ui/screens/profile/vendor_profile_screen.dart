@@ -55,6 +55,8 @@ class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
         return const StoresTab();
       case 2:
         return const SubscriptionTab();
+      case 3:
+        return AccreditationTab();
       default:
         return const ProfileInformationTab();
     }
@@ -89,39 +91,48 @@ class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
           : Column(
               children: [
                 YBox(10),
-                AnimatedBuilder(
-                  animation: _fadeAnimation,
-                  builder: (context, child) {
-                    return FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Container(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: Sizer.width(16)),
-                        color: colorScheme.white,
-                        child: Row(
-                          children: [
-                            ProfileTab(
-                              title: "Profile Information",
-                              isSelected: currentIndex == 0,
-                              onTap: () => _onTabChanged(0),
+                SizedBox(
+                  height: 55,
+                  child: AnimatedBuilder(
+                      animation: _fadeAnimation,
+                      builder: (context, child) {
+                        return FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: Sizer.width(16)),
+                            color: colorScheme.white,
+                            child: ListView(
+                              scrollDirection: Axis.horizontal,
+                              children: [
+                                ProfileTab(
+                                  title: "Profile Information",
+                                  isSelected: currentIndex == 0,
+                                  onTap: () => _onTabChanged(0),
+                                ),
+                                XBox(30),
+                                ProfileTab(
+                                  title: "Stores",
+                                  isSelected: currentIndex == 1,
+                                  onTap: () => _onTabChanged(1),
+                                ),
+                                XBox(30),
+                                ProfileTab(
+                                  title: "Subscription",
+                                  isSelected: currentIndex == 2,
+                                  onTap: () => _onTabChanged(2),
+                                ),
+                                XBox(30),
+                                ProfileTab(
+                                  title: "Accreditation",
+                                  isSelected: currentIndex == 3,
+                                  onTap: () => _onTabChanged(3),
+                                ),
+                              ],
                             ),
-                            XBox(30),
-                            ProfileTab(
-                              title: "Stores",
-                              isSelected: currentIndex == 1,
-                              onTap: () => _onTabChanged(1),
-                            ),
-                            XBox(30),
-                            ProfileTab(
-                              title: "Subscription",
-                              isSelected: currentIndex == 2,
-                              onTap: () => _onTabChanged(2),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                          ),
+                        );
+                      }),
                 ),
                 Expanded(
                   child: AnimatedSwitcher(

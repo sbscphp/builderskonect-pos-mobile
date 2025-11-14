@@ -32,6 +32,7 @@ class RoutePath {
   // Product
   static const searchAddProductScreen = '/searchAddProductScreen';
   static const addProductScreen = '/addProductScreen';
+  static const promoteProductScreen = '/promoteProductScreen';
   static const addProductRequestScreen = '/addProductRequestScreen';
   static const inventoryScreen = '/inventoryScreen';
   static const viewUploadScreen = '/viewUploadScreen';

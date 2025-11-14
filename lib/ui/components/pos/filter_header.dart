@@ -61,9 +61,11 @@ class NewButtonWidget extends StatelessWidget {
   const NewButtonWidget({
     super.key,
     required this.onTap,
+    this.text = "New"
   });
 
   final VoidCallback onTap;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,7 @@ class NewButtonWidget extends StatelessWidget {
             SvgPicture.asset(AppSvgs.plusCircle2),
             XBox(8),
             Text(
-              "New",
+              text,
               style: textTheme.text14?.medium.copyWith(
                 color: colorScheme.primaryColor,
               ),

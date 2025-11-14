@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:collection/collection.dart';
 
@@ -59,6 +61,7 @@ class StaffVm extends BaseVm {
       {required String fullName,
       required String email,
       required String phone,
+      List<StoreModel>? selectedStores,//optional
       dynamic roleId}) async {
     final body = {
       "name": fullName,
@@ -66,6 +69,10 @@ class StaffVm extends BaseVm {
       "phone": phone,
       "role_id": roleId,
     };
+
+    if(selectedStores != null){
+      body["location_ids"] = selectedStores.map((store) => store.id).toList();
+    }
 
     return await performApiCall(
       url: "/api/v1/merchants/staff",

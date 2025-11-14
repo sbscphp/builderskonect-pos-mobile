@@ -1,4 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/models/network/promotion_fees_model.dart';
+import 'package:builders_konnect/core/models/network/promotion_payment_breakdown_model.dart';
+import 'package:builders_konnect/core/models/network/promotion_response.dart';
 
 class ProductInventoryVm extends BaseVm {
   //page number
@@ -24,7 +27,7 @@ class ProductInventoryVm extends BaseVm {
       ..addQueryParameterIfNotEmpty("product_review", productReview.toString())
       ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
       ..addQueryParameterIfNotEmpty("status", status ?? '')
-      ..addQueryParameterIfNotEmpty("limit", '50')
+      ..addQueryParameterIfNotEmpty("limit", '10')
       ..addQueryParameterIfNotEmpty("paginate", '1');
 
     _inventoryProductModel = null;
@@ -44,6 +47,54 @@ class ProductInventoryVm extends BaseVm {
           _inventoryProductModel =
               inventoryProductModelFromJson(json.encode(data["data"]));
           _inventoryProducts.addAll(_inventoryProductModel?.data?.data ?? []);
+          pageNumber++;
+        }
+
+        return apiResponse;
+      },
+    );
+  }
+
+  InventoryProductModel? _dotdinventoryProductModel;
+  ProductStats? get dotdproductStats => _dotdinventoryProductModel?.stats;
+  List<ProductModel> _dotdinventoryProducts = [];
+  List<ProductModel> get dotdinventoryProducts => _dotdinventoryProducts;
+  Future<ApiResponse> getdotdProducts(
+      {String? q,
+      // bool productReview = false,
+      String? busyObjectName = getState,
+      String? dateFilter,
+      String? status}) async {
+    if (busyObjectName != paginateState) {
+      pageNumber = 1;
+    }
+    UriBuilder uriBuilder =
+        UriBuilder("/api/v1/merchants/inventory-products?page=$pageNumber")
+          ..addQueryParameterIfNotEmpty("q", q ?? '')
+          ..addQueryParameterIfNotEmpty("collection", "deals of the day")
+          ..addQueryParameterIfNotEmpty("date_filter", dateFilter ?? '')
+          ..addQueryParameterIfNotEmpty("status", status ?? '')
+          ..addQueryParameterIfNotEmpty("limit", '50')
+          ..addQueryParameterIfNotEmpty("paginate", '1');
+
+    _dotdinventoryProductModel = null;
+    return await performApiCall(
+      url: uriBuilder.build().toString(),
+      method: apiService.getWithAuth,
+      errorObjectName: busyObjectName,
+      busyObjectName: busyObjectName,
+      onSuccess: (data) {
+        if (busyObjectName != paginateState) {
+          _dotdinventoryProductModel =
+              inventoryProductModelFromJson(json.encode(data['data']));
+          _dotdinventoryProducts = _dotdinventoryProductModel?.data?.data ?? [];
+          pageNumber++;
+          lastPage = _dotdinventoryProductModel?.data?.lastPage;
+        } else {
+          _dotdinventoryProductModel =
+              inventoryProductModelFromJson(json.encode(data["data"]));
+          _dotdinventoryProducts
+              .addAll(_dotdinventoryProductModel?.data?.data ?? []);
           pageNumber++;
         }
 
@@ -221,6 +272,114 @@ class ProductInventoryVm extends BaseVm {
       errorObjectName: createState,
       busyObjectName: createState,
       body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> updateDiscountPrice(
+      {required String discountPrice, required String productId}) async {
+    final body = {"current_price": discountPrice};
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products/$productId/edit-quantity",
+      method: apiService.putWithAuth,
+      errorObjectName: updateState,
+      busyObjectName: updateState,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  PromotionFeesResponse? _promotionFeesResponse;
+  PromotionFeesResponse? get promotionFeesResponse => _promotionFeesResponse;
+
+  FeeData? selectedFeeData;
+
+  Future<ApiResponse> fetchPromotionFees() async {
+    selectedFeeData = null;
+    _paymentBreakdownResponse = null;
+    return await performApiCall(
+      url: "/api/v1/super_admin/fees?charge_usage=promotions&paginate=0",
+      method: apiService.getWithAuth,
+      errorObjectName: getFeesState,
+      busyObjectName: getFeesState,
+      onSuccess: (data) {
+        _promotionFeesResponse = PromotionFeesResponse.fromJson(data);
+        return apiResponse;
+      },
+    );
+  }
+
+  PaymentBreakdownResponse? _paymentBreakdownResponse;
+  PaymentBreakdownResponse? get paymentBreakdownResponse =>
+      _paymentBreakdownResponse;
+  set paymentBreakdownResponse(PaymentBreakdownResponse? val) {
+    _paymentBreakdownResponse = val;
+    notifyListeners();
+  }
+
+  Future<ApiResponse> getPaymentBreakdown(
+      {DateTime? startDate, DateTime? endDate}) async {
+    final body = {
+      "start_date": startDate?.toIso8601String().split("T").first,
+      "end_date": endDate?.toIso8601String().split("T").first,
+      "promotion_type":
+          selectedFeeData?.name?.toLowerCase().contains("regular") ?? false
+              ? "regular"
+              : "deluxe",
+    };
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products/promotions/payment-breakdown",
+      method: apiService.postWithAuth,
+      errorObjectName: paymentBreakdownState,
+      busyObjectName: paymentBreakdownState,
+      body: body,
+      onSuccess: (data) {
+        _paymentBreakdownResponse = PaymentBreakdownResponse.fromJson(data);
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> creatPromotion(
+      {required String productId,
+      String? callbackUrl,
+      DateTime? startDate,
+      DateTime? endDate}) async {
+    final body = {
+      "product_id": productId,
+      "start_date": startDate?.toIso8601String().split("T").first,
+      "end_date": endDate?.toIso8601String().split("T").first,
+      "amount_paid": _paymentBreakdownResponse?.data?.total
+          ?.substring(1)
+          .replaceAll(",", ''),
+      "callback_url": callbackUrl,
+      "promotion_type":
+          selectedFeeData?.name?.toLowerCase().contains("regular") ?? false
+              ? "regular"
+              : "deluxe",
+    };
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products/promotions",
+      method: apiService.postWithAuth,
+      errorObjectName: createPromotionState,
+      busyObjectName: createPromotionState,
+      body: body,
+      onSuccess: (data) {
+        return apiResponse;
+      },
+    );
+  }
+
+  Future<ApiResponse> verifyPayment(String? reference) async {
+    return await performApiCall(
+      url: "/api/v1/merchants/inventory-products/promotions/$reference/verify",
+      method: apiService.getWithAuth,
+      errorObjectName: getState,
+      busyObjectName: getState,
       onSuccess: (data) {
         return apiResponse;
       },

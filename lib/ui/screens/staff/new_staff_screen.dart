@@ -18,6 +18,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
   final roleC = TextEditingController();
   final assignStoreC = TextEditingController();
   dynamic roleId;
+  List<StoreModel> selectedStores = [];
 
   @override
   void dispose() {
@@ -140,6 +141,21 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                     // validator: Validators.required(),//optional
                     onTap: () async {
                       //todo:: handle store bit here
+                      final res = await ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: StoresSelectionModal(),
+                      );
+                      if (res is List<StoreModel>) {
+                        selectedStores.clear();
+                        assignStoreC.clear();
+                        selectedStores = res;
+                        var ctrlText = "";
+                        for (var element in res) {
+                          ctrlText = "$ctrlText${element.name ?? ""}, ";
+                        }
+                        assignStoreC.text = ctrlText.replaceRange((ctrlText.length - 2), null, '');
+                        setState(() {});
+                      }
                     },
                   ),
                   YBox(20),
@@ -151,6 +167,7 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                             fullName: fullNameC.text,
                             email: emailC.text,
                             phone: phoneC.text,
+                            selectedStores: selectedStores,
                             roleId: roleId);
 
                         handleApiResponse(
