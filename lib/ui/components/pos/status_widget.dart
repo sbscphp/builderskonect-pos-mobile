@@ -42,12 +42,12 @@ class _OrderStatusState extends State<OrderStatus> {
     final colorScheme = Theme.of(context).colorScheme;
     switch (status) {
       case "processing":
+      case "pending":
         return {
           "bgColor": AppColors.yellowE6,
           "textColor": AppColors.yellow6,
           "borderColor": AppColors.yellow3
         };
-      case "pending":
       case "not active":
       case "deactivated":
       case "declined":

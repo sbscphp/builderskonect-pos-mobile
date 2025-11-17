@@ -90,6 +90,12 @@ class AppRouter {
           settings,
         );
 
+      case RoutePath.accreditationScreen:
+        return TransitionUtils.buildTransition(
+          const AccreditationScreen(),
+          settings,
+        );
+
       case RoutePath.editBusinessProfileScreen:
         if (args is Business) {
           return TransitionUtils.buildTransition(

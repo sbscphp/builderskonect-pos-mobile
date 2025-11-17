@@ -23,3 +23,4 @@ export 'subscription_vm.dart';
 export 'theme_view_model.dart';
 export 'user_profile_vm.dart';
 export 'vendor_profile_vm.dart';
+export 'accreditation_vm.dart';

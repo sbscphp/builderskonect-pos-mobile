@@ -20,6 +20,7 @@ class RoutePath {
   static const editBusinessProfileScreen = '/editBusinessProfileScreen';
   static const editFinanceScreen = '/editFinanceScreen';
   static const editDocumentsScreen = '/editDocumentScreen';
+  static const accreditationScreen = '/accreditationScreen';
 
   // Subscription Plans
   static const pricingPlansScreen = '/pricingPlansScreen';

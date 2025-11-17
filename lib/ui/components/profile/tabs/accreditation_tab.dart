@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
@@ -10,13 +12,47 @@ class AccreditationTab extends ConsumerStatefulWidget {
 
 class _AccreditationTabState extends ConsumerState<AccreditationTab> {
   final searchC = TextEditingController();
+  final searchFocus = FocusNode();
+  final _scrollController = ScrollController();
+  Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // ref.read(subscriptionVModel).getSubcriptionHistory();
+      ref.read(accreditationVm).getAccreditaions();
+      _scrollListener();
     });
+  }
+
+  _scrollListener() {
+    final vm = ref.watch(accreditationVm);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        if (!vm.busy(paginateState) && vm.pageNumber <= (vm.lastPage ?? 1)) {
+          vm.getAccreditaions(busyObjectName: paginateState);
+        }
+      }
+    });
+  }
+
+  void _performSearch(String query) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      final vm = ref.read(accreditationVm);
+      vm.getAccreditaions(
+        q: query.trim(),
+        busyObjectName: searchState,
+      );
+    });
+  }
+
+  void _clearSearch() {
+    searchC.clear();
+    final vm = ref.read(accreditationVm);
+    vm.getAccreditaions();
   }
 
   @override
@@ -29,10 +65,10 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final subscriptionVm = ref.watch(subscriptionVModel);
+    final vm = ref.watch(accreditationVm);
 
     return LoadableContentBuilder(
-        isBusy: subscriptionVm.isBusy,
+        isBusy: vm.busy(getState),
         loadingBuilder: (ctx) {
           return SizerLoader(
             height: double.infinity,
@@ -51,10 +87,11 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
         contentBuilder: (ctx) {
           return RefreshIndicator(
             onRefresh: () async {
-              subscriptionVm.getSubcriptionHistory();
+              vm.getAccreditaions();
             },
             child: ListView(
               padding: EdgeInsets.symmetric(horizontal: Sizer.width(16)),
+              controller: _scrollController,
               children: [
                 YBox(16),
                 Container(
@@ -70,9 +107,11 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
                         title: "Accreditation List",
                         subTitle:
                             "This shows the manufacturers you are accredited with.",
-                        // onFilter: () {},
                         trailingWidget: NewButtonWidget(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutePath.accreditationScreen);
+                          },
                           text: "Add",
                         ),
                       ),
@@ -83,15 +122,15 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
                         isRequired: false,
                         showLabelHeader: false,
                         hintText: "Search",
-                        onChanged: (value) {
-                          setState(() {});
-                        },
+                        onChanged: _performSearch,
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             if (searchC.text.isNotEmpty)
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  _clearSearch();
+                                },
                                 child: Padding(
                                   padding: EdgeInsets.all(Sizer.width(10)),
                                   child: Icon(
@@ -118,20 +157,54 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
                         ),
                       ),
                       YBox(10),
-                      ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(
-                          top: Sizer.height(14),
-                          bottom: Sizer.height(50),
+                      LoadableContentBuilder(
+                          isBusy: vm.busy(getState),
+                          items: vm.brandCertificates,
+                          loadingBuilder: (context) {
+                            return SizerLoader(height: 300);
+                          },
+                          emptyBuilder: (context) {
+                            return SizedBox(
+                              height: Sizer.height(240),
+                              child: EmptyListState(
+                                text: "No data",
+                              ),
+                            );
+                          },
+                          contentBuilder: (context) {
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: EdgeInsets.only(
+                                top: Sizer.height(14),
+                                bottom: Sizer.height(50),
+                              ),
+                              itemCount: vm.brandCertificates.length,
+                              separatorBuilder: (_, __) => HDivider(),
+                              itemBuilder: (ctx, i) {
+                                final item = vm.brandCertificates[i];
+                                return AccreditationTile(
+                                  item: item,
+                                );
+                              },
+                            );
+                          }),
+                      if (vm.busy(paginateState))
+                        SpinKitLoader(
+                          size: 16,
+                          color: AppColors.neutral5,
                         ),
-                        itemCount: subscriptionVm.subscriptionHistory.length,
-                        separatorBuilder: (_, __) => HDivider(),
-                        itemBuilder: (ctx, i) {
-                          final item = subscriptionVm.subscriptionHistory[i];
-                          return AccreditationTile();
-                        },
-                      ),
+                      if (vm.error(paginateState))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ErrorState(
+                            onPressed: () {
+                              vm.getAccreditaions(
+                                  busyObjectName: paginateState);
+                            },
+                            isPaginationType: true,
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -144,8 +217,9 @@ class _AccreditationTabState extends ConsumerState<AccreditationTab> {
 
 class AccreditationTile extends StatelessWidget {
   final VoidCallback? onTap;
+  final Certificate item;
 
-  const AccreditationTile({super.key, this.onTap});
+  const AccreditationTile({super.key, this.onTap, required this.item});
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +234,7 @@ class AccreditationTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Sterling Bosch",
+                  item.brand?.name ?? "---",
                   style:
                       textTheme.text14?.medium.copyWith(color: AppColors.black),
                 ),
@@ -176,7 +250,7 @@ class AccreditationTile extends StatelessWidget {
                         ),
                       ),
                       TextSpan(
-                        text: "12345708",
+                        text: item.certificateNo ?? "---",
                         style: textTheme.text12?.copyWith(
                           color: colorScheme.primaryColor,
                           fontFamily: "Roboto",
@@ -191,28 +265,30 @@ class AccreditationTile extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              OrderStatus(status: "active"),
+              OrderStatus(status: item.status ?? ''),
               YBox(8),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      text: "Expiring: ",
-                      style: textTheme.text12?.medium.copyWith(
-                        color: colorScheme.black85,
-                        fontFamily: "Roboto",
+              if (item.certificateExpiryDate != null)
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text: "Expiring: ",
+                        style: textTheme.text12?.medium.copyWith(
+                          color: colorScheme.black85,
+                          fontFamily: "Roboto",
+                        ),
                       ),
-                    ),
-                    TextSpan(
-                      text: AppUtils.dateFirstYear(DateTime.now()),
-                      style: textTheme.text12?.medium.copyWith(
-                        color: AppColors.gray500,
-                        fontFamily: "Roboto",
+                      TextSpan(
+                        text: AppUtils.dateFirstYear(
+                            DateTime.parse(item.certificateExpiryDate ?? "")),
+                        style: textTheme.text12?.medium.copyWith(
+                          color: AppColors.gray500,
+                          fontFamily: "Roboto",
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ],

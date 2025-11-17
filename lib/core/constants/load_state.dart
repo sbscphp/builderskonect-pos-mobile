@@ -34,3 +34,7 @@ const String paymentBreakdownState = 'paymentBreakdownState';
 const String getFeesState = 'getFeesState';
 const String createPromotionState = 'createPromotionState';
 
+//accreditation
+const String getBrandState = 'getBrandState';
+const String createAccreditationState = 'createAccreditationState';
+

@@ -38,6 +38,7 @@ class _ConfirmationModalState extends ConsumerState<ConfirmationModal> {
           YBox(16),
           Text(
             widget.modalConfirmationArg.title,
+            textAlign: TextAlign.center,
             style: textTheme.text20?.medium,
           ),
           YBox(4),
