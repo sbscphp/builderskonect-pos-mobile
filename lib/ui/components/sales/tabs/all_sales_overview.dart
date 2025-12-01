@@ -20,8 +20,11 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      final salesVm = ref.watch(salesVmodel);
       _scrollListener();
-      ref.read(salesVmodel).getSalesOverview();
+      if (salesVm.salesData.isEmpty) {
+        ref.read(salesVmodel).getSalesOverview();
+      }
     });
   }
 
@@ -82,7 +85,13 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
 
       return RefreshIndicator(
         onRefresh: () async {
-          salesVm.getSalesOverview();
+          // Trigger manual sync if online
+          // final connectivityVm = ref.read(connectivityViewModelProvider);
+          // if (connectivityVm.isOnline) {
+          //   await connectivityVm.triggerManualSync();
+          // }
+          // Refresh sales overview
+          await salesVm.getSalesOverview();
         },
         child: ListView(
           padding: EdgeInsets.only(
@@ -209,7 +218,7 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                     controller: searchC,
                     isRequired: false,
                     showLabelHeader: false,
-                    hintText: "Search by product id, name etc.",
+                    hintText: "Search by order id, name etc",
                     onChanged: (value) {
                       setState(() {});
                       _performSearch(value);
@@ -307,6 +316,82 @@ class _AllSalesOverviewState extends ConsumerState<AllSalesOverview> {
                 ],
               ),
             ),
+            // TODO: Offline Orders Section
+            // if (salesVm.offlineSalesOrders.isNotEmpty) ...[
+            //   YBox(16),
+            //   Container(
+            //     padding: EdgeInsets.all(Sizer.radius(16)),
+            //     decoration: BoxDecoration(
+            //       color: colorScheme.white,
+            //       borderRadius: BorderRadius.circular(Sizer.radius(4)),
+            //     ),
+            //     child: Column(
+            //       crossAxisAlignment: CrossAxisAlignment.start,
+            //       children: [
+            //         FilterHeader(
+            //           title: "Offline Orders",
+            //           subTitle: "Orders created while offline",
+            //           onFilter: () {},
+            //         ),
+            //         YBox(16),
+            //         ListView.separated(
+            //           shrinkWrap: true,
+            //           physics: const NeverScrollableScrollPhysics(),
+            //           itemCount: salesVm.offlineSalesOrders.length,
+            //           separatorBuilder: (_, __) => HDivider(),
+            //           itemBuilder: (ctx, i) {
+            //             final offlineOrder = salesVm.offlineSalesOrders[i];
+            //             return Container(
+            //               padding: EdgeInsets.all(Sizer.radius(12)),
+            //               child: Row(
+            //                 children: [
+            //                   Expanded(
+            //                     child: Column(
+            //                       crossAxisAlignment: CrossAxisAlignment.start,
+            //                       children: [
+            //                         Text(
+            //                           "Local Order #${offlineOrder.localId.substring(0, 8)}",
+            //                           style: Theme.of(context)
+            //                               .textTheme
+            //                               .bodyMedium
+            //                               ?.copyWith(
+            //                                 fontWeight: FontWeight.w600,
+            //                               ),
+            //                         ),
+            //                         YBox(4),
+            //                         Text(
+            //                           "Customer: ${offlineOrder.order.customer?.name ?? 'N/A'}",
+            //                           style:
+            //                               Theme.of(context).textTheme.bodySmall,
+            //                         ),
+            //                         YBox(4),
+            //                         Text(
+            //                           "Items: ${offlineOrder.order.lineItems?.length ?? 0}",
+            //                           style:
+            //                               Theme.of(context).textTheme.bodySmall,
+            //                         ),
+            //                         YBox(4),
+            //                         Text(
+            //                           "Created: ${AppUtils.dayWithSuffixMonthAndYear(offlineOrder.createdAt)}",
+            //                           style:
+            //                               Theme.of(context).textTheme.bodySmall,
+            //                         ),
+            //                       ],
+            //                     ),
+            //                   ),
+            //                   OrderSyncStatusBadge(
+            //                     status: offlineOrder.syncStatus,
+            //                     retryCount: offlineOrder.retryCount,
+            //                   ),
+            //                 ],
+            //               ),
+            //             );
+            //           },
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ],
           ],
         ),
       );

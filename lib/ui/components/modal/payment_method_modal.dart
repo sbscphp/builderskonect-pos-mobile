@@ -2,7 +2,9 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class PaymentMethodModal extends ConsumerStatefulWidget {
-  const PaymentMethodModal({super.key});
+  const PaymentMethodModal({super.key, this.isPausedSale = false});
+
+  final bool isPausedSale;
 
   @override
   ConsumerState<PaymentMethodModal> createState() => _PaymentMethodModalState();
@@ -106,9 +108,11 @@ class _PaymentMethodModalState extends ConsumerState<PaymentMethodModal> {
                         text: "Next",
                         online: selectedPaymentMethods.isNotEmpty,
                         onTap: () {
+                          Navigator.of(context).pop();
                           ModalWrapper.bottomSheet(
                               context: context,
                               widget: PaymentBreakdownModal(
+                                isPausedSale: widget.isPausedSale,
                                 paymentMethods: selectedPaymentMethods,
                               ));
                         },

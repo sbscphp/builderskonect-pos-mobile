@@ -115,10 +115,13 @@ class AppRouter {
         return errorScreen(settings);
 
       case RoutePath.editDocumentsScreen:
-        return TransitionUtils.buildTransition(
-          const EditDocumentsScreen(),
-          settings,
-        );
+        if (args is Documents) {
+          return TransitionUtils.buildTransition(
+            EditDocumentsScreen(documents: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
 
       // Settings
       case RoutePath.settingScreen:
@@ -341,6 +344,22 @@ class AppRouter {
           );
         }
         return errorScreen(settings);
+
+      case RoutePath.viewOrderReceiptScreen:
+        final args = settings.arguments as String?;
+        if (args != null) {
+          return TransitionUtils.buildTransition(
+            ViewOrderReceiptScreen(id: args),
+            settings,
+          );
+        }
+        return errorScreen(settings);
+
+      case RoutePath.offlineSalesScreeen:
+        return TransitionUtils.buildTransition(
+          const OfflineSalesScreen(),
+          settings,
+        );
 
       // Returns
       case RoutePath.returnRefundScreen:

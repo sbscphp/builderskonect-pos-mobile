@@ -137,7 +137,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
           width: double.infinity,
           decoration: BoxDecoration(
               //color: ColorPath.athensGrey2,
-              color: widget.bgColor,
+              // color: widget.bgColor,
               //border: Border.all(color: ColorPath.mischkaGrey, width: 1.w),
               borderRadius: BorderRadius.all(
                   Radius.circular(Sizer.radius(widget.borderRadius)))

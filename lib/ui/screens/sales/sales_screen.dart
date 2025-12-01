@@ -95,6 +95,10 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                         value: 'order_analytics',
                         child: Text('Order Analytics', style: textTheme.text14),
                       ),
+                      PopupMenuItem(
+                        value: 'offline_sales',
+                        child: Text('Offline Sales', style: textTheme.text14),
+                      ),
                     ],
                   ).then((value) {
                     if (value != null) {
@@ -112,6 +116,11 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                           Navigator.pushNamed(
                               context, RoutePath.orderAnalyticsScreen);
                           break;
+                        case 'offline_sales':
+                          Navigator.pushNamed(
+                              context, RoutePath.offlineSalesScreeen);
+                          break;
+
                         default:
                           break;
                       }

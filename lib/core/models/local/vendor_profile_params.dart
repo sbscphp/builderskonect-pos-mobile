@@ -14,6 +14,10 @@ class VendorProfileParams {
   final String? accountName;
   final List<Media>? media;
 
+  final String? stateId;
+  final String? cityId;
+  final String? postalCode;
+
   VendorProfileParams({
     this.name,
     this.email,
@@ -27,6 +31,9 @@ class VendorProfileParams {
     this.bankName,
     this.accountName,
     this.media,
+    this.stateId,
+    this.cityId,
+    this.postalCode,
   });
 
   Map<String, dynamic> toMap() {
@@ -43,6 +50,9 @@ class VendorProfileParams {
       'bankName': bankName,
       'accountName': accountName,
       'media': media?.map((x) => x.toJson()).toList(),
+      'state_id': stateId,
+      'city_id': cityId,
+      'postal_code': postalCode,
     };
   }
 }

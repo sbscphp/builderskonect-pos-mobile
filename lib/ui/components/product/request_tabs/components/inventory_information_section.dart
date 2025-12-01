@@ -16,6 +16,12 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     required this.measurementC,
     required this.dimensionC,
     this.dimensionUnitC,
+
+    // Separate dimension controllers
+    this.lengthC,
+    this.widthC,
+    this.heightC,
+    this.diameterC,
     required this.weightPerSellUnitC,
     required this.weightPerUnitItemC,
     required this.reorderLevelC,
@@ -38,6 +44,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
     this.onRemoveAdditionalImageAt,
     this.onUnitSelectionChanged,
     this.onDimensionUnitChanged,
+    this.onDimensionTypeChanged,
   });
 
   final TextEditingController sellingUnitC;
@@ -47,6 +54,13 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final TextEditingController measurementC;
   final TextEditingController dimensionC;
   final TextEditingController? dimensionUnitC;
+
+  // Separate dimension controllers
+  final TextEditingController? lengthC;
+  final TextEditingController? widthC;
+  final TextEditingController? heightC;
+  final TextEditingController? diameterC;
+
   final TextEditingController weightPerSellUnitC;
   final TextEditingController weightPerUnitItemC;
   final TextEditingController reorderLevelC;
@@ -69,6 +83,7 @@ class InventoryInformationSection extends ConsumerStatefulWidget {
   final Function(int)? onRemoveAdditionalImageAt;
   final Function(String)? onUnitSelectionChanged;
   final Function(String)? onDimensionUnitChanged;
+  final Function(String)? onDimensionTypeChanged;
 
   @override
   ConsumerState<InventoryInformationSection> createState() =>
@@ -89,6 +104,15 @@ class _InventoryInformationSectionState
     if (widget.sellingUnitC.text.isNotEmpty) {
       selectedSubUnit = widget.sellingUnitC.text;
     }
+  }
+
+  // Helper method to clear dimension values when switching dimension types
+  void _clearDimensionValues() {
+    widget.dimensionC.clear();
+    widget.lengthC?.clear();
+    widget.widthC?.clear();
+    widget.heightC?.clear();
+    widget.diameterC?.clear();
   }
 
   // String? selectedMeasuremrntUnit;
@@ -179,6 +203,10 @@ class _InventoryInformationSectionState
                 showTrailing: false,
                 onTap: () {
                   Navigator.pop(context);
+
+                  // Clear dimension values when switching dimension types
+                  _clearDimensionValues();
+
                   selectedMeasureSubOption = subUnit;
                   dimensionUnits = getUnitsForDimensionUnit(subUnit.id);
                   if (dimensionUnits.isNotEmpty) {
@@ -193,6 +221,12 @@ class _InventoryInformationSectionState
                     }
                   }
                   widget.measurementC.text = subUnit.label;
+
+                  // Notify parent about dimension type change
+                  if (widget.onDimensionTypeChanged != null) {
+                    widget.onDimensionTypeChanged!(subUnit.id);
+                  }
+
                   setState(() {});
                 },
               ),
@@ -364,6 +398,17 @@ class _InventoryInformationSectionState
           suffixIcon: SuffixBox(
             text: selectedSubUnit ?? "",
           ),
+          validator: (value) {
+            if (value != null && value.isNotEmpty) {
+              final stockQty = int.tryParse(value) ?? 0;
+              final minOrderQty =
+                  int.tryParse(widget.minOrderQty.text.trim()) ?? 0;
+              if (minOrderQty > 0 && stockQty > 0 && stockQty < minOrderQty) {
+                return 'Stock quantity must not be lower than minimum order quantity';
+              }
+            }
+            return null;
+          },
         ),
         YBox(16),
         CustomTextField(
@@ -435,53 +480,316 @@ class _InventoryInformationSectionState
           },
         ),
         YBox(16),
-        CustomTextField(
-          controller: widget.dimensionC,
-          labelText: 'Dimension',
-          hintText: 'Enter value',
-          showLabelHeader: true,
-          isRequired: false,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          suffixIcon: InkWell(
-            key: _dimensionMenuAnchorKey,
-            onTapDown: (details) {
-              final position =
-                  _computeMenuPosition(globalPosition: details.globalPosition);
-              showMenu(
-                context: context,
-                color: AppColors.white,
-                position: position,
-                items: List.generate(
-                  dimensionUnits.length,
-                  (index) => PopupMenuItem(
-                    value: dimensionUnits[index],
-                    child: Text(
-                      dimensionUnits[index],
-                      style: textTheme.text14,
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            "Dimension",
+            style: textTheme.text14?.copyWith(fontWeight: FontWeight.w500),
+          ),
+        ),
+        if (selectedMeasureSubOption?.id == 'L×W×H')
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomTextField(
+                      controller: widget.lengthC ?? widget.dimensionC,
+                      showLabelHeader: false,
+                      hintText: 'Length (L)',
+                      isRequired: false,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      suffixIcon: InkWell(
+                        onTapDown: (details) {
+                          final position = _computeMenuPosition(
+                              globalPosition: details.globalPosition);
+                          showMenu(
+                            context: context,
+                            color: AppColors.white,
+                            position: position,
+                            items: List.generate(
+                              dimensionUnits.length,
+                              (index) => PopupMenuItem(
+                                value: dimensionUnits[index],
+                                child: Text(
+                                  dimensionUnits[index],
+                                  style: textTheme.text14,
+                                ),
+                              ),
+                            ),
+                          ).then((value) {
+                            // Handle the selected option
+                            if (value != null) {
+                              selectedDimensionUnit = value;
+                              // propagate to controller and parent callback
+                              if (widget.dimensionUnitC != null) {
+                                widget.dimensionUnitC!.text =
+                                    selectedDimensionUnit ?? '';
+                              }
+                              if (widget.onDimensionUnitChanged != null) {
+                                widget.onDimensionUnitChanged!(value);
+                              }
+                              setState(() {});
+                            }
+                          });
+                        },
+                        child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+                      ),
                     ),
                   ),
+                  XBox(10),
+                  Expanded(
+                    child: CustomTextField(
+                      controller: widget.widthC ?? widget.dimensionC,
+                      showLabelHeader: false,
+                      hintText: 'Width (W)',
+                      isRequired: false,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                      suffixIcon: InkWell(
+                        onTapDown: (details) {
+                          final position = _computeMenuPosition(
+                              globalPosition: details.globalPosition);
+                          showMenu(
+                            context: context,
+                            color: AppColors.white,
+                            position: position,
+                            items: List.generate(
+                              dimensionUnits.length,
+                              (index) => PopupMenuItem(
+                                value: dimensionUnits[index],
+                                child: Text(
+                                  dimensionUnits[index],
+                                  style: textTheme.text14,
+                                ),
+                              ),
+                            ),
+                          ).then((value) {
+                            // Handle the selected option
+                            if (value != null) {
+                              selectedDimensionUnit = value;
+                              // propagate to controller and parent callback
+                              if (widget.dimensionUnitC != null) {
+                                widget.dimensionUnitC!.text =
+                                    selectedDimensionUnit ?? '';
+                              }
+                              if (widget.onDimensionUnitChanged != null) {
+                                widget.onDimensionUnitChanged!(value);
+                              }
+                              setState(() {});
+                            }
+                          });
+                        },
+                        child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              YBox(16),
+              CustomTextField(
+                controller: widget.heightC ?? widget.dimensionC,
+                showLabelHeader: false,
+                hintText: 'Height (H)',
+                isRequired: false,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                ],
+                suffixIcon: InkWell(
+                  onTapDown: (details) {
+                    final position = _computeMenuPosition(
+                        globalPosition: details.globalPosition);
+                    showMenu(
+                      context: context,
+                      color: AppColors.white,
+                      position: position,
+                      items: List.generate(
+                        dimensionUnits.length,
+                        (index) => PopupMenuItem(
+                          value: dimensionUnits[index],
+                          child: Text(
+                            dimensionUnits[index],
+                            style: textTheme.text14,
+                          ),
+                        ),
+                      ),
+                    ).then((value) {
+                      // Handle the selected option
+                      if (value != null) {
+                        selectedDimensionUnit = value;
+                        // propagate to controller and parent callback
+                        if (widget.dimensionUnitC != null) {
+                          widget.dimensionUnitC!.text =
+                              selectedDimensionUnit ?? '';
+                        }
+                        if (widget.onDimensionUnitChanged != null) {
+                          widget.onDimensionUnitChanged!(value);
+                        }
+                        setState(() {});
+                      }
+                    });
+                  },
+                  child: SuffixBox(text: selectedDimensionUnit ?? "-"),
                 ),
-          ).then((value) {
-            // Handle the selected option
-            if (value != null) {
-              selectedDimensionUnit = value;
-              // propagate to controller and parent callback
-              if (widget.dimensionUnitC != null) {
-                widget.dimensionUnitC!.text = selectedDimensionUnit ?? '';
-              }
-              if (widget.onDimensionUnitChanged != null) {
-                widget.onDimensionUnitChanged!(value);
-              }
-              setState(() {});
-            }
-          });
-        },
-        child: SuffixBox(text: selectedDimensionUnit ?? "-"),
-      ),
-        ),
+              ),
+            ],
+          )
+        else if (selectedMeasureSubOption?.id == 'L×D')
+          Row(
+            children: [
+              Expanded(
+                child: CustomTextField(
+                  controller: widget.lengthC ?? widget.dimensionC,
+                  showLabelHeader: false,
+                  hintText: 'Length (L)',
+                  isRequired: false,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  suffixIcon: InkWell(
+                    onTapDown: (details) {
+                      final position = _computeMenuPosition(
+                          globalPosition: details.globalPosition);
+                      showMenu(
+                        context: context,
+                        color: AppColors.white,
+                        position: position,
+                        items: List.generate(
+                          dimensionUnits.length,
+                          (index) => PopupMenuItem(
+                            value: dimensionUnits[index],
+                            child: Text(
+                              dimensionUnits[index],
+                              style: textTheme.text14,
+                            ),
+                          ),
+                        ),
+                      ).then((value) {
+                        // Handle the selected option
+                        if (value != null) {
+                          selectedDimensionUnit = value;
+                          // propagate to controller and parent callback
+                          if (widget.dimensionUnitC != null) {
+                            widget.dimensionUnitC!.text =
+                                selectedDimensionUnit ?? '';
+                          }
+                          if (widget.onDimensionUnitChanged != null) {
+                            widget.onDimensionUnitChanged!(value);
+                          }
+                          setState(() {});
+                        }
+                      });
+                    },
+                    child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+                  ),
+                ),
+              ),
+              XBox(10),
+              Expanded(
+                child: CustomTextField(
+                  controller: widget.diameterC ?? widget.dimensionC,
+                  showLabelHeader: false,
+                  hintText: 'Diameter (D)',
+                  isRequired: false,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.digitsOnly,
+                  ],
+                  suffixIcon: InkWell(
+                    onTapDown: (details) {
+                      final position = _computeMenuPosition(
+                          globalPosition: details.globalPosition);
+                      showMenu(
+                        context: context,
+                        color: AppColors.white,
+                        position: position,
+                        items: List.generate(
+                          dimensionUnits.length,
+                          (index) => PopupMenuItem(
+                            value: dimensionUnits[index],
+                            child: Text(
+                              dimensionUnits[index],
+                              style: textTheme.text14,
+                            ),
+                          ),
+                        ),
+                      ).then((value) {
+                        // Handle the selected option
+                        if (value != null) {
+                          selectedDimensionUnit = value;
+                          // propagate to controller and parent callback
+                          if (widget.dimensionUnitC != null) {
+                            widget.dimensionUnitC!.text =
+                                selectedDimensionUnit ?? '';
+                          }
+                          if (widget.onDimensionUnitChanged != null) {
+                            widget.onDimensionUnitChanged!(value);
+                          }
+                          setState(() {});
+                        }
+                      });
+                    },
+                    child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+                  ),
+                ),
+              ),
+            ],
+          )
+        else
+          CustomTextField(
+            controller: widget.dimensionC,
+            showLabelHeader: false,
+            hintText: 'Enter value',
+            isRequired: false,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            suffixIcon: InkWell(
+              key: _dimensionMenuAnchorKey,
+              onTapDown: (details) {
+                final position = _computeMenuPosition(
+                    globalPosition: details.globalPosition);
+                showMenu(
+                  context: context,
+                  color: AppColors.white,
+                  position: position,
+                  items: List.generate(
+                    dimensionUnits.length,
+                    (index) => PopupMenuItem(
+                      value: dimensionUnits[index],
+                      child: Text(
+                        dimensionUnits[index],
+                        style: textTheme.text14,
+                      ),
+                    ),
+                  ),
+                ).then((value) {
+                  // Handle the selected option
+                  if (value != null) {
+                    selectedDimensionUnit = value;
+                    // propagate to controller and parent callback
+                    if (widget.dimensionUnitC != null) {
+                      widget.dimensionUnitC!.text = selectedDimensionUnit ?? '';
+                    }
+                    if (widget.onDimensionUnitChanged != null) {
+                      widget.onDimensionUnitChanged!(value);
+                    }
+                    setState(() {});
+                  }
+                });
+              },
+              child: SuffixBox(text: selectedDimensionUnit ?? "-"),
+            ),
+          ),
         YBox(16),
         CustomTextField(
           controller: widget.weightPerSellUnitC,

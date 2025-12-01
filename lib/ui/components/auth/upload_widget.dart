@@ -9,6 +9,7 @@ class UploadWidget extends StatelessWidget {
     this.labelText,
     this.uploadText,
     this.isUploading = false,
+    this.isFile = true,
     this.onUpload,
     this.onRemove,
   });
@@ -18,6 +19,7 @@ class UploadWidget extends StatelessWidget {
   final String? labelText;
   final String? uploadText;
   final bool isUploading;
+  final bool isFile;
   final VoidCallback? onUpload;
   final VoidCallback? onRemove;
 
@@ -78,31 +80,33 @@ class UploadWidget extends StatelessWidget {
               else
                 Row(
                   children: [
-                    InkWell(
-                      onTap: !isUploading ? onUpload : null,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: Sizer.width(16),
-                          vertical: Sizer.height(16),
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: AppColors.neutral5),
-                          borderRadius: BorderRadius.circular(Sizer.radius(2)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            SvgPicture.asset(AppSvgs.upload),
-                            XBox(8),
-                            Text(
-                              uploadText ?? "Click to upload certificate",
-                              style: textTheme.text14,
-                            ),
-                          ],
+                    Expanded(
+                      child: InkWell(
+                        onTap: !isUploading ? onUpload : null,
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: Sizer.width(16),
+                            vertical: Sizer.height(12),
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: AppColors.neutral5),
+                            borderRadius:
+                                BorderRadius.circular(Sizer.radius(2)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SvgPicture.asset(AppSvgs.upload),
+                              XBox(8),
+                              Text(
+                                uploadText ?? "Click to upload certificate",
+                                style: textTheme.text14,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                    Spacer(),
                     if (isUploading) CupertinoActivityIndicator()
                   ],
                 ),

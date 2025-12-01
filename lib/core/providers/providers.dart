@@ -4,6 +4,7 @@ export 'barcode_scanner_vm.dart';
 export 'base_vm.dart';
 export 'catalogue_vm.dart';
 export 'categories_vm.dart';
+export 'connectivity_vm.dart';
 export 'customer_vm.dart';
 export 'dashboard_vm.dart';
 export 'discount_vm.dart';

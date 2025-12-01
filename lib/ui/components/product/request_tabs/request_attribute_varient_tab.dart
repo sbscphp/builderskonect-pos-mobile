@@ -35,6 +35,13 @@ class _RequestAttributeVarientTabState
   final measurementC = TextEditingController();
   final dimensionC = TextEditingController();
   final dimensionUnitC = TextEditingController();
+
+  // Separate dimension controllers for different dimension types
+  final lengthC = TextEditingController();
+  final widthC = TextEditingController();
+  final heightC = TextEditingController();
+  final diameterC = TextEditingController();
+
   final weightPerSellUnitC = TextEditingController();
   final weightPerUnitItemC = TextEditingController();
   final reorderLevelC = TextEditingController();
@@ -98,6 +105,23 @@ class _RequestAttributeVarientTabState
   // Validation tracking
   Map<int, Map<String, String>> variantValidationErrors = {};
   Set<String> usedVariantCombinations = {};
+  bool _isFormValid = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupValidationListeners();
+  }
+
+  // Setup validation listeners for real-time validation
+  void _setupValidationListeners() {
+    // Add listeners to single product controllers
+    stockQtyC.addListener(_validateForm);
+    minOrderQty.addListener(_validateForm);
+    costPricePerUnitC.addListener(_validateForm);
+    sellingPricePerUnitC.addListener(_validateForm);
+    sellingUnitC.addListener(_validateForm);
+  }
 
   // Unit synchronization methods
   void _onSingleProductUnitChanged(String selectedUnit) {
@@ -217,6 +241,13 @@ class _RequestAttributeVarientTabState
     minOrderQty.clear();
     measurementC.clear();
     dimensionC.clear();
+
+    // Clear separate dimension controllers
+    lengthC.clear();
+    widthC.clear();
+    heightC.clear();
+    diameterC.clear();
+
     weightPerSellUnitC.clear();
     weightPerUnitItemC.clear();
     reorderLevelC.clear();
@@ -307,7 +338,7 @@ class _RequestAttributeVarientTabState
 
   void _ensureVariantInventoryControllers(int variantIndex) {
     if (!variantInventoryControllers.containsKey(variantIndex)) {
-      variantInventoryControllers[variantIndex] = {
+      final controllers = {
         'sellingUnit': TextEditingController(),
         'stockQty': TextEditingController(),
         'qtyPerSellUnit': TextEditingController(),
@@ -315,21 +346,41 @@ class _RequestAttributeVarientTabState
         'measurement': TextEditingController(),
         'dimension': TextEditingController(),
         'dimensionUnit': TextEditingController(),
+
+        // Separate dimension controllers for different dimension types
+        'length': TextEditingController(),
+        'width': TextEditingController(),
+        'height': TextEditingController(),
+        'diameter': TextEditingController(),
+
         'weightPerSellUnit': TextEditingController(),
         'weightPerUnitItem': TextEditingController(),
         'reorderLevel': TextEditingController(),
         'sku': TextEditingController(),
       };
+
+      // Add validation listeners to relevant controllers
+      controllers['stockQty']?.addListener(_validateForm);
+      controllers['minOrderQty']?.addListener(_validateForm);
+      controllers['sellingUnit']?.addListener(_validateForm);
+
+      variantInventoryControllers[variantIndex] = controllers;
     }
   }
 
   void _ensureVariantPricingControllers(int variantIndex) {
     if (!variantPricingControllers.containsKey(variantIndex)) {
-      variantPricingControllers[variantIndex] = {
+      final controllers = {
         'costPricePerUnit': TextEditingController(),
         'sellingPricePerUnit': TextEditingController(),
         'discountPrice': TextEditingController(),
       };
+
+      // Add validation listeners to pricing controllers
+      controllers['costPricePerUnit']?.addListener(_validateForm);
+      controllers['sellingPricePerUnit']?.addListener(_validateForm);
+
+      variantPricingControllers[variantIndex] = controllers;
     }
   }
 
@@ -653,6 +704,17 @@ class _RequestAttributeVarientTabState
             sourceControllers['measurement']?.text ?? '';
         targetControllers['dimension']?.text =
             sourceControllers['dimension']?.text ?? '';
+
+        // Copy separate dimension values
+        targetControllers['length']?.text =
+            sourceControllers['length']?.text ?? '';
+        targetControllers['width']?.text =
+            sourceControllers['width']?.text ?? '';
+        targetControllers['height']?.text =
+            sourceControllers['height']?.text ?? '';
+        targetControllers['diameter']?.text =
+            sourceControllers['diameter']?.text ?? '';
+
         targetControllers['weightPerSellUnit']?.text =
             sourceControllers['weightPerSellUnit']?.text ?? '';
         targetControllers['weightPerUnitItem']?.text =
@@ -779,6 +841,19 @@ class _RequestAttributeVarientTabState
             errors['sellingUnit'] = 'Selling unit is required';
             isValid = false;
           }
+
+          // Validate quantity level vs order level
+          final stockQty = int.tryParse(
+                  inventoryControllers['stockQty']?.text.trim() ?? '') ??
+              0;
+          final minOrderQty = int.tryParse(
+                  inventoryControllers['minOrderQty']?.text.trim() ?? '') ??
+              0;
+          if (minOrderQty > 0 && stockQty > 0 && stockQty < minOrderQty) {
+            errors['stockQty'] =
+                'Stock quantity must not be lower than minimum order quantity';
+            isValid = false;
+          }
         }
 
         if (pricingControllers != null) {
@@ -791,6 +866,20 @@ class _RequestAttributeVarientTabState
           if (pricingControllers['costPricePerUnit']?.text.trim().isEmpty ==
               true) {
             errors['costPricePerUnit'] = 'Cost price is required';
+            isValid = false;
+          }
+
+          // Validate selling price vs cost price
+          final costPrice = double.tryParse(
+                  pricingControllers['costPricePerUnit']?.text.trim() ?? '') ??
+              0.0;
+          final sellingPrice = double.tryParse(
+                  pricingControllers['sellingPricePerUnit']?.text.trim() ??
+                      '') ??
+              0.0;
+          if (costPrice > 0 && sellingPrice > 0 && sellingPrice <= costPrice) {
+            errors['sellingPricePerUnit'] =
+                'Selling price must be greater than cost price';
             isValid = false;
           }
         }
@@ -820,12 +909,44 @@ class _RequestAttributeVarientTabState
         isValid = false;
       }
 
+      // Validate quantity level vs order level for single product
+      final stockQty = int.tryParse(stockQtyC.text.trim()) ?? 0;
+      final minOrderQuantity = int.tryParse(minOrderQty.text.trim()) ?? 0;
+      if (minOrderQuantity > 0 && stockQty > 0 && stockQty < minOrderQuantity) {
+        errors['stockQty'] =
+            'Stock quantity must not be lower than minimum order quantity';
+        isValid = false;
+      }
+
+      // Validate selling price vs cost price for single product
+      final costPrice = double.tryParse(costPricePerUnitC.text.trim()) ?? 0.0;
+      final sellingPrice =
+          double.tryParse(sellingPricePerUnitC.text.trim()) ?? 0.0;
+      if (costPrice > 0 && sellingPrice > 0 && sellingPrice <= costPrice) {
+        errors['sellingPricePerUnit'] =
+            'Selling price must be greater than cost price';
+        isValid = false;
+      }
+
       if (errors.isNotEmpty) {
         variantValidationErrors[0] = errors;
       }
     }
 
+    // Update form validation state
+    _isFormValid = isValid;
     return isValid;
+  }
+
+  // Method to validate form in real-time
+  void _validateForm() {
+    final wasValid = _isFormValid;
+    _validateRequiredFields();
+
+    // Only trigger setState if validation state changed
+    if (wasValid != _isFormValid) {
+      setState(() {});
+    }
   }
 
   void _showValidationErrors() {
@@ -844,14 +965,68 @@ class _RequestAttributeVarientTabState
     showWarningToast(message);
   }
 
+  // Helper method to calculate physical dimension based on dimension type
+  UnitValue _calculatePhysicalDimension(String unit,
+      {Map<String, TextEditingController>? controllers}) {
+    // Use provided controllers (for variants) or default controllers (for single product)
+    final lengthController = controllers?['length'] ?? lengthC;
+    final widthController = controllers?['width'] ?? widthC;
+    final heightController = controllers?['height'] ?? heightC;
+    final diameterController = controllers?['diameter'] ?? diameterC;
+    final dimensionController = controllers?['dimension'] ?? dimensionC;
+
+    // Get the selected measurement sub-option to determine dimension type
+    // For now, we'll use a simple approach - if separate dimension controllers have values, use them
+    final lengthValue = int.tryParse(lengthController.text.trim()) ?? 0;
+    final widthValue = int.tryParse(widthController.text.trim()) ?? 0;
+    final heightValue = int.tryParse(heightController.text.trim()) ?? 0;
+    final diameterValue = int.tryParse(diameterController.text.trim()) ?? 0;
+    final dimensionValue = int.tryParse(dimensionController.text.trim()) ?? 0;
+
+    // If we have length, width, and height values (L×W×H), calculate volume or use length as primary
+    if (lengthValue > 0 && widthValue > 0 && heightValue > 0) {
+      // For now, use length as the primary dimension value
+      // In a more sophisticated implementation, you might want to store all three values
+      return UnitValue(unit: unit, value: lengthValue);
+    }
+    // If we have length and diameter values (L×D), use length as primary
+    else if (lengthValue > 0 && diameterValue > 0) {
+      return UnitValue(unit: unit, value: lengthValue);
+    }
+    // If we have individual dimension values, use them
+    else if (lengthValue > 0) {
+      return UnitValue(unit: unit, value: lengthValue);
+    } else if (diameterValue > 0) {
+      return UnitValue(unit: unit, value: diameterValue);
+    }
+    // Fall back to the original dimension controller
+    else {
+      return UnitValue(unit: unit, value: dimensionValue);
+    }
+  }
+
   @override
   void dispose() {
+    // Remove listeners before disposing
+    stockQtyC.removeListener(_validateForm);
+    minOrderQty.removeListener(_validateForm);
+    costPricePerUnitC.removeListener(_validateForm);
+    sellingPricePerUnitC.removeListener(_validateForm);
+    sellingUnitC.removeListener(_validateForm);
+
     sellingUnitC.dispose();
     stockQtyC.dispose();
     qtyPerSellUnitC.dispose();
     minOrderQty.dispose();
     measurementC.dispose();
     dimensionC.dispose();
+
+    // Dispose separate dimension controllers
+    lengthC.dispose();
+    widthC.dispose();
+    heightC.dispose();
+    diameterC.dispose();
+
     weightPerSellUnitC.dispose();
     weightPerUnitItemC.dispose();
     reorderLevelC.dispose();
@@ -1036,6 +1211,13 @@ class _RequestAttributeVarientTabState
                       measurementC: measurementC,
                       dimensionC: dimensionC,
                       dimensionUnitC: dimensionUnitC,
+
+                      // Pass separate dimension controllers
+                      lengthC: lengthC,
+                      widthC: widthC,
+                      heightC: heightC,
+                      diameterC: diameterC,
+
                       weightPerSellUnitC: weightPerSellUnitC,
                       weightPerUnitItemC: weightPerUnitItemC,
                       reorderLevelC: reorderLevelC,
@@ -1077,6 +1259,14 @@ class _RequestAttributeVarientTabState
                       onDimensionUnitChanged: (unit) {
                         dimensionUnitC.text = unit;
                       },
+                      onDimensionTypeChanged: (dimensionType) {
+                        // Clear dimension values when switching types
+                        lengthC.clear();
+                        widthC.clear();
+                        heightC.clear();
+                        diameterC.clear();
+                        dimensionC.clear();
+                      },
                       onUnitSelectionChanged: _onSingleProductUnitChanged,
                     ),
                     PricingInformationSection(
@@ -1115,10 +1305,15 @@ class _RequestAttributeVarientTabState
             ),
             Expanded(
               child: CustomBtn.solid(
-                onTap: () {
-                  _handleNext();
-                },
+                onTap: _isFormValid
+                    ? () {
+                        _handleNext();
+                      }
+                    : null,
                 text: "Next",
+                online: _isFormValid,
+                offlineColor: Colors.grey.shade400,
+                textColor: _isFormValid ? null : Colors.grey.shade600,
               ),
             )
           ],
@@ -1284,10 +1479,8 @@ class _RequestAttributeVarientTabState
       value: int.tryParse(measurementC.text.trim()) ?? 0,
     );
 
-    final physicalDimension = UnitValue(
-      unit: selectedDimUnit,
-      value: int.tryParse(dimensionC.text.trim()) ?? 0,
-    );
+    // Calculate dimension value based on dimension type
+    final physicalDimension = _calculatePhysicalDimension(selectedDimUnit);
 
     final weightPerUnitItem = UnitValue(
       unit: 'kg',
@@ -1408,12 +1601,10 @@ class _RequestAttributeVarientTabState
             0;
 
     // Take user input directly for units and values
-    final selectedDimUnit = (inventoryControllers['dimensionUnit']?.text
-                .trim()
-                .isEmpty ==
-            true)
-        ? 'cm'
-        : inventoryControllers['dimensionUnit']!.text.trim();
+    final selectedDimUnit =
+        (inventoryControllers['dimensionUnit']?.text.trim().isEmpty == true)
+            ? 'cm'
+            : inventoryControllers['dimensionUnit']!.text.trim();
 
     final physicalMeasurement = UnitValue(
       unit: selectedDimUnit,
@@ -1422,12 +1613,9 @@ class _RequestAttributeVarientTabState
           0,
     );
 
-    final physicalDimension = UnitValue(
-      unit: selectedDimUnit,
-      value:
-          int.tryParse(inventoryControllers['dimension']?.text.trim() ?? '') ??
-              0,
-    );
+    // Calculate dimension value based on dimension type for variant
+    final physicalDimension = _calculatePhysicalDimension(selectedDimUnit,
+        controllers: inventoryControllers);
 
     final weightPerUnitItem = UnitValue(
       unit: 'kg',

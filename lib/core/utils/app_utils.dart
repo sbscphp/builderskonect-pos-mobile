@@ -191,6 +191,15 @@ class AppUtils {
     return fileUrl.split('/').last;
   }
 
+  // remove the currency symbol and convert the string to a double
+  static double parseCurrencyToDouble(String value) {
+    // Remove everything except digits and the decimal point
+    final cleaned = value.replaceAll(RegExp(r'[^\d.]'), '');
+
+    // Convert to double
+    return double.tryParse(cleaned) ?? 0.0;
+  }
+
   launchPhone(String phoneNumber) async {
     final Uri phoneUri = Uri(
       scheme: 'tel',

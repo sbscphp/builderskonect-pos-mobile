@@ -53,7 +53,8 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
             child: ListView(
               padding: EdgeInsets.only(bottom: Sizer.height(30)),
               children: [
-                if (profileVm.vendorProfile?.onboardingStatus != "approved")
+                if (profileVm.vendorProfile?.onboardingStatus?.toLowerCase() !=
+                    "approved")
                   Padding(
                     padding: EdgeInsets.only(
                       top: Sizer.height(16),
@@ -279,8 +280,13 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                           XBox(8),
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(
-                                  context, RoutePath.editDocumentsScreen);
+                              if (profileVm.vendorProfile?.documents != null) {
+                                Navigator.pushNamed(
+                                  context,
+                                  RoutePath.editDocumentsScreen,
+                                  arguments: profileVm.vendorProfile?.documents,
+                                );
+                              }
                             },
                             child: SvgPicture.asset(AppSvgs.profileEdit),
                           ),
@@ -329,7 +335,7 @@ class _ProfileInformationTabState extends ConsumerState<ProfileInformationTab> {
                             YBox(16),
                             ProfileColText(
                               title: "TIN No.",
-                              subTitle: profileVm.vendorProfile?.documents?.cac
+                              subTitle: profileVm.vendorProfile?.documents?.tin
                                       ?.identifier ??
                                   "N/A",
                             ),

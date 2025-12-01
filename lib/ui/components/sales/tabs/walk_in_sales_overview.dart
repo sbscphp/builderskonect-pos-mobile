@@ -129,7 +129,7 @@ class _WalkInSalesOverviewState extends ConsumerState<WalkInSalesOverview> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ProductColText(
-                          title: "TOTAL WALK-IN SALES VALUE",
+                          title: "TOTAL SALES VALUE",
                           value:
                               "${AppUtils.nairaSymbol}${salesVm.salesStats?.offlineSales}",
                         ),

@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
-class PausedSalesScreen extends ConsumerStatefulWidget {
-  const PausedSalesScreen({super.key});
+class OfflineSalesScreen extends ConsumerStatefulWidget {
+  const OfflineSalesScreen({super.key});
 
   @override
-  ConsumerState<PausedSalesScreen> createState() => _PausedSalesScreenState();
+  ConsumerState<OfflineSalesScreen> createState() => _OfflineSalesScreenState();
 }
 
-class _PausedSalesScreenState extends ConsumerState<PausedSalesScreen> {
+class _OfflineSalesScreenState extends ConsumerState<OfflineSalesScreen> {
   final searchC = TextEditingController();
   Timer? _debounce;
 
@@ -44,10 +44,6 @@ class _PausedSalesScreenState extends ConsumerState<PausedSalesScreen> {
     return Scaffold(
         appBar: CustomAppbar(
           title: "Paused Sales",
-          onBack: () {
-            salesVm.setSelectedPausedSalesModel(null);
-            Navigator.pop(context);
-          },
         ),
         body: Builder(builder: (context) {
           if (salesVm.busy(draftSalesState)) {
@@ -73,8 +69,8 @@ class _PausedSalesScreenState extends ConsumerState<PausedSalesScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FilterHeader(
-                      title: "Paused Sales",
-                      subTitle: "See all paused sales made in your business",
+                      title: "Offline Sales",
+                      subTitle: "See all offline sales made in your business",
                       onFilter: () {},
                     ),
                     YBox(16),
@@ -148,14 +144,6 @@ class _PausedSalesScreenState extends ConsumerState<PausedSalesScreen> {
                             totalItems: (item.itemsCount ?? 0).toString(),
                             status: item.orderDetails?.status ?? "",
                             date: item.orderDate ?? DateTime.now(),
-                            onTap: () {
-                              salesVm.setSelectedPausedSalesModel(item);
-                              ModalWrapper.bottomSheet(
-                                  context: context,
-                                  widget: PaymentMethodModal(
-                                    isPausedSale: true,
-                                  ));
-                            },
                           );
                         },
                       );

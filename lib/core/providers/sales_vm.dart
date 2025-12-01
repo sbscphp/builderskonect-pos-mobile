@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:builders_konnect/core/core.dart';
 
 class SalesVm extends BaseVm {
@@ -63,6 +65,12 @@ class SalesVm extends BaseVm {
 
   /// Currently selected customer data
   CustomerData? selectedCustomerData;
+
+  // Offline-specific properties
+  List<OfflineSalesOrder> _offlineSalesOrders = [];
+  List<OfflineSalesOrder> get offlineSalesOrders => _offlineSalesOrders;
+
+  StreamSubscription<SyncEvent>? _syncEventSubscription;
 
   SalesOrderAmountBreakdownModel? _salesOrderAmountBreakdownModel;
   SalesOrderAmountBreakdownModel? get salesOrderAmountBreakdownModel =>
@@ -185,6 +193,13 @@ class SalesVm extends BaseVm {
     );
   }
 
+  // selected pause to resume
+  PausedSalesModel? _selectedPausedSalesModel;
+  PausedSalesModel? get selectedPausedSalesModel => _selectedPausedSalesModel;
+  setSelectedPausedSalesModel(PausedSalesModel? value) {
+    _selectedPausedSalesModel = value;
+  }
+
   List<PausedSalesModel> _pausedSales = [];
   List<PausedSalesModel> get pausedSales => _pausedSales;
   Future<ApiResponse> getDraftOverview({String? q}) async {
@@ -292,6 +307,142 @@ class SalesVm extends BaseVm {
       },
     );
   }
+
+  // Offline-specific methods
+
+  /// Initialize offline functionality
+  void initializeOfflineSupport() {
+    _syncEventSubscription = SalesSyncService.instance.syncEventStream.listen(
+      _onSyncEvent,
+      onError: (error) {
+        printty('SalesVm sync event stream error: $error', logName: 'SalesVm');
+      },
+    );
+
+    // Load offline orders
+    _loadOfflineOrders();
+  }
+
+  // Connectivity getters that delegate to ConnectivityService
+  bool get isOfflineMode => !ConnectivityService.instance.isOnline;
+  ConnectivityState get connectivityState =>
+      ConnectivityService.instance.currentState;
+
+  /// Handle sync events
+  void _onSyncEvent(SyncEvent event) {
+    printty('SalesVm sync event: ${event.type.name}', logName: 'SalesVm');
+
+    // Reload offline orders when sync completes
+    if (event.type == SyncEventType.completed) {
+      _loadOfflineOrders();
+    }
+  }
+
+  /// Load offline orders from database
+  Future<void> _loadOfflineOrders() async {
+    try {
+      _offlineSalesOrders =
+          await OfflineSalesDatabaseService.getAllOfflineSalesOrders();
+      notifyListeners();
+    } catch (e) {
+      printty('Error loading offline orders: $e', logName: 'SalesVm');
+    }
+  }
+
+  /// Create offline sales order (offline-first approach)
+  Future<ApiResponse> createOfflineSalesOrder({
+    required Order order,
+    Map<String, dynamic>? metadata,
+  }) async {
+    try {
+      // Always save locally first
+      final offlineOrder =
+          await OfflineSalesDatabaseService.createOfflineSalesOrder(
+        order: order,
+        metadata: metadata,
+      );
+
+      // Add to local list
+      _offlineSalesOrders.insert(0, offlineOrder);
+      notifyListeners();
+
+      // If online, try to sync immediately
+      if (ConnectivityService.instance.isOnline) {
+        // Trigger sync in background
+        SalesSyncService.instance.syncPendingOrders();
+      }
+
+      return ApiResponse(
+        success: true,
+        message: isOfflineMode
+            ? 'Order saved offline. Will sync when connection is restored.'
+            : 'Order created successfully.',
+        data: {'local_id': offlineOrder.localId},
+      );
+    } catch (e) {
+      printty('Error creating offline sales order: $e', logName: 'SalesVm');
+      return ApiResponse(
+        success: false,
+        message: 'Failed to create order: $e',
+      );
+    }
+  }
+
+  /// Enhanced sales order checkout with offline support
+  Future<ApiResponse> salesOrderCheckoutOfflineFirst({
+    required SalesCheckoutParams params,
+  }) async {
+    // If offline, save locally
+    // if (isOfflineMode) {
+    //   if (params.orders?.isNotEmpty == true) {
+    //     return await createOfflineSalesOrder(order: params.orders!.first);
+    //   }
+    //   return ApiResponse(success: false, message: 'No order data provided');
+    // }
+
+    // If online, try normal checkout first
+    final onlineResult = await salesOrderCheckout(params: params);
+
+    // If online checkout fails, save offline as fallback
+    // if (!onlineResult.success) {
+    //   if (params.orders?.isNotEmpty == true) {
+    //     return await createOfflineSalesOrder(
+    //       order: params.orders!.first,
+    //       metadata: {'fallback_reason': 'online_checkout_failed'},
+    //     );
+    //   }
+    // }
+
+    return onlineResult;
+  }
+
+  /// Force sync all pending orders
+  Future<void> forceSyncAllOrders() async {
+    if (!ConnectivityService.instance.isOnline) {
+      return;
+    }
+
+    await SalesSyncService.instance.forceSyncAll();
+    await _loadOfflineOrders();
+  }
+
+  /// Get connectivity status text for UI
+  String get connectivityStatusText =>
+      ConnectivityService.instance.connectivityStatusText;
+
+  /// Dispose offline resources
+  @override
+  void dispose() {
+    _syncEventSubscription?.cancel();
+    super.dispose();
+  }
 }
 
-final salesVmodel = ChangeNotifierProvider((ref) => SalesVm());
+final salesVmodel = ChangeNotifierProvider((ref) {
+  final vm = SalesVm();
+  // Initialize offline support when the provider is created
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    vm.initializeOfflineSupport();
+  });
+  return vm;
+});

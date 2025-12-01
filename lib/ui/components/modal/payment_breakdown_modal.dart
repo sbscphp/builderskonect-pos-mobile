@@ -2,8 +2,13 @@ import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 
 class PaymentBreakdownModal extends ConsumerStatefulWidget {
-  const PaymentBreakdownModal({super.key, required this.paymentMethods});
+  const PaymentBreakdownModal({
+    super.key,
+    required this.paymentMethods,
+    this.isPausedSale = false,
+  });
 
+  final bool isPausedSale;
   final List<PaymentMethodsModel> paymentMethods;
 
   @override
@@ -53,8 +58,7 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
   }
 
   void _calculateBalance() {
-    final salesVm = ref.read(salesVmodel);
-    final total = salesVm.salesOrderAmountBreakdownModel?.total ?? 0;
+    final total = totalAmount ?? 0;
 
     // Calculate total amount collected from all payment methods
     double totalCollected = 0;
@@ -78,179 +82,226 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
     }
   }
 
+  double? get totalAmount {
+    final salesVm = ref.watch(salesVmodel);
+    return widget.isPausedSale
+        ? AppUtils.parseCurrencyToDouble(
+            salesVm.selectedPausedSalesModel?.amount ?? "0")
+        : salesVm.salesOrderAmountBreakdownModel?.total;
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     // final colorSheme = Theme.of(context).colorScheme;
     final salesVm = ref.watch(salesVmodel);
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.76,
-      padding: EdgeInsets.symmetric(
-        horizontal: Sizer.width(16),
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          YBox(6),
-          Align(
-            alignment: Alignment.center,
-            child: SvgPicture.asset(AppSvgs.modalHLine),
-          ),
-          YBox(16),
-          Row(
-            children: [
-              Text(
-                "Payment Breakdown",
-                style: textTheme.text16?.medium,
-              ),
-              Spacer(),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).pop();
-                },
-                child: Icon(
-                  Icons.close,
-                  size: Sizer.width(24),
-                ),
-              )
-            ],
-          ),
-          YBox(16),
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              horizontal: Sizer.width(16),
-              vertical: Sizer.height(8),
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.76,
+        padding: EdgeInsets.only(
+          left: Sizer.width(16),
+          right: Sizer.width(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            YBox(6),
+            Align(
+              alignment: Alignment.center,
+              child: SvgPicture.asset(AppSvgs.modalHLine),
             ),
-            decoration: BoxDecoration(
-              color: AppColors.neutral3,
-              // borderRadius: BorderRadius.circular(Sizer.radius(6)),
-            ),
-            child: Column(
+            YBox(16),
+            Row(
               children: [
                 Text(
-                  "Total Amount",
-                  style: textTheme.text12?.copyWith(
-                    color: AppColors.neutral7,
-                  ),
+                  "Payment Breakdown",
+                  style: textTheme.text16?.medium,
                 ),
-                YBox(4),
-                Text(
-                  "${AppUtils.nairaSymbol}${AppUtils.formatNumber(number: salesVm.salesOrderAmountBreakdownModel?.total ?? 0)}",
-                  style: textTheme.text20?.medium.copyWith(
-                    color: AppColors.primaryBlue,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                YBox(16),
-                ...List.generate(
-                  widget.paymentMethods.length,
-                  (i) => Padding(
-                    padding: EdgeInsets.only(bottom: Sizer.height(12)),
-                    child: MethodCard(
-                      title: widget.paymentMethods[i].name ?? "",
-                      amountCollectedC: amountCollectedControllers[i],
-                      balanceC: balanceControllers[i],
-                    ),
-                  ),
-                ),
-                CustomBtn.solid(
-                    text: "Create order",
-                    online: isBalanceZero,
-                    isLoading: salesVm.busy(createState),
-                    onTap: () async {
-                      final ctx = NavKey.appNavKey.currentContext!;
-                      final res = await ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: ConfirmationModal(
-                          modalConfirmationArg: ModalConfirmationArg(
-                            iconPath: AppSvgs.infoCircle,
-                            title: "Create Order",
-                            description:
-                                "Are you sure you want to create order? This order will be \nrecorded and sent for order confirmation.",
-                            solidBtnText: "Yes, create order",
-                            onSolidBtnOnTap: () {
-                              Navigator.pop(ctx, true);
-                            },
-                            onOutlineBtnOnTap: () {
-                              Navigator.pop(ctx);
-                            },
-                          ),
-                        ),
-                      );
-                      if (res == true) {
-                        if (ctx.mounted) {
-                          Navigator.pop(ctx);
-                          Navigator.pop(ctx);
-                          _createOrder();
-                        }
-                      }
-                    }),
-                YBox(16),
-                CustomBtn.solid(
-                  text: "No, cancel",
-                  isOutline: true,
-                  outlineColor: AppColors.neutral5,
-                  textStyle: textTheme.text16,
+                Spacer(),
+                InkWell(
                   onTap: () {
                     Navigator.of(context).pop();
                   },
-                ),
-                YBox(30),
+                  child: Icon(
+                    Icons.close,
+                    size: Sizer.width(24),
+                  ),
+                )
               ],
             ),
-          )
-        ],
+            YBox(16),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.symmetric(
+                horizontal: Sizer.width(16),
+                vertical: Sizer.height(8),
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.neutral3,
+                // borderRadius: BorderRadius.circular(Sizer.radius(6)),
+              ),
+              child: Column(
+                children: [
+                  Text(
+                    "Total Amount",
+                    style: textTheme.text12?.copyWith(
+                      color: AppColors.neutral7,
+                    ),
+                  ),
+                  YBox(4),
+                  Text(
+                    "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: totalAmount ?? 0)}",
+                    style: textTheme.text20?.medium.copyWith(
+                      color: AppColors.primaryBlue,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  YBox(16),
+                  ...List.generate(
+                    widget.paymentMethods.length,
+                    (i) => Padding(
+                      padding: EdgeInsets.only(bottom: Sizer.height(12)),
+                      child: MethodCard(
+                        title: widget.paymentMethods[i].name ?? "",
+                        amountCollectedC: amountCollectedControllers[i],
+                        balanceC: balanceControllers[i],
+                      ),
+                    ),
+                  ),
+                  CustomBtn.solid(
+                      text: "Create order",
+                      online: isBalanceZero,
+                      isLoading: salesVm.busy(createState),
+                      onTap: () async {
+                        final ctx = NavKey.appNavKey.currentContext!;
+                        final res = await ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: ConfirmationModal(
+                            modalConfirmationArg: ModalConfirmationArg(
+                              iconPath: AppSvgs.infoCircle,
+                              title: "Create Order",
+                              description:
+                                  "Are you sure you want to create order? This order will be \nrecorded and sent for order confirmation.",
+                              solidBtnText: "Yes, create order",
+                              onSolidBtnOnTap: () {
+                                Navigator.pop(ctx, true);
+                              },
+                              onOutlineBtnOnTap: () {
+                                Navigator.pop(ctx);
+                              },
+                            ),
+                          ),
+                        );
+                        if (res == true) {
+                          if (ctx.mounted) {
+                            Navigator.pop(ctx);
+                            Navigator.pop(ctx);
+                            _createOrder();
+                          }
+                        }
+                      }),
+                  YBox(16),
+                  CustomBtn.solid(
+                    text: "No, cancel",
+                    isOutline: true,
+                    outlineColor: AppColors.neutral5,
+                    textStyle: textTheme.text16,
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  YBox(30),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
 
   _createOrder() async {
     final saleVm = ref.read(salesVmodel);
-    final CustomerCred customerCred = saleVm.selectedCustomerData?.id != null
-        ? CustomerCred(
-            id: saleVm.selectedCustomerData?.id,
-          )
-        : CustomerCred(
-            id: saleVm.selectedCustomerData?.id,
-            name: saleVm.selectedCustomerData?.name,
-            phone: saleVm.selectedCustomerData?.phone,
-            email: saleVm.selectedCustomerData?.email,
-            referralSource: saleVm.selectedCustomerData?.source,
-            openedVia: "merchant",
-          );
+    Order? order;
 
-    List<SalesPaymentMethod> paymentMethods = [];
-    for (int i = 0; i < widget.paymentMethods.length; i++) {
-      SalesPaymentMethod paymentMethod = SalesPaymentMethod(
-        id: widget.paymentMethods[i].id,
-        amount: double.tryParse(amountCollectedControllers[i].text) ?? 0,
+    // Create order for paused sale
+    if (widget.isPausedSale) {
+      final PausedSalesModel? pausedSale = saleVm.selectedPausedSalesModel;
+
+      List<SalesPaymentMethod> paymentMethods = [];
+      for (int i = 0; i < widget.paymentMethods.length; i++) {
+        SalesPaymentMethod paymentMethod = SalesPaymentMethod(
+          id: widget.paymentMethods[i].id,
+          amount: double.tryParse(amountCollectedControllers[i].text) ?? 0,
+        );
+        paymentMethods.add(paymentMethod);
+      }
+
+      // Convert product list to line items
+      final selectedProducts = pausedSale?.orderDetails?.lineItems
+          ?.map((product) => LineItemParams(
+                productId: product.productId,
+                quantity: product.quantity,
+              ))
+          .toList();
+
+      order = Order(
+        pausedSalesId: pausedSale?.id,
+        customer: CustomerCred(
+          id: saleVm.selectedCustomerData?.id,
+        ),
+        status: "completed",
+        salesType: "pos",
+        lineItems: selectedProducts,
+        paymentMethods: paymentMethods,
       );
-      paymentMethods.add(paymentMethod);
+    } else {
+      final CustomerCred customerCred = saleVm.selectedCustomerData?.id != null
+          ? CustomerCred(id: saleVm.selectedCustomerData?.id)
+          : CustomerCred(
+              id: saleVm.selectedCustomerData?.id,
+              name: saleVm.selectedCustomerData?.name,
+              phone: saleVm.selectedCustomerData?.phone,
+              email: saleVm.selectedCustomerData?.email,
+              referralSource: saleVm.selectedCustomerData?.source,
+              openedVia: "merchant",
+            );
+
+      List<SalesPaymentMethod> paymentMethods = [];
+      for (int i = 0; i < widget.paymentMethods.length; i++) {
+        SalesPaymentMethod paymentMethod = SalesPaymentMethod(
+          id: widget.paymentMethods[i].id,
+          amount: double.tryParse(amountCollectedControllers[i].text) ?? 0,
+        );
+        paymentMethods.add(paymentMethod);
+      }
+
+      // Convert product list to line items
+      final selectedProducts = saleVm.productList
+          .map((product) => LineItemParams(
+                productId: product.id,
+                quantity: product.quantity,
+              ))
+          .toList();
+
+      order = Order(
+        customer: customerCred,
+        status: "completed",
+        salesType: "pos",
+        lineItems: selectedProducts,
+        paymentMethods: paymentMethods,
+      );
     }
 
-    // Convert product list to line items
-    final selectedProducts = saleVm.productList
-        .map((product) => LineItemParams(
-              productId: product.id,
-              quantity: product.quantity,
-            ))
-        .toList();
-
-    final order = Order(
-      customer: customerCred,
-      status: "completed",
-      salesType: "pos",
-      lineItems: selectedProducts,
-      paymentMethods: paymentMethods,
-    );
-
-    final res = await saleVm.salesOrderCheckout(
+    final res = await saleVm.salesOrderCheckoutOfflineFirst(
       params: SalesCheckoutParams(
         orders: [order],
       ),
@@ -280,6 +331,12 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
               widget: ConfirmationModal(
                 modalConfirmationArg: ModalConfirmationArg(
                   iconPath: AppSvgs.checkIcon,
+                  // title: !ConnectivityService.instance.isOnline
+                  //     ? "Order Saved Offline"
+                  //     : "Order Created",
+                  // description: !ConnectivityService.instance.isOnline
+                  //     ? "Your order has been saved locally and will be synced when internet connection is restored."
+                  //     : "A sales order has been created and sent for order confirmation. Kindly confirm this order before releasing the products to the customer.",
                   title: "Order Created",
                   description:
                       "A sales order has been created and sent for order confirmation. Kindly confirm this order before releasing the products to the customer.",
@@ -289,13 +346,22 @@ class _PaymentBreakdownModalState extends ConsumerState<PaymentBreakdownModal> {
                     final navCtx = NavKey.appNavKey.currentContext;
                     if (navCtx == null) return;
 
-                    // Safely extract orderId from response
+                    // Handle offline orders differently
+                    // if (!ConnectivityService.instance.isOnline) {
+                    //   // For offline orders, just go back to sales screen
+                    //   Navigator.of(navCtx).popUntil((route) => route.isFirst);
+                    //   return;
+                    // }
+
+                    // For online orders, extract orderId and navigate to order details
                     final dynamic responseData = res.data;
                     if (responseData == null ||
                         responseData['data'] == null ||
                         responseData['data'].isEmpty ||
                         responseData['data'][0]['id'] == null) {
                       printty("Error: Invalid order ID in response");
+                      // Fallback: go back to sales screen
+                      Navigator.of(navCtx).popUntil((route) => route.isFirst);
                       return;
                     }
 

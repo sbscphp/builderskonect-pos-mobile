@@ -80,7 +80,7 @@ class CatalogueModel {
         media: json["media"] == null
             ? []
             : List<String>.from(json["media"]!.map((x) => x)),
-        attributes: json["attributes"] == null
+        attributes: json["attributes"] == null || json["attributes"] is List
             ? {}
             : Map.from(json["attributes"]).map((k, v) =>
                 MapEntry<String, List<String>>(

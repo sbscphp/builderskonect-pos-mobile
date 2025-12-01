@@ -11,6 +11,21 @@ class AppInitService {
     //hive
     await _initializeHive();
 
+    //offline sales database
+    await _initializeOfflineSalesDatabase();
+
+    //offline recovery service
+    await _initializeOfflineRecoveryService();
+
+    //connectivity monitoring
+    await _initializeConnectivityService();
+
+    //sales sync service
+    await _initializeSalesSyncService();
+
+    //startup recovery
+    await _performStartupRecovery();
+
     //firebase
     // await _firebaseInit();
 
@@ -38,6 +53,51 @@ class AppInitService {
       printty("===> hive initialized...");
     } catch (e) {
       printty(e.toString(), logName: 'Hive Init Error');
+    }
+  }
+
+  Future<void> _initializeOfflineSalesDatabase() async {
+    try {
+      await OfflineSalesDatabaseService.initialize();
+      printty("===> offline sales database initialized...");
+    } catch (e) {
+      printty(e.toString(), logName: 'Offline Sales Database Init Error');
+    }
+  }
+
+  Future<void> _initializeConnectivityService() async {
+    try {
+      await ConnectivityService.instance.initialize();
+      printty("===> connectivity service initialized...");
+    } catch (e) {
+      printty(e.toString(), logName: 'Connectivity Service Init Error');
+    }
+  }
+
+  Future<void> _initializeOfflineRecoveryService() async {
+    try {
+      await OfflineRecoveryService.initialize();
+      printty("===> offline recovery service initialized...");
+    } catch (e) {
+      printty(e.toString(), logName: 'Offline Recovery Service Init Error');
+    }
+  }
+
+  Future<void> _initializeSalesSyncService() async {
+    try {
+      await SalesSyncService.instance.initialize();
+      printty("===> sales sync service initialized...");
+    } catch (e) {
+      printty(e.toString(), logName: 'Sales Sync Service Init Error');
+    }
+  }
+
+  Future<void> _performStartupRecovery() async {
+    try {
+      await OfflineRecoveryService.performStartupRecovery();
+      printty("===> startup recovery completed...");
+    } catch (e) {
+      printty(e.toString(), logName: 'Startup Recovery Error');
     }
   }
 

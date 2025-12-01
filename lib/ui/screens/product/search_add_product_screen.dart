@@ -30,6 +30,7 @@ class _SearchAddProductScreenState
   @override
   void initState() {
     super.initState();
+    searchF.requestFocus();
     searchC.addListener(() {
       isSearching = searchC.text.isNotEmpty && searchF.hasFocus;
       setState(() {});
@@ -41,7 +42,10 @@ class _SearchAddProductScreenState
     // });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await ref.read(catalogueVmodel).getCatalogueProducts();
+      final catalogueVm = ref.read(catalogueVmodel);
+      if (catalogueVm.catalogueProducts.isEmpty) {
+        await catalogueVm.getCatalogueProducts();
+      }
     });
   }
 
@@ -292,7 +296,7 @@ class _SearchAddProductScreenState
                       showLabelHeader: true,
                       onChanged: _searchProducts,
                     ),
-                    YBox(24),
+                    YBox(10),
 
                     // suggestion catalogue products
                     AnimatedSize(
