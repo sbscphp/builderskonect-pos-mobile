@@ -67,6 +67,8 @@ class StatCard extends StatelessWidget {
                     ),
                     child: SvgPicture.asset(
                       iconPath ?? AppSvgs.bag,
+                      height: 16.w,
+                      width: 16.w,
                       colorFilter: ColorFilter.mode(
                         amountColor,
                         BlendMode.srcIn,

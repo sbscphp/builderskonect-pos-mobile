@@ -77,4 +77,10 @@ class SnackBarType {
     iconColor: AppColors.primaryBlue,
     icon: Icons.check_circle,
   );
+    static const SnackBarType successGreen = SnackBarType(
+    bgColor: AppColors.greenED,
+    borderColor: AppColors.green8F,
+    iconColor: AppColors.green8F,
+    icon: Icons.check_circle,
+  );
 }

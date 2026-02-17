@@ -110,58 +110,58 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                       ),
                       child: HomeWelcomeOnboardWidget(),
                     ),
-                  YBox(16),
-                  Container(
-                    padding: EdgeInsets.all(Sizer.radius(16)),
-                    decoration: BoxDecoration(
-                      color: colorScheme.white,
-                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Quick Actions", style: textTheme.text16?.medium),
-                        YBox(16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            QuickActionCol(
-                              title: "Customers",
-                              svgPath: AppSvgs.customer,
-                              onTap: () {
-                                Navigator.pushNamed(context,
-                                    RoutePath.customersManagementScreen);
-                              },
-                            ),
-                            QuickActionCol(
-                              title: "Returns",
-                              svgPath: AppSvgs.returns,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RoutePath.returnRefundScreen);
-                              },
-                            ),
-                            QuickActionCol(
-                              title: "Discounts",
-                              svgPath: AppSvgs.discount,
-                              onTap: () {
-                                Navigator.pushNamed(context,
-                                    RoutePath.discountManagementScreen);
-                              },
-                            ),
-                            QuickActionCol(
-                              title: "Staff",
-                              svgPath: AppSvgs.userFilled,
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, RoutePath.staffManagementScreen);
-                              },
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                  ),
+                  // YBox(16),
+                  // Container(
+                  //   padding: EdgeInsets.all(Sizer.radius(16)),
+                  //   decoration: BoxDecoration(
+                  //     color: colorScheme.white,
+                  //     borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                  //   ),
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       Text("Quick Actions", style: textTheme.text16?.medium),
+                  //       YBox(16),
+                  //       Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           QuickActionCol(
+                  //             title: "Customers",
+                  //             svgPath: AppSvgs.customer,
+                  //             onTap: () {
+                  //               Navigator.pushNamed(context,
+                  //                   RoutePath.customersManagementScreen);
+                  //             },
+                  //           ),
+                  //           QuickActionCol(
+                  //             title: "Returns",
+                  //             svgPath: AppSvgs.returns,
+                  //             onTap: () {
+                  //               Navigator.pushNamed(
+                  //                   context, RoutePath.returnRefundScreen);
+                  //             },
+                  //           ),
+                  //           QuickActionCol(
+                  //             title: "Discounts",
+                  //             svgPath: AppSvgs.discount,
+                  //             onTap: () {
+                  //               Navigator.pushNamed(context,
+                  //                   RoutePath.discountManagementScreen);
+                  //             },
+                  //           ),
+                  //           QuickActionCol(
+                  //             title: "Staff",
+                  //             svgPath: AppSvgs.userFilled,
+                  //             onTap: () {
+                  //               Navigator.pushNamed(
+                  //                   context, RoutePath.staffManagementScreen);
+                  //             },
+                  //           ),
+                  //         ],
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
                   if (!dashVm.showTodoCard)
                     Container(
                       margin: EdgeInsets.only(top: Sizer.height(16)),
@@ -255,6 +255,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     bgColor: AppColors.blueFF,
                                     borderColor: AppColors.blue5,
                                     amountColor: AppColors.primaryBlue,
+                                    iconPath: AppSvgs.chart,
                                     onTap: () {},
                                   ),
                                 ),
@@ -268,6 +269,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     borderColor: AppColors.magenta4,
                                     borderButtomColor: AppColors.magenta2,
                                     amountColor: AppColors.magenta6,
+                                    iconPath: AppSvgs.chart,
                                     onTap: () {},
                                   ),
                                 ),
@@ -282,9 +284,10 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     value: dashVm.statModel?.totalSalesOrders ??
                                         "0",
                                     borderButtomColor: AppColors.purple2,
-                                    bgColor: AppColors.yellowE6,
-                                    borderColor: AppColors.yellow4,
-                                    amountColor: AppColors.yellow6,
+                                    bgColor: AppColors.purpleF9,
+                                    borderColor: AppColors.purpleEB,
+                                    amountColor: AppColors.purpleEB,
+                                    iconPath: AppSvgs.chart,
                                     onTap: () {},
                                   ),
                                 ),
@@ -295,11 +298,16 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                                     value: dashVm.statModel?.totalCustomers
                                             ?.toString() ??
                                         "0",
-                                    bgColor: AppColors.greenED,
-                                    borderColor: AppColors.green4,
+                                    // bgColor: AppColors.greenED,
+                                    // borderColor: AppColors.green4,
+                                    // borderButtomColor: AppColors.purple2,
+                                    // amountColor: AppColors.green7,
+                                    bgColor: AppColors.yellowE6,
                                     borderButtomColor: AppColors.purple2,
-                                    amountColor: AppColors.green7,
-                                    iconPath: AppSvgs.chart,
+                                    borderColor: AppColors.yellow4,
+                                    amountColor: AppColors.yellow6,
+                                    iconPath: AppSvgs.userFilled,
+
                                     onTap: () {},
                                   ),
                                 ),
@@ -307,6 +315,58 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                             ),
                           ],
                         ),
+                      ],
+                    ),
+                  ),
+                  YBox(16),
+                  Container(
+                    padding: EdgeInsets.all(Sizer.radius(16)),
+                    decoration: BoxDecoration(
+                      color: colorScheme.white,
+                      borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Quick Actions", style: textTheme.text16?.medium),
+                        YBox(16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            QuickActionCol(
+                              title: "Customers",
+                              svgPath: AppSvgs.customer,
+                              onTap: () {
+                                Navigator.pushNamed(context,
+                                    RoutePath.customersManagementScreen);
+                              },
+                            ),
+                            QuickActionCol(
+                              title: "Returns",
+                              svgPath: AppSvgs.returns,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, RoutePath.returnRefundScreen);
+                              },
+                            ),
+                            QuickActionCol(
+                              title: "Discounts",
+                              svgPath: AppSvgs.discount,
+                              onTap: () {
+                                Navigator.pushNamed(context,
+                                    RoutePath.discountManagementScreen);
+                              },
+                            ),
+                            QuickActionCol(
+                              title: "Staff",
+                              svgPath: AppSvgs.userFilled,
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, RoutePath.staffManagementScreen);
+                              },
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),

@@ -6,6 +6,7 @@ void handleApiResponse({
   String? successMsg,
   bool showErrorToast = true,
   bool showSuccessToast = true,
+  bool useBrandSuccessSnack = true,
   void Function()? onSuccess,
   void Function()? onError,
 }) {
@@ -14,7 +15,8 @@ void handleApiResponse({
 
     if (showSuccessToast) {
       showSuccessToastMessage(
-          successMsg ?? response.message ?? 'Operation successful');
+          successMsg ?? response.message ?? 'Operation successful',
+          useBrandSuccessSnack: useBrandSuccessSnack);
     }
   } else {
     onError?.call();
@@ -30,9 +32,10 @@ void showWarningToast(String msg) {
 }
 
 /// Shows a success toast message
-void showSuccessToastMessage(String msg) {
+void showSuccessToastMessage(String msg, {bool useBrandSuccessSnack = true}) {
   FlushBarToast.fLSnackBar(
     message: msg,
-    snackBarType: SnackBarType.success,
+    snackBarType:
+        useBrandSuccessSnack ? SnackBarType.success : SnackBarType.successGreen,
   );
 }

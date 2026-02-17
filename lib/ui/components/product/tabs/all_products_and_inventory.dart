@@ -103,12 +103,13 @@ class _AllProductsAndInventoryState
                     FilterHeader(
                       title: "Products and Inventory",
                       subTitle: "View and manage products in your business",
-                      trailingWidget: NewButtonWidget(
-                        onTap: () {
-                          Navigator.pushNamed(
-                              context, RoutePath.searchAddProductScreen);
-                        },
-                      ),
+                      // todo:::NOTE::: > FEATURE not FEASIBLE on MOBILE
+                      // trailingWidget: NewButtonWidget(
+                      //   onTap: () {
+                      //     Navigator.pushNamed(
+                      //         context, RoutePath.searchAddProductScreen);
+                      //   },
+                      // ),
                     ),
                     YBox(16),
                     Container(

@@ -331,28 +331,28 @@ class _SearchAddProductScreenState
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  "Can’t find the product you want to add?",
-                                  style: textTheme.text14,
-                                ),
-                                YBox(5),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.pushNamed(context,
-                                        RoutePath.addProductRequestScreen);
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: Sizer.height(2),
-                                    ),
-                                    child: Text(
-                                      "Request to add product",
-                                      style: textTheme.text14?.medium.copyWith(
-                                        color: colorScheme.primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                ),
+                                // Text(
+                                //   "Can’t find the product you want to add?",
+                                //   style: textTheme.text14,
+                                // ),
+                                // YBox(5),
+                                // InkWell(
+                                //   onTap: () {
+                                //     Navigator.pushNamed(context,
+                                //         RoutePath.addProductRequestScreen);
+                                //   },
+                                //   child: Padding(
+                                //     padding: EdgeInsets.symmetric(
+                                //       vertical: Sizer.height(2),
+                                //     ),
+                                //     child: Text(
+                                //       "Request to add product",
+                                //       style: textTheme.text14?.medium.copyWith(
+                                //         color: colorScheme.primaryColor,
+                                //       ),
+                                //     ),
+                                //   ),
+                                // ),
                                 Expanded(
                                   child: ListView.separated(
                                     shrinkWrap: true,
