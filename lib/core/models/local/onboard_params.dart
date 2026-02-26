@@ -1,6 +1,6 @@
 class OnboardParams {
   final String? businessName;
-  final String? categoryId;
+  final List<String>? categoryId;
   final String? businessType;
   final String? contactName;
   final String? email;

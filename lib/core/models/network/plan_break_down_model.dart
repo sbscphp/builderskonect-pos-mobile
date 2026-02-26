@@ -8,7 +8,7 @@ class PlanBreakDownModel {
   final int? vatAmount;
   final double? discountAmount;
   final double? amountDue;
-  final Map<String, dynamic>? fees;
+  final dynamic fees;//NOTE:: changed Map<string,dynamic> -> dynamic
 
   PlanBreakDownModel({
     this.planAmount,
@@ -24,6 +24,6 @@ class PlanBreakDownModel {
         vatAmount: json["vat_amount"],
         discountAmount: json["discount_amount"]?.toDouble(),
         amountDue: json["amount_due"]?.toDouble(),
-        fees: json["fees"],
+        // fees: json["fees"],
       );
 }

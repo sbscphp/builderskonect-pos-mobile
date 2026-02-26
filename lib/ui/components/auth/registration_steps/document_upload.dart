@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class DocumentUpload extends ConsumerStatefulWidget {
   const DocumentUpload({
@@ -44,167 +45,175 @@ class _DocumentUploadState extends ConsumerState<DocumentUpload> {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: EdgeInsets.only(
-              top: Sizer.height(30),
-              bottom: Sizer.height(60),
-            ),
-            children: [
-              Container(
-                padding: EdgeInsets.all(Sizer.radius(8)),
-                decoration: BoxDecoration(
-                  border: Border.all(color: AppColors.yellow8F),
-                  borderRadius: BorderRadius.circular(Sizer.radius(4)),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.info_outline,
-                      color: AppColors.yellow3D,
-                    ),
-                    XBox(8),
-                    Expanded(
-                      child: Text(
-                        "Skip the document upload process if you do not have the documents",
-                        style: textTheme.text12?.copyWith(
-                          color: AppColors.neutral8,
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.only(
+                top: Sizer.height(30),
+                bottom: Sizer.height(60),
+              ),
+              children: [
+                Container(
+                  padding: EdgeInsets.all(Sizer.radius(8)),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColors.yellow8F),
+                    borderRadius: BorderRadius.circular(Sizer.radius(4)),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: AppColors.yellow3D,
+                      ),
+                      XBox(8),
+                      Expanded(
+                        child: Text(
+                          "Skip the document upload process if you do not have the documents",
+                          style: textTheme.text12?.copyWith(
+                            color: AppColors.neutral8,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
+                YBox(24),
+                CustomTextField(
+                  controller: cacC,
+                  focusNode: cacF,
+                  isRequired: false,
+                  labelText: 'CAC Number',
+                  hintText: 'Enter CAC number',
+                  showLabelHeader: true,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(9),
                   ],
                 ),
-              ),
-              YBox(24),
-              CustomTextField(
-                controller: cacC,
-                focusNode: cacF,
-                isRequired: false,
-                labelText: 'CAC Number',
-                hintText: 'Enter CAC number',
-                showLabelHeader: true,
-              ),
-              YBox(20),
-              UploadWidget(
-                documentName: _cacFile?.path.split('/').last,
-                isUploading: ref.watch(fileUploadVm).busy("cacUploadState"),
-                buttomTextDesc:
-                    "Upload a copy of your Corporate Affairs Commission Certificate",
-                onUpload: () async {
-                  final file = await ImageAndDocUtils.pickDocument();
-                  if (file != null) {
-                    _cacFile = file;
-                    final r = await ref.read(fileUploadVm).uploadFile(
-                        file: [file], busyObjectName: "cacUploadState");
-                    _cacUrl = r.data?.first.url;
+                YBox(20),
+                UploadWidget(
+                  documentName: _cacFile?.path.split('/').last,
+                  isUploading: ref.watch(fileUploadVm).busy("cacUploadState"),
+                  buttomTextDesc:
+                      "Upload a copy of your Corporate Affairs Commission Certificate",
+                  onUpload: () async {
+                    final file = await ImageAndDocUtils.pickDocument();
+                    if (file != null) {
+                      _cacFile = file;
+                      final r = await ref.read(fileUploadVm).uploadFile(
+                          file: [file], busyObjectName: "cacUploadState");
+                      _cacUrl = r.data?.first.url;
+                      setState(() {});
+                    }
+                  },
+                  onRemove: () {
+                    _cacFile = null;
+                    _cacUrl = null;
                     setState(() {});
-                  }
-                },
-                onRemove: () {
-                  _cacFile = null;
-                  _cacUrl = null;
-                  setState(() {});
-                },
-              ),
-              YBox(20),
-              CustomTextField(
-                controller: tinC,
-                focusNode: tinF,
-                isRequired: false,
-                labelText: 'TIN Number',
-                hintText: 'Enter TIN number',
-                showLabelHeader: true,
-                keyboardType: TextInputType.number,
-              ),
-              YBox(20),
-              UploadWidget(
-                documentName: _tinFile?.path.split('/').last,
-                buttomTextDesc:
-                    "Upload a copy of your Tax Identification Certificate",
-                isUploading: ref.watch(fileUploadVm).busy("tinUploadState"),
-                onUpload: () async {
-                  // Reset progress tracking for any previous uploads
-                  ref.read(fileUploadVm).resetProgress();
+                  },
+                ),
+                YBox(20),
+                CustomTextField(
+                  controller: tinC,
+                  focusNode: tinF,
+                  isRequired: false,
+                  labelText: 'TIN Number',
+                  hintText: 'Enter TIN number',
+                  showLabelHeader: true,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    LengthLimitingTextInputFormatter(13),
+                  ],
+                ),
+                YBox(20),
+                UploadWidget(
+                  documentName: _tinFile?.path.split('/').last,
+                  buttomTextDesc:
+                      "Upload a copy of your Tax Identification Certificate",
+                  isUploading: ref.watch(fileUploadVm).busy("tinUploadState"),
+                  onUpload: () async {
+                    // Reset progress tracking for any previous uploads
+                    ref.read(fileUploadVm).resetProgress();
 
-                  final file = await ImageAndDocUtils.pickDocument();
-                  if (file != null) {
-                    _tinFile = file;
-                    final r = await ref.read(fileUploadVm).uploadFile(
-                        file: [file], busyObjectName: "tinUploadState");
-                    _tinUrl = r.data?.first.url;
-                  }
-                },
-                onRemove: () {
-                  _tinFile = null;
-                  _tinUrl = null;
-                  setState(() {});
-                },
-              ),
-              YBox(20),
-              UploadWidget(
-                labelText: 'Proof of Address',
-                documentName: _proofOfAddressFile?.path.split('/').last,
-                isUploading:
-                    ref.watch(fileUploadVm).busy("proofOfAddressUploadState"),
-                onUpload: () async {
-                  final file = await ImageAndDocUtils.pickDocument();
-                  if (file != null) {
-                    _proofOfAddressFile = file;
-                    final r = await ref.read(fileUploadVm).uploadFile(
-                        file: [file],
-                        busyObjectName: "proofOfAddressUploadState");
-                    _proofOfAddressUrl = r.data?.first.url;
+                    final file = await ImageAndDocUtils.pickDocument();
+                    if (file != null) {
+                      _tinFile = file;
+                      final r = await ref.read(fileUploadVm).uploadFile(
+                          file: [file], busyObjectName: "tinUploadState");
+                      _tinUrl = r.data?.first.url;
+                    }
+                  },
+                  onRemove: () {
+                    _tinFile = null;
+                    _tinUrl = null;
                     setState(() {});
-                  }
-                },
-                onRemove: () {
-                  _proofOfAddressFile = null;
-                  _proofOfAddressUrl = null;
-                  setState(() {});
-                },
-                buttomTextDesc:
-                    "Upload a copy of your utility bill for proof of address",
+                  },
+                ),
+                YBox(20),
+                UploadWidget(
+                  labelText: 'Proof of Address',
+                  documentName: _proofOfAddressFile?.path.split('/').last,
+                  isUploading:
+                      ref.watch(fileUploadVm).busy("proofOfAddressUploadState"),
+                  onUpload: () async {
+                    final file = await ImageAndDocUtils.pickDocument();
+                    if (file != null) {
+                      _proofOfAddressFile = file;
+                      final r = await ref.read(fileUploadVm).uploadFile(
+                          file: [file],
+                          busyObjectName: "proofOfAddressUploadState");
+                      _proofOfAddressUrl = r.data?.first.url;
+                      setState(() {});
+                    }
+                  },
+                  onRemove: () {
+                    _proofOfAddressFile = null;
+                    _proofOfAddressUrl = null;
+                    setState(() {});
+                  },
+                  buttomTextDesc:
+                      "Upload a copy of your utility bill for proof of address",
+                ),
+                YBox(40),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                      onPressed: submitForm,
+                      child: Text(
+                        "Skip",
+                        style: textTheme.text16?.copyWith(
+                          color: colorScheme.primaryColor,
+                        ),
+                      )),
+                )
+              ],
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: CustomBtn.solid(
+                  isOutline: true,
+                  outlineColor: AppColors.neutral5,
+                  textStyle: textTheme.text16,
+                  text: "Previous",
+                  onTap: widget.onPrevious ?? () {},
+                ),
               ),
-              YBox(40),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                    onPressed: submitForm,
-                    child: Text(
-                      "Skip",
-                      style: textTheme.text16?.copyWith(
-                        color: colorScheme.primaryColor,
-                      ),
-                    )),
-              )
+              XBox(20),
+              Expanded(
+                child: CustomBtn.solid(
+                  text: "Next",
+                  onTap: submitForm,
+                ),
+              ),
             ],
           ),
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CustomBtn.solid(
-                isOutline: true,
-                outlineColor: AppColors.neutral5,
-                textStyle: textTheme.text16,
-                text: "Previous",
-                onTap: widget.onPrevious ?? () {},
-              ),
-            ),
-            XBox(20),
-            Expanded(
-              child: CustomBtn.solid(
-                text: "Next",
-                onTap: submitForm,
-              ),
-            ),
-          ],
-        ),
-        YBox(10),
-      ],
+          YBox(10),
+        ],
+      ),
     );
   }
 

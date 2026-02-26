@@ -46,147 +46,149 @@ class _BankDetailsState extends ConsumerState<BankDetails> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final bankVm = ref.watch(bankVmodel);
-    return Column(
-      children: [
-        Expanded(
-          child: Form(
-            key: formKey,
-            child: ListView(
-              padding: EdgeInsets.only(
-                top: Sizer.height(30),
-                bottom: Sizer.height(60),
-              ),
-              children: [
-                CustomTextField(
-                  controller: bankC,
-                  focusNode: bankF,
-                  isRequired: true,
-                  labelText: 'Bank Name',
-                  hintText: 'Select bank name',
-                  readOnly: true,
-                  showLabelHeader: true,
-                  validator: Validators.required(),
-                  onChanged: (v) => setState(() {}),
-                  suffixIcon: Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 20,
-                    color: AppColors.neutral9,
+    return SafeArea(
+      child: Column(
+        children: [
+          Expanded(
+            child: Form(
+              key: formKey,
+              child: ListView(
+                padding: EdgeInsets.only(
+                  top: Sizer.height(30),
+                  bottom: Sizer.height(60),
+                ),
+                children: [
+                  CustomTextField(
+                    controller: bankC,
+                    focusNode: bankF,
+                    isRequired: true,
+                    labelText: 'Bank Name',
+                    hintText: 'Select bank name',
+                    readOnly: true,
+                    showLabelHeader: true,
+                    validator: Validators.required(),
+                    onChanged: (v) => setState(() {}),
+                    suffixIcon: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 20,
+                      color: AppColors.neutral9,
+                    ),
+                    onTap: () async {
+                      final res = await ModalWrapper.bottomSheet(
+                          context: context,
+                          widget: SelectBankModal(selectedBank: selectedBank));
+      
+                      if (res is BankModel) {
+                        selectedBank = res;
+                        bankC.text = res.name ?? "";
+                        setState(() {});
+                      }
+                    },
                   ),
-                  onTap: () async {
-                    final res = await ModalWrapper.bottomSheet(
-                        context: context,
-                        widget: SelectBankModal(selectedBank: selectedBank));
-
-                    if (res is BankModel) {
-                      selectedBank = res;
-                      bankC.text = res.name ?? "";
-                      setState(() {});
-                    }
-                  },
-                ),
-                YBox(20),
-                CustomTextField(
-                  controller: accountNumberC,
-                  focusNode: accountNumberF,
-                  isRequired: true,
-                  labelText: 'Account Number',
-                  hintText: 'Enter account number',
-                  showLabelHeader: true,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(10),
-                  ],
-                  readOnly: selectedBank == null,
-                  onTap: () {
-                    if (selectedBank == null) {
-                      return FlushBarToast.fLSnackBar(
-                        snackBarType: SnackBarType.warning,
-                        message: 'Please select bank name',
-                      );
-                    }
-                  },
-                  validator: Validators.required(),
-                  onChanged: (v) async {
-                    if (v.trim().length == 10) {
-                      final res = await ref.read(bankVmodel).verifyBank(
-                            accountNumber: v.trim(),
-                            bankId: selectedBank?.id ?? 0,
-                          );
-                      handleApiResponse(
-                        response: res,
-                        showSuccessToast: false,
-                        onSuccess: () {
-                          accountNameC.text = res.data ?? "";
-                        },
-                      );
-                    }
-                  },
-                ),
-                YBox(20),
-                CustomTextField(
-                  controller: accountNameC,
-                  focusNode: accountNameF,
-                  isRequired: true,
-                  readOnly: true,
-                  labelText: 'Account Name',
-                  hintText: 'Enter account name',
-                  showLabelHeader: true,
-                  fillColor: AppColors.neutral3,
-                  validator: Validators.required(),
-                  suffixIcon: bankVm.busy(verifyBankState)
-                      ? Padding(
-                          padding: EdgeInsets.only(right: Sizer.width(4)),
-                          child: CupertinoActivityIndicator(),
-                        )
-                      : null,
-                ),
-              ],
+                  YBox(20),
+                  CustomTextField(
+                    controller: accountNumberC,
+                    focusNode: accountNumberF,
+                    isRequired: true,
+                    labelText: 'Account Number',
+                    hintText: 'Enter account number',
+                    showLabelHeader: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
+                    readOnly: selectedBank == null,
+                    onTap: () {
+                      if (selectedBank == null) {
+                        return FlushBarToast.fLSnackBar(
+                          snackBarType: SnackBarType.warning,
+                          message: 'Please select bank name',
+                        );
+                      }
+                    },
+                    validator: Validators.required(),
+                    onChanged: (v) async {
+                      if (v.trim().length == 10) {
+                        final res = await ref.read(bankVmodel).verifyBank(
+                              accountNumber: v.trim(),
+                              bankId: selectedBank?.id ?? 0,
+                            );
+                        handleApiResponse(
+                          response: res,
+                          showSuccessToast: false,
+                          onSuccess: () {
+                            accountNameC.text = res.data ?? "";
+                          },
+                        );
+                      }
+                    },
+                  ),
+                  YBox(20),
+                  CustomTextField(
+                    controller: accountNameC,
+                    focusNode: accountNameF,
+                    isRequired: true,
+                    readOnly: true,
+                    labelText: 'Account Name',
+                    hintText: 'Enter account name',
+                    showLabelHeader: true,
+                    fillColor: AppColors.neutral3,
+                    validator: Validators.required(),
+                    suffixIcon: bankVm.busy(verifyBankState)
+                        ? Padding(
+                            padding: EdgeInsets.only(right: Sizer.width(4)),
+                            child: CupertinoActivityIndicator(),
+                          )
+                        : null,
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-        Row(
-          children: [
-            Expanded(
-              child: CustomBtn.solid(
-                isOutline: true,
-                outlineColor: AppColors.neutral5,
-                textStyle: textTheme.text16,
-                text: "Previous",
-                onTap: widget.onPrevious,
+          Row(
+            children: [
+              Expanded(
+                child: CustomBtn.solid(
+                  isOutline: true,
+                  outlineColor: AppColors.neutral5,
+                  textStyle: textTheme.text16,
+                  text: "Previous",
+                  onTap: widget.onPrevious,
+                ),
               ),
-            ),
-            XBox(20),
-            Expanded(
-              child: CustomBtn.solid(
-                  text: "Next",
-                  onTap: () async {
-                    if (formKey.currentState?.validate() ?? false) {
-                      final params = OnboardParams(
-                        bankId: selectedBank?.id ?? 0,
-                        accountNumber: accountNumberC.text.trim(),
-                        accountName: accountNameC.text.trim(),
-                      );
-
-                      final res = await ref
-                          .read(onboardVmodel)
-                          .validateBank(onboardParams: params);
-
-                      handleApiResponse(
-                        response: res,
-                        showSuccessToast: false,
-                        onSuccess: () {
-                          ref.read(onboardVmodel).setBankOnboardParams(params);
-                          widget.onNext?.call();
-                        },
-                      );
-                    }
-                  }),
-            ),
-          ],
-        ),
-        YBox(10),
-      ],
+              XBox(20),
+              Expanded(
+                child: CustomBtn.solid(
+                    text: "Next",
+                    onTap: () async {
+                      if (formKey.currentState?.validate() ?? false) {
+                        final params = OnboardParams(
+                          bankId: selectedBank?.id ?? 0,
+                          accountNumber: accountNumberC.text.trim(),
+                          accountName: accountNameC.text.trim(),
+                        );
+      
+                        final res = await ref
+                            .read(onboardVmodel)
+                            .validateBank(onboardParams: params);
+      
+                        handleApiResponse(
+                          response: res,
+                          showSuccessToast: false,
+                          onSuccess: () {
+                            ref.read(onboardVmodel).setBankOnboardParams(params);
+                            widget.onNext?.call();
+                          },
+                        );
+                      }
+                    }),
+              ),
+            ],
+          ),
+          YBox(10),
+        ],
+      ),
     );
   }
 }

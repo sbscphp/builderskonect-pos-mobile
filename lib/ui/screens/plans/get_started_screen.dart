@@ -272,8 +272,8 @@ class _GetStartedScreenState extends ConsumerState<GetStartedScreen> {
                       phone: phoneC.text.trim(),
                       priceItemId: widget.arg?.priceItem.id,
                       provider: "paystack",
-                      callbackUrl:
-                          "${AppConfig.callBackUrl}/auth/register-vendor",
+                      // callbackUrl:
+                      //     "${AppConfig.callBackUrl}/auth/register-vendor",
                     ),
                   );
 

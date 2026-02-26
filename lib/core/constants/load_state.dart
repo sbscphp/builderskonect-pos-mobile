@@ -38,3 +38,5 @@ const String createPromotionState = 'createPromotionState';
 const String getBrandState = 'getBrandState';
 const String createAccreditationState = 'createAccreditationState';
 
+//
+const String fetchAddressState = 'fetchAddressState';

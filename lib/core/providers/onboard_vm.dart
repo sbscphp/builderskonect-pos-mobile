@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/models/network/address.dart';
 
 const String categoryTypeState = "categoryTypeState";
 
@@ -73,6 +74,44 @@ class OnboardVm extends BaseVm {
         return apiResponse;
       },
     );
+  }
+
+  //list of address suggestions
+  List<Address> _addressSuggestions = [];
+  List<Address> get addressSuggestions => _addressSuggestions;
+
+  List<String> get addressNames =>
+      _addressSuggestions.map((address) => address.name ?? 'N/A').toList();
+  bool _showAddressList = false;
+  bool get showAddressList => _showAddressList;
+  set showAddressList(bool val) {
+    _showAddressList = val;
+    notifyListeners();
+  }
+
+  Future<ApiResponse> fetchAddressSuggestions(
+      {required String? keyWord}) async {
+    _showAddressList = true;
+    return await performApiCall(
+      url: "/api/v1/shared/search-address?q=$keyWord",
+      method: apiService.get,
+      busyObjectName: fetchAddressState,
+      errorObjectName: fetchAddressState,
+      onSuccess: (data) {
+        final res = addressFromJson(json.encode(data["data"]));
+        _addressSuggestions = res;
+        return apiResponse;
+      },
+      onError: (errorMessage) {
+        _showAddressList = false;
+        return apiResponse;
+      },
+    );
+  }
+
+    resetAddressSuggestions(){
+    _showAddressList = false;
+    _addressSuggestions.clear();
   }
 
   Future<ApiResponse> completeOnboarding({
