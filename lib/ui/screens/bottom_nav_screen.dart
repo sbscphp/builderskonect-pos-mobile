@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/core/utils/system_ui_helper.dart';
 import 'package:builders_konnect/ui/components/components.dart';
 import 'package:builders_konnect/ui/screens/screens.dart';
+import 'package:upgrader/upgrader.dart';
 
 class DashboardNav {
   final String name;
@@ -75,7 +78,11 @@ class _BottomNavScreenState extends ConsumerState<BottomNavScreen> {
       child: BusyOverlay(
         show: false,
         child: Scaffold(
-          body: items[currentIndex].screen,
+          body: UpgradeAlert(
+            dialogStyle: Platform.isAndroid
+              ? UpgradeDialogStyle.material
+              : UpgradeDialogStyle.cupertino,
+            child: items[currentIndex].screen),
           backgroundColor: AppColors.white,
           bottomNavigationBar: SystemUIHelper.safeAreaWrapper(
             top: false,

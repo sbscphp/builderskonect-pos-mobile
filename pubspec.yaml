@@ -75,6 +75,7 @@ dependencies:
   fluttertoast: ^9.0.0
   pdf: ^3.11.3
   printing: ^5.14.2
+  upgrader: ^12.5.0
 
 dev_dependencies:
   flutter_test:
