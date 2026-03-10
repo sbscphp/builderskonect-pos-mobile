@@ -206,7 +206,10 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                               children: [
                                 if (searchC.text.isNotEmpty)
                                   InkWell(
-                                    onTap: () {},
+                                    onTap: () {
+                                      searchC.clear();
+                                      setState(() {});
+                                    },
                                     child: Padding(
                                       padding: EdgeInsets.all(Sizer.width(10)),
                                       child: Icon(
@@ -221,11 +224,11 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                                   child: Container(
                                     padding: EdgeInsets.all(Sizer.width(10)),
                                     decoration: BoxDecoration(
-                                        border: Border(
-                                      left: BorderSide(
-                                        color: AppColors.neutral5,
+                                      border: Border(
+                                        left: BorderSide(
+                                            color: AppColors.neutral5),
                                       ),
-                                    )),
+                                    ),
                                     child: SvgPicture.asset(AppSvgs.search),
                                   ),
                                 ),
@@ -233,55 +236,93 @@ class _StoresTabState extends ConsumerState<StoresTab> {
                             ),
                           ),
                           YBox(10),
-                          ListView.separated(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            padding: EdgeInsets.only(
-                              top: Sizer.height(14),
-                              bottom: Sizer.height(50),
-                            ),
-                            itemCount: storeVm.storeList.length,
-                            separatorBuilder: (_, __) => HDivider(),
-                            itemBuilder: (ctx, i) {
-                              final store = storeVm.storeList[i];
-                              return CustomColWidget(
-                                firstColText: store.storeId ?? '',
-                                subTitle: store.name ?? '',
-                                status: store.status ?? '',
-                                date: store.dateCreated?.toLocal(),
-                                onTap: () {
-                                  ModalWrapper.bottomSheet(
-                                    context: context,
-                                    widget: StoreOptionModal(options: [
-                                      ModalOption(
-                                        title: "View store details",
-                                        onTap: () {
-                                          Navigator.pushNamed(context,
-                                              RoutePath.viewStoreScreen,
-                                              arguments: store);
-                                        },
-                                      ),
-                                      ModalOption(
-                                        title: "Store sales overview",
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context,
-                                              RoutePath
-                                                  .storeSalesOverviewScreen,
-                                              arguments: store);
-                                        },
-                                      ),
-                                      ModalOption(
-                                        title: "Store products/inventory list",
-                                        onTap: () {
-                                          Navigator.pushNamed(
-                                              context,
-                                              RoutePath
-                                                  .storeInventoryOverviewScreen,
-                                              arguments: store);
-                                        },
-                                      ),
-                                    ]),
+                          Builder(
+                            builder: (_) {
+                              final query = searchC.text.toLowerCase().trim();
+                              final filteredStores = query.isEmpty
+                                  ? storeVm.storeList
+                                  : storeVm.storeList.where((store) {
+                                      return (store.storeId ?? '')
+                                              .toLowerCase()
+                                              .contains(query) ||
+                                          (store.name ?? '')
+                                              .toLowerCase()
+                                              .contains(query) ||
+                                          (store.status ?? '')
+                                              .toLowerCase()
+                                              .contains(query);
+                                    }).toList();
+
+                              if (filteredStores.isEmpty) {
+                                return Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: Sizer.height(40)),
+                                  child: Center(
+                                    child: Text(
+                                      "No stores found for ${searchC.text}",
+                                      style:
+                                          TextStyle(color: AppColors.gray500),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              return ListView.separated(
+                                shrinkWrap: true,
+                                physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.only(
+                                  top: Sizer.height(14),
+                                  bottom: Sizer.height(50),
+                                ),
+                                itemCount: filteredStores.length,
+                                separatorBuilder: (_, __) => HDivider(),
+                                itemBuilder: (ctx, i) {
+                                  final store = filteredStores[i];
+                                  return CustomColWidget(
+                                    firstColText: store.storeId ?? '',
+                                    subTitle: store.name ?? '',
+                                    status: store.status ?? '',
+                                    date: store.dateCreated?.toLocal(),
+                                    onTap: () {
+                                      ModalWrapper.bottomSheet(
+                                        context: context,
+                                        widget: StoreOptionModal(options: [
+                                          ModalOption(
+                                            title: "View store details",
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                RoutePath.viewStoreScreen,
+                                                arguments: store,
+                                              );
+                                            },
+                                          ),
+                                          ModalOption(
+                                            title: "Store sales overview",
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                RoutePath
+                                                    .storeSalesOverviewScreen,
+                                                arguments: store,
+                                              );
+                                            },
+                                          ),
+                                          ModalOption(
+                                            title:
+                                                "Store products/inventory list",
+                                            onTap: () {
+                                              Navigator.pushNamed(
+                                                context,
+                                                RoutePath
+                                                    .storeInventoryOverviewScreen,
+                                                arguments: store,
+                                              );
+                                            },
+                                          ),
+                                        ]),
+                                      );
+                                    },
                                   );
                                 },
                               );

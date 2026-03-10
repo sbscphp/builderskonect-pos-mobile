@@ -1,7 +1,7 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/core/models/network/promotion_fees_model.dart';
 import 'package:builders_konnect/core/models/network/promotion_payment_breakdown_model.dart';
-import 'package:builders_konnect/core/models/network/promotion_response.dart';
+// import 'package:builders_konnect/core/models/network/promotion_response.dart';
 
 class ProductInventoryVm extends BaseVm {
   //page number

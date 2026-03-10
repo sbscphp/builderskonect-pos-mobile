@@ -123,10 +123,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen>
                       context: context,
                       position: RelativeRect.fromLTRB(100, 100, 0, 0),
                       items: [
-                        PopupMenuItem(
-                          value: 'add_product',
-                          child: Text('Add Product', style: textTheme.text14),
-                        ),
+                        // PopupMenuItem(
+                        //   value: 'add_product',
+                        //   child: Text('Add Product', style: textTheme.text14),
+                        // ),
                         PopupMenuItem(
                           value: 'view_inventory',
                           child:
@@ -142,10 +142,10 @@ class _ProductScreenState extends ConsumerState<ProductScreen>
                       if (value != null) {
                         printty('Selected: $value');
                         switch (value) {
-                          case 'add_product':
-                            Navigator.pushNamed(
-                                context, RoutePath.searchAddProductScreen);
-                            break;
+                          // case 'add_product':
+                          //   Navigator.pushNamed(
+                          //       context, RoutePath.searchAddProductScreen);
+                          //   break;
                           case 'view_inventory':
                             Navigator.pushNamed(
                                 context, RoutePath.inventoryScreen);

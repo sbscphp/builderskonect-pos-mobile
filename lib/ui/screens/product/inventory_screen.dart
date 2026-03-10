@@ -135,7 +135,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                     value: AppUtils.formatNumber(
                                         number: double.tryParse(productVm
                                                     .productStats
-                                                    ?.totalProducts ??
+                                                    ?.totalProducts?.toString() ??
                                                 "0") ??
                                             0),
                                     valueTextSize: 12,
@@ -148,7 +148,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                     value: AppUtils.formatNumber(
                                         number: double.tryParse(productVm
                                                     .productStats
-                                                    ?.availableProducts ??
+                                                    ?.availableProducts?.toString() ??
                                                 "0") ??
                                             0),
                                     valueTextSize: 12,
@@ -168,7 +168,7 @@ class _InventoryScreenState extends ConsumerState<InventoryScreen> {
                                     value: AppUtils.formatNumber(
                                         number: double.tryParse(productVm
                                                     .productStats
-                                                    ?.totalSoldProducts ??
+                                                    ?.totalSoldProducts?.toString() ??
                                                 "0") ??
                                             0),
                                     valueTextSize: 12,

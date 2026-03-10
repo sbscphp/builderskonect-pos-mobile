@@ -102,7 +102,7 @@ class _AllProductsAndInventoryState
                   children: [
                     FilterHeader(
                       title: "Products and Inventory",
-                      subTitle: "View and manage products in your business",
+                      subTitle: "View products in your business",
                       // todo:::NOTE::: > FEATURE not FEASIBLE on MOBILE
                       // trailingWidget: NewButtonWidget(
                       //   onTap: () {
@@ -144,7 +144,7 @@ class _AllProductsAndInventoryState
                                 textColor: colorScheme.black85,
                                 title: "Total Sales",
                                 value:
-                                    "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(productVm.productStats?.totalSales ?? "0") ?? 0)}",
+                                    "${AppUtils.nairaSymbol}${AppUtils.formatNumber(decimalPlaces: 2, number: double.tryParse(productVm.productStats?.totalSales?.toString() ?? "0") ?? 0)}",
                                 valueTextSize: 12,
                                 valueColor: AppColors.green1A,
                               ),

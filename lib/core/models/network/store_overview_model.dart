@@ -20,7 +20,7 @@ class StoreOverviewModel {
   final int? completed;
   final int? processing;
   final int? cancelled;
-  final SalesOverview? salesOverview;
+  final dynamic salesOverview;
 
   StoreOverviewModel({
     this.id,
@@ -60,7 +60,9 @@ class StoreOverviewModel {
         cancelled: json["cancelled"],
         salesOverview: json["sales_overview"] == null
             ? null
-            : SalesOverview.fromJson(json["sales_overview"]),
+            : json["sales_overview"]?.runtimeType == List
+                ? null
+                : SalesOverview.fromJson(json["sales_overview"]),
       );
 }
 

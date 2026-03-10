@@ -49,3 +49,4 @@ export 'vendor_profile_model.dart';
 export 'product_attribute_model.dart';
 export 'brand_response.dart';
 export 'brand_certificate.dart';
+export 'permission_role.dart';

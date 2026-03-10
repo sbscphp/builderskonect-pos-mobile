@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/services.dart';
 
 class AccreditationScreen extends ConsumerStatefulWidget {
   const AccreditationScreen({super.key});
@@ -115,6 +116,9 @@ class _AccreditationScreenState extends ConsumerState<AccreditationScreen> {
                           labelText: 'Certification Number',
                           hintText: 'Enter certification no',
                           showLabelHeader: true,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(23),
+                          ],
                           height: 35.h,
                           // onChanged: _searchProducts,
                         ),

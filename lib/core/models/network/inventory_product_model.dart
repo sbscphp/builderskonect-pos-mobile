@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:builders_konnect/core/models/network/store_location_model.dart';
+// import 'package:builders_konnect/core/models/network/store_location_model.dart';
 
 InventoryProductModel inventoryProductModelFromJson(String str) =>
     InventoryProductModel.fromJson(json.decode(str));
@@ -36,14 +36,14 @@ class InventoryResponse {
   final int? currentPage;
   final List<ProductModel>? data;
   final String? firstPageUrl;
-  final int? from;
+  // final int? from;
   final int? lastPage;
-  final String? lastPageUrl;
-  final List<Link>? links;
-  final dynamic nextPageUrl;
-  final String? path;
-  final int? perPage;
-  final dynamic prevPageUrl;
+  // final String? lastPageUrl;
+  // final List<Link>? links;
+  // final dynamic nextPageUrl;
+  // final String? path;
+  // final int? perPage;
+  // final dynamic prevPageUrl;
   final int? to;
   final int? total;
 
@@ -51,14 +51,14 @@ class InventoryResponse {
     this.currentPage,
     this.data,
     this.firstPageUrl,
-    this.from,
+    // this.from,
     this.lastPage,
-    this.lastPageUrl,
-    this.links,
-    this.nextPageUrl,
-    this.path,
-    this.perPage,
-    this.prevPageUrl,
+    // this.lastPageUrl,
+    // this.links,
+    // this.nextPageUrl,
+    // this.path,
+    // this.perPage,
+    // this.prevPageUrl,
     this.to,
     this.total,
   });
@@ -71,16 +71,16 @@ class InventoryResponse {
             : List<ProductModel>.from(
                 json["data"]!.map((x) => ProductModel.fromJson(x))),
         firstPageUrl: json["first_page_url"],
-        from: json["from"],
+        // from: json["from"],
         lastPage: json["last_page"],
-        lastPageUrl: json["last_page_url"],
-        links: json["links"] == null
-            ? []
-            : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
-        nextPageUrl: json["next_page_url"],
-        path: json["path"],
-        perPage: json["per_page"],
-        prevPageUrl: json["prev_page_url"],
+        // lastPageUrl: json["last_page_url"],
+        // links: json["links"] == null
+        //     ? []
+        //     : List<Link>.from(json["links"]!.map((x) => Link.fromJson(x))),
+        // nextPageUrl: json["next_page_url"],
+        // path: json["path"],
+        // perPage: json["per_page"],
+        // prevPageUrl: json["prev_page_url"],
         to: json["to"],
         total: json["total"],
       );
@@ -91,17 +91,17 @@ class InventoryResponse {
             ? []
             : List<dynamic>.from(data!.map((x) => x.toJson())),
         "first_page_url": firstPageUrl,
-        "from": from,
+        // "from": from,
         "last_page": lastPage,
-        "last_page_url": lastPageUrl,
-        "links": links == null
-            ? []
-            : List<dynamic>.from(links!.map((x) => x.toJson())),
-        "next_page_url": nextPageUrl,
-        "path": path,
-        "per_page": perPage,
-        "prev_page_url": prevPageUrl,
-        "to": to,
+        // "last_page_url": lastPageUrl,
+        // "links": links == null
+        //     ? []
+        //     : List<dynamic>.from(links!.map((x) => x.toJson())),
+        // "next_page_url": nextPageUrl,
+        // "path": path,
+        // "per_page": perPage,
+        // "prev_page_url": prevPageUrl,
+        // "to": to,
         "total": total,
       };
 }

@@ -44,8 +44,10 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   }
 
   _fetchStaffDashboardData() async {
-    await ref.read(staffVm).getDashboardStats(busyObjectName: firstState);
-    await ref.read(roleVm).getAvailableRoles();
+     ref.read(staffVm).getDashboardStats(busyObjectName: firstState);
+     ref.read(roleVm).getAvailableRoles();
+     ref.read(roleVm).fetchRoles();
+
   }
 
   @override

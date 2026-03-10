@@ -1,4 +1,5 @@
 import 'package:builders_konnect/core/core.dart';
+import 'package:builders_konnect/core/models/local/grouped.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -265,5 +266,31 @@ class AppUtils {
       snackBarType: SnackBarType.warning,
       message: message,
     );
+  }
+
+   static List<Grouped<K, T>> groupBy<T, K>(
+      List<T> list,
+      K Function(T item) keySelector, {
+        int Function(K a, K b)? sort,
+      }) {
+    final Map<K, List<T>> buckets = {};
+
+    for (final item in list) {
+      final key = keySelector(item);
+      buckets.putIfAbsent(key, () => []).add(item);
+    }
+
+    final grouped = buckets.entries
+        .map((e) => Grouped<K, T>(
+      label: e.key,
+      items: e.value,
+    ))
+        .toList();
+
+    if (sort != null) {
+      grouped.sort((a, b) => sort(a.label, b.label));
+    }
+
+    return grouped;
   }
 }

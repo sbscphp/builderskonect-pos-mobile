@@ -252,28 +252,33 @@ class _RenewSubscriptionScreenState
                                             final ctx = NavKey
                                                 .appNavKey.currentContext!;
                                             Navigator.pop(ctx);
-                                            Navigator.pushNamed(
-                                              ctx,
-                                              RoutePath
-                                                  .subscriptionSuccessScreen,
-                                              arguments: SubscriptionSuccessArg(
-                                                header:
-                                                    "Subscription Successful!",
-                                                content:
-                                                    AppText.subcriptionSuccess,
-                                                btnText: "Register as a Vendor",
-                                                onTap: () {
-                                                  Navigator
-                                                      .pushReplacementNamed(
-                                                    ctx,
-                                                    RoutePath
-                                                        .vendorRegistrationScreen,
-                                                    arguments: res.data["data"]
-                                                        ["reference"],
-                                                  );
-                                                },
-                                              ),
-                                            );
+                                            Navigator.of(context).popUntil(
+                                                (route) =>
+                                                    route.settings.name ==
+                                                    RoutePath.bottomNavScreen);
+
+                                            // Navigator.pushNamed(
+                                            //   ctx,
+                                            //   RoutePath
+                                            //       .subscriptionSuccessScreen,
+                                            //   arguments: SubscriptionSuccessArg(
+                                            //     header:
+                                            //         "Subscription Successful!",
+                                            //     content:
+                                            //         AppText.subcriptionSuccess,
+                                            //     btnText: "Register as a Vendor",
+                                            //     onTap: () {
+                                            //       Navigator
+                                            //           .pushReplacementNamed(
+                                            //         ctx,
+                                            //         RoutePath
+                                            //             .vendorRegistrationScreen,
+                                            //         arguments: res.data["data"]
+                                            //             ["reference"],
+                                            //       );
+                                            //     },
+                                            //   ),
+                                            // );
                                           },
                                         ),
                                       ),
