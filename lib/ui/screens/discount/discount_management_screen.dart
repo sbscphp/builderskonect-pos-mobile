@@ -59,6 +59,12 @@ class _DiscountManagementScreenState
       appBar: CustomAppbar(
         title: "Discount Management",
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, RoutePath.newDiscountScreen);
+        },
+        child: Icon(Icons.add),
+      ),
       body: !staffRef.hasAccessToDiscount
           ? RequestAccessWidget(
               isLoading: staffRef.busy(RowParams.customer),
@@ -285,12 +291,14 @@ class _DiscountManagementScreenState
                                                   busyObjectName: firstState,
                                                   dateFilter:
                                                       data["date_filter"],
-                                                  status:
-                                                      data["selectorGroups"]["status"] == "All"
-                                                          ? ''
-                                                          : (data["selectorGroups"]["status"]
-                                                                  as String)
-                                                              .toLowerCase());
+                                                  status: data["selectorGroups"]
+                                                              ["status"] ==
+                                                          "All"
+                                                      ? ''
+                                                      : (data["selectorGroups"]
+                                                                  ["status"]
+                                                              as String)
+                                                          .toLowerCase());
                                         },
                                       ),
                                     );

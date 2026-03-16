@@ -76,28 +76,27 @@ class _NewStoreScreenState extends ConsumerState<NewStoreScreen> {
                     controller: storeAddressC,
                     isRequired: false,
                     labelText: 'Store Address',
-                    optionalText: "(optional)",
                     hintText: 'Enter store address',
                     showLabelHeader: true,
                     validator: Validators.required(),
-                    // readOnly: true,
-                    // onTsp: () async {
-                    //   final res = await ModalWrapper.bottomSheet(
-                    //     context: context,
-                    //     widget: GoogleAddressModal(),
-                    //   );
-                    //   if (res is StateModel) {
-                    //     stateC.text = res.name ?? "";
-                    //     selectedState = res;
-                    //   }
-                    // },
+                    readOnly: true,
+                    onTap: () async {
+                      final res = await ModalWrapper.bottomSheet(
+                        context: context,
+                        widget: GoogleAddressModal(),
+                      );
+                      if (res is GoogleAddressModel) {
+                        storeAddressC.text = res.description ?? "";
+                        // selectedState = res;
+                      }
+                    },
                   ),
                   YBox(16),
                   CustomTextField(
                     controller: stateC,
                     isRequired: false,
                     labelText: 'State',
-                    optionalText: "(optional)",
+                    // optionalText: "(optional)",
                     hintText: 'Select state',
                     showLabelHeader: true,
                     readOnly: true,
@@ -118,7 +117,7 @@ class _NewStoreScreenState extends ConsumerState<NewStoreScreen> {
                     controller: cityC,
                     isRequired: false,
                     labelText: 'City/Region',
-                    optionalText: "(optional)",
+                    // optionalText: "(optional)",
                     hintText: 'Enter city/region',
                     showLabelHeader: true,
                     readOnly: true,

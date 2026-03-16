@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:builders_konnect/ui/screens/screens.dart';
 
 class ReturnRefundScreen extends ConsumerStatefulWidget {
   const ReturnRefundScreen({super.key});
@@ -75,6 +76,15 @@ class _ReturnRefundScreenState extends ConsumerState<ReturnRefundScreen> {
       child: Scaffold(
           appBar: CustomAppbar(
             title: "Returns and Refund",
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => LogNewReturnScreen()));
+            },
+            child: Icon(Icons.add),
           ),
           body: !staffRef.hasAccessToReturns
               ? RequestAccessWidget(

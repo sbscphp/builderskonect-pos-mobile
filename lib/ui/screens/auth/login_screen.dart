@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -14,8 +15,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   final _formKey = GlobalKey<FormState>();
   // final _emailController = TextEditingController(text: 'olutan@yopmail.com');
   // final _passwordController = TextEditingController(text: 'Password@1');
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final _emailController =
+      TextEditingController(text: kDebugMode ? 'merchantbk@yopmail.com' : '');
+  final _passwordController =
+      TextEditingController(text: kDebugMode ? 'Micr0s0ft@' : '');
 
   late AnimationController _customController;
   late Animation<double> _customAnimation;

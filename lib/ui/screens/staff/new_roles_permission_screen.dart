@@ -156,40 +156,54 @@ class _NewRolesPermissionScreenState
                                       },
                                     ),
                                     XBox(8),
-                                    Text(label,
+                                    Text(label.capFirstLetter,
                                         style: textTheme.text12?.medium),
                                   ],
                                 ),
                                 secondaryChild: ListView.separated(
-                                    padding: EdgeInsets.only(left: 12),
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, childIndex) {
-                                      final child = children[childIndex];
-                                      final childId = child.id ?? 0;
-                                      final childLabel =
-                                          "${child.subModule ?? ''} ${child.name?.split('.').last ?? ''}"
-                                              .replaceAll("_", " ");
-                                      final isChildChecked =
-                                          vm.isChildChecked(childId);
+                                  padding: EdgeInsets.only(left: 12),
+                                  physics: NeverScrollableScrollPhysics(),
+                                  shrinkWrap: true,
+                                  itemBuilder: (context, childIndex) {
+                                    final child = children[childIndex];
+                                    final childId = child.id ?? 0;
+                                    final childLabel =
+                                        "${child.subModule ?? ''} ${child.name?.split('.').last ?? ''}"
+                                            .replaceAll("_", " ");
+                                    final isChildChecked =
+                                        vm.isChildChecked(childId);
 
-                                      return Row(
-                                        children: [
-                                          CustomCheckbox(
-                                            isSelected: isChildChecked,
-                                            onTap: () {
-                                              vm.modifyList(id: childId);
-                                            },
+                                    return Row(
+                                      children: [
+                                        CustomCheckbox(
+                                          isSelected: isChildChecked,
+                                          onTap: () {
+                                            vm.modifyList(id: childId);
+                                          },
+                                        ),
+                                        XBox(8),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                childLabel
+                                                    .trim()
+                                                    .capFirstLetter,
+                                                style: textTheme.text12?.bold,
+                                              ),
+                                              Text(child.description ?? '',
+                                                  style: textTheme.text12),
+                                            ],
                                           ),
-                                          XBox(8),
-                                          Text(childLabel,
-                                              style: textTheme.text12?.medium),
-                                        ],
-                                      );
-                                    },
-                                    separatorBuilder: (context, index) =>
-                                        YBox(8),
-                                    itemCount: children.length),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) => YBox(8),
+                                  itemCount: children.length,
+                                ),
                               );
                             },
                             separatorBuilder: (context, index) => YBox(12),

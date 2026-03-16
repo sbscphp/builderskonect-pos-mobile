@@ -2,6 +2,7 @@
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:builders_konnect/ui/screens/sales/sales.dart';
 
 class SalesScreen extends ConsumerStatefulWidget {
   const SalesScreen({super.key});
@@ -73,6 +74,13 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
     return Scaffold(
       key: _scaffoldKey,
       drawer: const CustomDrawer(),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => NewSalesScreen()));
+        },
+        child: Icon(Icons.add),
+      ),
       appBar: CustomAppbar(
         title: "Sales",
         trailingWidget: !staffRef.hasAccessToSales
@@ -102,7 +110,6 @@ class _SalesScreenState extends ConsumerState<SalesScreen>
                     ],
                   ).then((value) {
                     if (value != null) {
-                      printty('Selected: $value');
                       switch (value) {
                         case 'paused_sales':
                           Navigator.pushNamed(

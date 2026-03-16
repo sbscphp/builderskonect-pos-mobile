@@ -34,7 +34,7 @@ class AppInitService {
 
     // Dotenv
     await dotenv.load(fileName: ".env");
-    AppConfig.setEnvironment(EnvironmentType.staging);
+    AppConfig.setEnvironment(EnvironmentType.qa);
   }
 
   // _firebaseInit() async {

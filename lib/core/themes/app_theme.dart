@@ -101,6 +101,10 @@ class AppTheme {
     highlightColor: Colors.transparent,
     fontFamily: 'Roboto',
     useMaterial3: true,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primaryBlue,
+      foregroundColor: AppColors.white,
+    ),
   ).copyWith(
     textTheme: _buildTextTheme(const ColorScheme.light()),
   );
@@ -113,6 +117,10 @@ class AppTheme {
     highlightColor: Colors.transparent,
     fontFamily: 'Roboto',
     useMaterial3: true,
+    floatingActionButtonTheme: FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primaryBlue,
+      foregroundColor: AppColors.white,
+    ),
   ).copyWith(
     textTheme: _buildTextTheme(const ColorScheme.dark()),
   );

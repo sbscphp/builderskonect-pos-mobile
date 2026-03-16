@@ -114,6 +114,7 @@ class _GoogleAddressModalState extends ConsumerState<GoogleAddressModal> {
                     : SizedBox.shrink();
               },
               contentBuilder: (context) {
+                print(geographyVm.addresses.length);
                 return RefreshIndicator(
                   onRefresh: () async {
                     await ref.read(geographyVmodel).getStates();
@@ -128,12 +129,13 @@ class _GoogleAddressModalState extends ConsumerState<GoogleAddressModal> {
                     separatorBuilder: (_, __) => YBox(24),
                     itemBuilder: (_, i) {
                       final item = geographyVm.addresses[i];
+                      print(item.toJson());
                       return InkWell(
                         onTap: () {
                           Navigator.pop(context, item);
                         },
                         child: Text(
-                          item.address ?? "",
+                          item.description ?? "",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: textTheme.text14,

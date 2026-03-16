@@ -153,7 +153,8 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
                         for (var element in res) {
                           ctrlText = "$ctrlText${element.name ?? ""}, ";
                         }
-                        assignStoreC.text = ctrlText.replaceRange((ctrlText.length - 2), null, '');
+                        assignStoreC.text = ctrlText.replaceRange(
+                            (ctrlText.length - 2), null, '');
                         setState(() {});
                       }
                     },
@@ -172,7 +173,9 @@ class _NewStaffScreenState extends ConsumerState<NewStaffScreen> {
 
                         handleApiResponse(
                           response: res,
-                          onSuccess: () {
+                          onSuccess: () async {
+                            await vm.getDashboardStats(
+                                busyObjectName: firstState);
                             ModalWrapper.bottomSheet(
                               context: context,
                               canDismiss: false,

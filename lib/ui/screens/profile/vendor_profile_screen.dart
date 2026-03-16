@@ -2,6 +2,7 @@
 
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:builders_konnect/ui/screens/screens.dart';
 
 class VendorProfileScreen extends ConsumerStatefulWidget {
   const VendorProfileScreen({super.key});
@@ -78,6 +79,19 @@ class _ProfileScreenState extends ConsumerState<VendorProfileScreen>
             },
             child: SvgPicture.asset(AppSvgs.support)),
       ),
+      floatingActionButton: currentIndex == 1 || currentIndex == 3
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => currentIndex == 1
+                            ? NewStoreScreen()
+                            : AccreditationScreen()));
+              },
+              child: Icon(Icons.add),
+            )
+          : null,
       body: !staffRef.hasAccessToVendorProfile
           ? RequestAccessWidget(
               isLoading: staffRef.busy(RowParams.vendorProfile),

@@ -1,5 +1,6 @@
 import 'package:builders_konnect/core/core.dart';
 import 'package:builders_konnect/ui/components/components.dart';
+import 'package:builders_konnect/ui/screens/screens.dart';
 
 class StaffManagementScreen extends ConsumerStatefulWidget {
   const StaffManagementScreen({super.key});
@@ -44,10 +45,9 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
   }
 
   _fetchStaffDashboardData() async {
-     ref.read(staffVm).getDashboardStats(busyObjectName: firstState);
-     ref.read(roleVm).getAvailableRoles();
-     ref.read(roleVm).fetchRoles();
-
+    ref.read(staffVm).getDashboardStats(busyObjectName: firstState);
+    ref.read(roleVm).getAvailableRoles();
+    ref.read(roleVm).fetchRoles();
   }
 
   @override
@@ -57,6 +57,21 @@ class _StaffManagementScreenState extends ConsumerState<StaffManagementScreen> {
     final staffViewModel = ref.watch(staffVm);
     return Scaffold(
       appBar: CustomAppbar(title: "Staff Management"),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          if (indexStack == 0) {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => NewStaffScreen()));
+          } else {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => NewRolesPermissionScreen()));
+          }
+        },
+        tooltip: indexStack == 0 ? "Add Staff" : "Add Role and Permission",
+        child: Icon(Icons.add),
+      ),
       body: !staffViewModel.hasAccessToStaff
           ? RequestAccessWidget(
               isLoading: staffViewModel.busy(RowParams.staff),
